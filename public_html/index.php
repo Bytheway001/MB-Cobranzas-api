@@ -1,20 +1,23 @@
 <?php 
 define("PROJECTPATH", dirname(__DIR__));
-define("APPPATH", PROJECTPATH . '/app');
+define("APPPATH", PROJECTPATH . '/App');
 define("DEBUG",true);
 require "../vendor/autoload.php";
 use PHPRouter\RouteCollection;
 use PHPRouter\Router;
 use PHPRouter\Route;
 use PHPRouter\Config;
-$config = Config::loadFromFile(PROJECTPATH.'/config/routes.yaml');
+header('Access-Control-Allow-Origin:*');
+header('Access-Control-Allow-Methods:*');
+header('Access-Control-Allow-Headers:*');
+$config = Config::loadFromFile(PROJECTPATH.'/Config/routes.yaml');
 $router = Router::parseConfig($config);
 //$router = Router::parseRafaFile($config);
 if (!session_id()) @session_start();
 ActiveRecord\Config::initialize(function($cfg)
 {
-	include('../config/web.php');
-	$cfg->set_model_directory(PROJECTPATH.'/App/Models');
+	include('../Config/web.php');
+	$cfg->set_model_directory(APPPATH.'/Models');
 	$cfg->set_connections(array(
 	'development' => 'mysql://'.$database['user'].':'.$database['password'].'@'.$database['host'].'/'.$database['name'].';charset=utf8'));
 });

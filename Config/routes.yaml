@@ -1,18 +1,10 @@
 base_path: /
 routes:
   index: [/,App\Controllers\homeController.index,GET]
-  parse: ['/parse',App\Controllers\homeController.parse,GET]
-  partials: ['/partials/:name',App\Controllers\apiController.partial,GET]
-  builder: ['/builder',\Core\Builder.index,GET]
-  create_builder: ['/builder/create',\Core\Builder.create,POST]
-  create: ['/',create,'POST']
-  update: ['/:id',update,'POST']
-  new: ['/new',new,'GET']
-  products_index: ['/products',\App\Controllers\ProductsController.index,'GET']
-  edit: ['/edit/:id',edit,'GET']
-  delete: ['/destroy/:id',destroy,'GET']
-
-
+  get_agents : [/agents,App\Controllers\agentsController.index,GET]
+  get_collectors: ['/collectors',App\Controllers\agentsController.getCollectors,GET]
+  create_client: [/clients/create,App\Controllers\clientsController.create,POST]
+  create_bulk_clients: [/clients/bulk,App\Controllers\clientsController.bulk,POST]
 
 
 
