@@ -1,8 +1,8 @@
 <?php 
 $database=[
 	'host'=>'localhost',
-	'user'=>'root',
-	'password'=>'',
+	'user'=>'megabrok_apiuser',
+	'password'=>'Silvereye1990',
 	'name'=>'mb_cobranzas',
 ]
 
