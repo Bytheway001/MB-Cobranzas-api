@@ -104,6 +104,7 @@ class clientsController extends Controller{
 		$client=Client::find_by_id($id);
 
 		$result=$client->serialize();
+		$result['payments']=[];
 		foreach($client->payments as $payment){
 			$result['payments'][]=$payment->to_array();
 		}
