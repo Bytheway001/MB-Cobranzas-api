@@ -6,9 +6,11 @@ routes:
   get_client_list: [/clients/list,App\Controllers\clientsController.index,GET]
   update_client_profile: [/clients/:id/update,App\Controllers\clientsController.updatePolicy,PUT]
   create_payment: [/payments/create,\App\Controllers\agentsController.createPayment,POST]
+  show_client: [/clients/show/:id,App\Controllers\clientsController.profile,GET]
   get_client_profile: [/clients/:id,App\Controllers\clientsController.show,GET]
   create_client: [/clients/create,App\Controllers\clientsController.create,POST]
   create_bulk_clients: [/clients/bulk,App\Controllers\clientsController.bulk,POST]
+
 
 
 

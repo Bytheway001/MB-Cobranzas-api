@@ -100,6 +100,16 @@ class clientsController extends Controller{
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
 
+	public function profile($id){
+		$client=Client::find_by_id($id);
+
+		$result=$client->serialize();
+		foreach($client->payments as $payment){
+			$result['payments'][]=$payment->to_array();
+		}
+		$this->response(['errors'=>false,'data'=>$result]);
+	}
+
 	private function setDateFormat($date,$format){
 
 		$newDate = date($format, strtotime($date));  

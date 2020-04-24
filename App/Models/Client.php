@@ -6,7 +6,7 @@ function setDateFormat($date,$format){
 }
 class Client extends \ActiveRecord\Model{
 	static $belongs_to=[['agent'],['collector','class_name'=>'User','foreign_key'=>'collector_id']];
-
+	static $has_many=[['payments']];
 	public function serialize(){
 		$r=$this->to_array();
 		$r['effective_date']=setDateFormat($this->effective_date,'d-m-Y');
