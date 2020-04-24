@@ -3,6 +3,10 @@ routes:
   index: [/,App\Controllers\homeController.index,GET]
   get_agents : [/agents,App\Controllers\agentsController.index,GET]
   get_collectors: ['/collectors',App\Controllers\agentsController.getCollectors,GET]
+  get_client_list: [/clients/list,App\Controllers\clientsController.index,GET]
+  update_client_profile: [/clients/:id/update,App\Controllers\clientsController.updatePolicy,PUT]
+  create_payment: [/payments/create,\App\Controllers\agentsController.createPayment,POST]
+  get_client_profile: [/clients/:id,App\Controllers\clientsController.show,GET]
   create_client: [/clients/create,App\Controllers\clientsController.create,POST]
   create_bulk_clients: [/clients/bulk,App\Controllers\clientsController.bulk,POST]
 

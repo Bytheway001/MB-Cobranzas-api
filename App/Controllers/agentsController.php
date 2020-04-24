@@ -3,6 +3,7 @@ namespace App\Controllers;
 use \Core\View;
 use \App\Models\Agent;
 use \App\Models\User;
+use \App\Models\Payment;
 class agentsController extends Controller{
 	public function index(){
 		$result = [];
@@ -21,6 +22,17 @@ class agentsController extends Controller{
 		} 
 
 		$this->response(['errors'=>false,'data'=>$result]);
+	}
+
+	public function createPayment(){
+		$payment=new Payment($this->payload);
+		if($payment->save()){
+			$this->response(['errors'=>false,'data'=>"Cobranza Registrada exitosamente"]);
+		}
+		else{
+			$this->response(['errors'=>true,'data'=>"No se pudo registrar la cobranza"]);
+		}
+
 	}
 }
 
