@@ -22,8 +22,8 @@ class Payment extends \ActiveRecord\Model{
 		else{
 			$result['account']="Cuenta".$this->account;
 		}
-		$result['amount']=$this->currency.' '.$this->amount;
-
+		$result['amount']=$this->amount;
+		$result['currency']=$this->currency;
 		return $result;
 	}
 
