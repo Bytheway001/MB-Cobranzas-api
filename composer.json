@@ -14,6 +14,9 @@
             "Core\\":"Core"
         }
     },
+    "scripts":{
+        "run":"php -S 127.0.0.1:200 -t public_html/"
+    },
     "repositories": [
         {
             "type": "vcs",

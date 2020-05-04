@@ -43,7 +43,24 @@ class clientsController extends Controller{
 	}
 
 	public function index(){
+		/*
 		$result=[];
+		$params=[
+			'limit'=>10,
+			'query'=>'Kath',
+			'properties'=>['hs_object_id','firstname','lastname']
+		];
+		
+		
+		$clients=\App\Libs\Curl::doPostRequest('https://api.hubapi.com/crm/v3/objects/contacts/search',$params);
+
+		print_r($clients);
+		echo 'a';
+		die();
+
+*/
+
+		
 		try{
 			if(isset($_GET['criteria'])){
 				if($_GET['criteria'] == 'client'){
@@ -72,13 +89,14 @@ class clientsController extends Controller{
 			echo $e->getMessage();
 		}
 		
+		
 	}
 
 	public function updatePolicy($id){
 		$client=Client::find_by_id($id);
 		if($client){
 			if($client->update_attributes($this->payload)){
-	
+
 				$this->response(['errors'=>false,'data'=>$client->serialize()]);
 			}
 			else{
@@ -112,13 +130,14 @@ class clientsController extends Controller{
 	}
 
 	private function setDateFormat($date,$format){
-
+		$date = str_replace('/', '-', $date);
+		
 		$newDate = date($format, strtotime($date));  
 		return $newDate;  
 	}
-
-
+	
 }
+
 
 
 ?>
