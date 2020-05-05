@@ -1,3 +1,4 @@
 #composer
 /vendor
+/Config/web.php
 /docs
