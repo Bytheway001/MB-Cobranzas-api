@@ -11,21 +11,24 @@ class clientsController extends Controller{
 	}
 
 	public function bulk(){
-		
-
 		foreach($this->payload as $client){
 			$agent=Agent::find_by_name($client['agent']);
 			if(!$agent){
 				$agent=Agent::create(['name'=>$client['agent']]);
 			}
-			$collector=User::find_by_name($client['collector']);
-			if(!$collector){
-				$collector=User::create(['name'=>$client['collector']]);
+			if(isset($client['collector'])){
+				$collector=User::find_by_name($client['collector']);
+				if(!$collector){
+					$collector=User::create(['name'=>$client['collector']]);
+				}
+				$client['collector_id']=$collector->id;
+				
 			}
-
+			else{
+				$client['collector_id']=null;
+			}
 			$client['agent_id']=$agent->id;
-			$client['collector_id']=$collector->id;
-
+			
 			$client['effective_date']=$this->setDateFormat($client['effective_date'],'Y-m-d');
 			$client['renovation_date']=$this->setDateFormat($client['renovation_date'],'Y-m-d');
 			unset($client['agent']);
@@ -43,54 +46,41 @@ class clientsController extends Controller{
 	}
 
 	public function index(){
-		/*
-		$result=[];
-		$params=[
-			'limit'=>10,
-			'query'=>'Kath',
-			'properties'=>['hs_object_id','firstname','lastname']
-		];
-		
-		
-		$clients=\App\Libs\Curl::doPostRequest('https://api.hubapi.com/crm/v3/objects/contacts/search',$params);
-
-		print_r($clients);
-		echo 'a';
-		die();
-
-*/
-
-		
 		try{
-			if(isset($_GET['criteria'])){
-				if($_GET['criteria'] == 'client'){
-					$clients=Client::all(['conditions'=>["name LIKE '%".$_GET['term']."%'"]]);
+			$criteria = isset($_GET['criteria'])?$_GET['criteria']:null;
+			$term = isset($_GET['term'])?$_GET['term']:null;
+		
+
+			$clients=[];
+			$result=[];
+			if($criteria){
+				if($criteria=='client'){
+					$clients=Client::all(['conditions'=>["name LIKE ?",'%'.$term.'%']]);
 				}
 				else{
-					$clients=Client::all(['conditions'=>['policy_number = ?',$_GET['term']]]);
+					$clients=Client::all(['conditions'=>['policy_number = ?',$term]]);
 				}
 			}
 			else{
 				$clients=Client::all();
 			}
-			
-			
-			
 			foreach($clients as $client){
-				$data=$client->serialize();
-				
-				$result[]=$data;
+				$result[]=$client->serialize();
 			}
-
 			$this->response(['errors'=>false,'data'=>$result]);
+
 		}
-		catch(\Exception $e){
+
+		catch(\ActiveRecord\DatabaseException $e){
 			echo Client::table()->conn->last_query;
 			echo $e->getMessage();
 		}
-		
-		
+
 	}
+
+
+
+
 
 	public function updatePolicy($id){
 		$client=Client::find_by_id($id);
@@ -110,11 +100,11 @@ class clientsController extends Controller{
 	}
 
 	public function show($id){
-		
+
 		$client=Client::find_by_id($id);
-		
+
 		$result=$client->serialize();
-		
+
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
 
@@ -130,12 +120,12 @@ class clientsController extends Controller{
 	}
 
 	private function setDateFormat($date,$format){
-		$date = str_replace('/', '-', $date);
 		
+
 		$newDate = date($format, strtotime($date));  
 		return $newDate;  
 	}
-	
+
 }
 
 

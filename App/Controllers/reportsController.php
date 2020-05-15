@@ -1,5 +1,7 @@
 <?php 
 namespace App\Controllers;
+use \App\Models\Client;
+use \App\Models\Payment;
 class reportsController extends Controller{
 	public function getReports(){
 		$from = $_GET['f']??null;
@@ -12,7 +14,6 @@ class reportsController extends Controller{
 			$payments=\App\Models\Payment::all();
 		}
 	
-		
 		$result['caja']=[
 			'sc'=>['USD'=>0,'BOB'=>0],
 			'lp'=>['USD'=>0,'BOB'=>0],
@@ -47,6 +48,31 @@ class reportsController extends Controller{
 			$result['payments'][]=$payment->serialize();
 		}
 		$this->response($result);
+		die();
+
+	}
+
+	public function payments_per_company(){
+		$result=[];
+		
+		foreach(Payment::all() as $payment){
+			$company = $payment->client->company;
+			$office= $payment->city;
+			if(!isset($result[$company])){
+				$result[$company]=[];
+			}
+			if(!isset($result[$company][$office])){
+				$result[$company][$office]=[];
+			}
+			if(!isset($result[$company][$office][$payment->payment_method])){
+				$result[$company][$office][$payment->payment_method]=0;
+			}
+			
+			$result[$company][$office][$payment->payment_method]=$result[$company][$office][$payment->payment_method]+$payment->amount;
+			
+		}
+
+	$this->response($result);
 		die();
 
 	}

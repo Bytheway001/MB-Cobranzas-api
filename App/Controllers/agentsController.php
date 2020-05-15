@@ -37,7 +37,7 @@ class agentsController extends Controller{
 		if($payment->save()){
 			$data='Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount;
 			if($payment->client->isLinkedToHubSpot()){
-				$payment->client->addHubSpotNote('Cobranza creada con exito',$data);
+				//$payment->client->addHubSpotNote('Cobranza creada con exito',$data);
 			}
 
 			$this->response(['errors'=>false,'data'=>"Cobranza Registrada exitosamente"]);
@@ -45,13 +45,9 @@ class agentsController extends Controller{
 		else{
 			$this->response(['errors'=>true,'data'=>"No se pudo registrar la cobranza"]);
 		}
-		
-
 	}
 
-private function setDateFormat($date,$format){
-		$date = str_replace('/', '-', $date);
-		
+	private function setDateFormat($date,$format){
 		$newDate = date($format, strtotime($date));  
 		return $newDate;  
 	}
