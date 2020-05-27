@@ -16,8 +16,10 @@ routes:
   create_expense: [/expenses,\App\Controllers\expensesController.create,POST]
   get_expenses_list: [/expenses,\App\Controllers\expensesController.index,GET]
   test: [/test,\App\Controllers\reportsController.payments_per_company,GET]
-
-
+  accounts: [/accounts,\App\Controllers\homeController.listAccounts,GET]
+  create_policy_payment: [/payments/policy,\App\Controllers\expensesController.CreatePolicyPayment,POST]
+  create_transfer: [/transfers,\App\Controllers\operationsController.createTransfer,POST]
+  list_checks: [/checks,\App\Controllers\homeController.listChecks,GET]
 
 
 
