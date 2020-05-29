@@ -14,6 +14,22 @@ class operationsController extends Controller{
 			$this->response(['errors'=>false,'data'=>"Transferencia realizada con exito"]);
 		}
 	}
+
+	public function collect_check(){
+		$check = \App\Models\Check::find([$this->payload['checkId']]);
+		$account = Account::find([$this->payload['accountId']]);
+		$check->status = 'Abonado en cuenta';
+		$check->save();
+		if($check->currency==='USD'){
+			$account->usd = $account->usd+$check->amount;
+		}
+		else{
+			$account->bob = $account->bob+$check->amount;
+		}
+		
+		$account->save();
+		$this->response(['errors'=>false,'data'=>"Cheque abonado a cuenta"]);
+	}
 }
 
 ?>

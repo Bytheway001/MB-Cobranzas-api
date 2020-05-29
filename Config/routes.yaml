@@ -20,7 +20,7 @@ routes:
   create_policy_payment: [/payments/policy,\App\Controllers\expensesController.CreatePolicyPayment,POST]
   create_transfer: [/transfers,\App\Controllers\operationsController.createTransfer,POST]
   list_checks: [/checks,\App\Controllers\homeController.listChecks,GET]
-
+  collect_check: [/checks/collect,\App\Controllers\operationsController.collect_check,POST]
 
 
 
