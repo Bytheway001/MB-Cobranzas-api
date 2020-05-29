@@ -18,6 +18,7 @@ if (!session_id()) @session_start();
 ActiveRecord\Config::initialize(function($cfg)
 {
 	include('../Config/web.php');
+	ActiveRecord\Connection::$datetime_format = 'Y-m-d H:i:s';
 	$cfg->set_model_directory(APPPATH.'/Models');
 	$cfg->set_connections(array(
 	'development' => 'mysql://'.$database['user'].':'.$database['password'].'@'.$database['host'].'/'.$database['name'].';charset=utf8'));
