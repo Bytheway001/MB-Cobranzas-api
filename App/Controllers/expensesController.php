@@ -2,6 +2,7 @@
 namespace App\Controllers;
 use \App\Models\Expense;
 use \App\Models\Account;
+use \App\Models\PolicyPayment;
 class expensesController extends Controller{
 	public function create(){
 		$expense = new Expense($this->payload);
@@ -28,14 +29,28 @@ class expensesController extends Controller{
 	}
 
 	public function index(){
-		$result=[];
-		
+		$result=[
+			'expenses'=>[],
+			'payments'=>[]
+		];
+
 		$expenses = Expense::all();
 		foreach($expenses as $expense){
 			$expense=$expense->to_array();
 			$expense['date']=\App\Libs\Time::format($expense['date'],'d-m-Y');
 			$expense['account_name']=\App\Models\Account::find([$expense['account']])->name;
-			$result[] =$expense; 
+			$result['expenses'][] =$expense; 
+		}
+
+		$policy_payments = PolicyPayment::all();
+		foreach($policy_payments as $payment){
+			$p=$payment->to_array();
+			$p['date']=\App\Libs\Time::format($p['created_at'],'d-m-Y');
+			$p['company']=\App\Models\Client::find([$payment->client])->company;
+			$p['client']=\App\Models\Client::find([$p['client']])->first_name;
+			$p['account']=\App\Models\Account::find([$p['account']])->name;
+
+			$result['payments'][]=$p;
 		}
 
 		$this->response(['errors'=>false,'data'=>$result]);
@@ -43,6 +58,9 @@ class expensesController extends Controller{
 
 	public function createPolicyPayment(){
 		$payment = new \App\Models\PolicyPayment($this->payload);
+		$client = \App\Models\Client::find([$payment->client]);
+		$client->status=$payment->policy_status;
+		$client->save();
 		$account  = Account::find([$payment->account]);
 		$currency = strtolower($payment->currency);
 		if($account->$currency<$payment->amount){

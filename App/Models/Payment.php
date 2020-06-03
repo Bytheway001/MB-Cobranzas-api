@@ -5,15 +5,11 @@ class Payment extends \ActiveRecord\Model{
 	static $belongs_to=['client'];
 
 	public function serialize(){
-		$result=[];
-		$result['date']=date('d/m/Y',strtotime($this->payment_date));
-		$result['client']=$this->client->name;
-		$result['collector']=$this->client->collector->name;
-		$result['payment_method']=$this->serializePaymentMethods($this->payment_method);
-		$result['account']=$this->account;
-		$result['amount']=$this->amount;
-		$result['currency']=$this->currency;
-		return $result;
+		$payment = $this->to_array();
+		$payment['payment_date']=$this->payment_date->format('d-m-Y');
+		$payment['client']=$this->client->first_name;
+		$payment['collector']=$this->client->collector->name;
+		return $payment;
 	}
 
 	private function serializePaymentMethods($method){

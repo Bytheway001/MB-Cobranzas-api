@@ -13,6 +13,8 @@ class Client extends \ActiveRecord\Model{
 		$r['renovation_date']=setDateFormat($this->renovation_date,'d-m-Y');
 		$r['agent']=$this->agent->name;
 		$r['collector']=$this->collector->name;
+		$r['name']=$this->first_name;
+		$r['policy_status']=$this->status;
 		return $r;
 	}
 

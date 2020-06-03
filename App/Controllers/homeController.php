@@ -21,7 +21,7 @@ class homeController extends Controller{
 		$checks =\App\Models\Check::all();
 		foreach($checks as $check){
 			$arr= $check->to_array();
-			$arr['client']=$check->client->name;
+			$arr['client']=$check->client->first_name;
 			$result[] =$arr;
 
 		}

@@ -6,33 +6,36 @@ class reportsController extends Controller{
 	public function getReports(){
 		$from = $_GET['f']??null;
 		$to = $_GET['t']??null;
-		$result=[];
-
-		$accounts=\App\Models\Account::all();
-		foreach($accounts as $account){
-			$result['accounts'][]=$account->to_array();
-		}
-		$payments=Payment::all();
-		foreach($payments as $payment){
-			$p=$payment->to_array();
-			$p['account']=\App\Models\Account::find([$p['account']])->name;
-			$client=Client::find([$p['client_id']]);
-			$p['client']=$client->name;
-			$p['collector']=$client->collector->name;
-			$result['payments'][]=$p;
-
-		}
+		$result=[
+			'expenses'=>[],
+			'policy_payments'=>[],
+			'payments'=>[]
+		];
 
 
 		if($from && $to){
-				$payments=\App\Models\Payment::all(['conditions'=>['DATE(payment_date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
-		}
-		else{
-			$payments=\App\Models\Payment::all();
+			$payments=\App\Models\Payment::all(['conditions'=>['DATE(payment_date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
+			$expenses=\App\Models\Expense::all(['conditions'=>['DATE(date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
+			$policy_payments=\App\Models\PolicyPayment::all(['conditions'=>['DATE(created_at) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
 		}
 
+		else{
+			$payments=\App\Models\Payment::all();
+			$expenses=\App\Models\Expense::all();
+			$policy_payments=\App\Models\PolicyPayment::all();
+		}
+
+		foreach($payments as $payment){
+			$result['payments'][]=$payment->serialize();
+		}
+		foreach($expenses as $expense){
+			$result['expenses'][]=$expense->serialize();
+		}
+		foreach($policy_payments as $policy_payment){
+			$result['policy_payments'][]=$policy_payment->serialize();
+		}
 		$this->response($result);
-		die();
+
 
 	}
 
@@ -55,7 +58,7 @@ class reportsController extends Controller{
 			
 		}
 
-	$this->response($result);
+		$this->response($result);
 		die();
 
 	}
