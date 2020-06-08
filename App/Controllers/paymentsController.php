@@ -4,6 +4,8 @@ use \App\Models\Payment;
 class paymentsController extends Controller{
 	public function create(){
 		$expense = new Expense($this->payload);
+		print_r($expense);
+		die();
 		if($expense->save()){
 			$this->response(['errors'=>false,'data'=>"Creado con exito"]);
 		}
@@ -19,7 +21,7 @@ class paymentsController extends Controller{
 			$payment=$payment->to_array();
 			$client = \App\Models\Client::find([$payment['client_id']]);
 			$payment['payment_date']=\App\Libs\Time::format($payment['payment_date'],'d-m-Y');
-			$payment['client']=$client->name;
+			$payment['client']=$client->first_name;
 			$payment['collector']=$client->collector->name;
 			$result[] = $payment;
 		}

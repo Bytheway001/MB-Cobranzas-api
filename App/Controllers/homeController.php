@@ -10,7 +10,7 @@ class homeController extends Controller{
 		$result=[];
 		$accounts = \App\Models\Account::all(['order'=>'name']);
 		foreach($accounts as $account){
-			$result[]=['id'=>$account->id,'name'=>$account->name,'usd'=>$account->usd,'bob'=>$account->bob];
+			$result[]=['id'=>$account->id,'name'=>$account->name,'usd'=>$account->usd,'bob'=>$account->bob,'type'=>$account->type];
 		}
 
 		$this->response(['errors'=>false,'data'=>$result]);

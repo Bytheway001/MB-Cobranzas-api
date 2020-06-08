@@ -55,7 +55,7 @@ class clientsController extends Controller{
 			$result=[];
 			if($criteria){
 				if($criteria=='client'){
-					$clients=Client::all(['conditions'=>["name LIKE ?",'%'.$term.'%']]);
+					$clients=Client::all(['conditions'=>["first_name LIKE ?",'%'.$term.'%']]);
 				}
 				else{
 					$clients=Client::all(['conditions'=>['policy_number = ?',$term]]);

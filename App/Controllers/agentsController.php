@@ -27,10 +27,12 @@ class agentsController extends Controller{
 
 	public function createPayment(){
 		$payment=new Payment($this->payload);
+		
 		$payment->payment_date =$this->setDateFormat($this->payload['payment_date'],'Y-m-d');
 		if(!$payment->client->isLinkedToHubSpot()){
 			$payment->client->linkToHubSpot();
 		}
+
 
 		switch($payment->payment_method){
 			case 'check_to_agency_local':
