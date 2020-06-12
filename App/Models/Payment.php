@@ -2,7 +2,7 @@
 namespace App\Models;
 
 class Payment extends \ActiveRecord\Model{
-	static $belongs_to=['client'];
+	static $belongs_to=[['client'],['user']];
 
 	public function serialize(){
 		$payment = $this->to_array();

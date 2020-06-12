@@ -12,7 +12,6 @@ class agentsController extends Controller{
 			$result[] = $agent->to_array();
 		}
 		$this->response(['errors'=>false,'data'=>$result]);
-
 	}
 
 	public function getCollectors(){
@@ -27,7 +26,7 @@ class agentsController extends Controller{
 
 	public function createPayment(){
 		$payment=new Payment($this->payload);
-		
+		$payment->user_id = $this->current_id;
 		$payment->payment_date =$this->setDateFormat($this->payload['payment_date'],'Y-m-d');
 		if(!$payment->client->isLinkedToHubSpot()){
 			$payment->client->linkToHubSpot();

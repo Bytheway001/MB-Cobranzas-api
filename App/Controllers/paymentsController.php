@@ -2,8 +2,11 @@
 namespace App\Controllers;
 use \App\Models\Payment;
 class paymentsController extends Controller{
+	
 	public function create(){
 		$expense = new Expense($this->payload);
+		print_r($this->current_id);
+		$expense->user_id = $this->current_id;
 		print_r($expense);
 		die();
 		if($expense->save()){

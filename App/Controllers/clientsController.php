@@ -104,17 +104,25 @@ class clientsController extends Controller{
 		$client=Client::find_by_id($id);
 
 		$result=$client->serialize();
-
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
 
 	public function profile($id){
 		$client=Client::find_by_id($id);
-
 		$result=$client->serialize();
 		$result['payments']=[];
 		foreach($client->payments as $payment){
-			$result['payments'][]=$payment->to_array();
+			$p=$payment->to_array();
+			$p['date']=$payment->payment_date->format('d-m-Y');
+			$p['user']=$payment->user->name;
+			$result['payments'][]=$p;
+		}
+		$result['policy_payments']=[];
+		foreach($client->policy_payments as $p){
+			$pp=$p->to_array();
+			$pp['date']=$p->created_at->format('d-m-y');
+			$pp['user']=$p->user->name;
+			$result['policy_payments'][]=$pp;
 		}
 		$this->response(['errors'=>false,'data'=>$result]);
 	}

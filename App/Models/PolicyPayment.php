@@ -2,7 +2,7 @@
 
 namespace App\Models;
 class PolicyPayment extends \ActiveRecord\Model{
-	static $belongs_to=[['account'],['client']];
+	static $belongs_to=[['account'],['client'],['user']];
 
 	public function serialize(){
 		$payment=$this->to_array(['only'=>['amount','currency']]);

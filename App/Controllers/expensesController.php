@@ -57,6 +57,7 @@ class expensesController extends Controller{
 
 	public function createPolicyPayment(){
 		$payment = new \App\Models\PolicyPayment($this->payload);
+		$payment->user_id = $this->current_id;
 		$client = $payment->client;
 		$client->status=$payment->policy_status;
 		$client->save();

@@ -6,9 +6,8 @@ namespace App\Controllers;
 class Controller{
 	public function __construct(){
 		$this->payload = json_decode(file_get_contents("php://input"), TRUE);
-		if(!$this->authenticateRequest()){
-			$this->response(['errors'=>true,'data'=>"USUARIO NO AUTENTICADO"]);
-		}
+		$this->authenticateRequest();
+		
 	}
 	protected function response(array $response){
 		header('Content-Type:application/json');
@@ -17,7 +16,17 @@ class Controller{
 	}
 
 	private function authenticateRequest(){
-		return true;
+		$uri = strtok($_SERVER["REQUEST_URI"], '?');
+		if($uri !=='/auth'){
+			if(!isset($_SERVER['HTTP_U'])){
+				http_response_code(403);
+				$this->response(['errors'=>true,'data'=>'NOT AUTHENTICATED']);
+			}
+			else{
+				$this->current_id = $_SERVER['HTTP_U'];
+			}
+		}
+
 	}
 }
 
