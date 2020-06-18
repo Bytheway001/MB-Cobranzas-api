@@ -14,9 +14,7 @@ class expensesController extends Controller{
 		}
 		else{
 			if($expense->save()){
-
 				$payingAccount->$currency = $payingAccount->$currency-$expense->amount;
-
 				$payingAccount->save();
 				$this->response(['errors'=>false,'data'=>"Creado con exito"]);
 			}
@@ -64,7 +62,8 @@ class expensesController extends Controller{
 		$account  = $payment->account;
 		$currency = strtolower($payment->currency);
 		if($account->$currency<$payment->amount){
-			$this->response(['errors'=>true,'data'=>'Saldo insuficiente para realizar este pago']);
+			http_response_code(403);
+			$this->response(['errors'=>true,'data'=>"La cuenta seleccionada no posee el saldo suficiente para registrar esta salida"]);
 		}
 		else{
 			if($payment->save()){

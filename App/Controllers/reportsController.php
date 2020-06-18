@@ -9,7 +9,8 @@ class reportsController extends Controller{
 		$result=[
 			'expenses'=>[],
 			'policy_payments'=>[],
-			'payments'=>[]
+			'payments'=>[],
+			'checks'=>[],
 		];
 
 
@@ -34,6 +35,22 @@ class reportsController extends Controller{
 		foreach($policy_payments as $policy_payment){
 			$result['policy_payments'][]=$policy_payment->serialize();
 		}
+		foreach(\App\Models\Check::all(['conditions'=>['status = ?','Abonado en cuenta']]) as $check){
+			$c = $check->to_array();
+
+			$c['client']=$check->client->first_name;
+			
+			if($check->status=='Abonado en cuenta'){
+				$c['collected']=$check->collected_at->format('d-m-Y');
+			}
+			else{
+				$c['collected']='--';
+			}
+			$result['checks'][]=$c;
+
+
+		}
+
 		$this->response($result);
 
 

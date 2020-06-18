@@ -7,6 +7,7 @@ class Controller{
 	public function __construct(){
 		$this->payload = json_decode(file_get_contents("php://input"), TRUE);
 		$this->authenticateRequest();
+
 		
 	}
 	protected function response(array $response){

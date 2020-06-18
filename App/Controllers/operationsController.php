@@ -19,6 +19,7 @@ class operationsController extends Controller{
 		$check = \App\Models\Check::find([$this->payload['checkId']]);
 		$account = Account::find([$this->payload['accountId']]);
 		$check->status = 'Abonado en cuenta';
+		$check->account_id = $account->id;
 		$check->save();
 		if($check->currency==='USD'){
 			$account->usd = $account->usd+$check->amount;
