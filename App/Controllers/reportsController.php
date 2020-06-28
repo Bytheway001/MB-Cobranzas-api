@@ -15,6 +15,7 @@ class reportsController extends Controller{
 
 
 		if($from && $to){
+		
 			$payments=\App\Models\Payment::all(['conditions'=>['DATE(payment_date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
 			$expenses=\App\Models\Expense::all(['conditions'=>['DATE(date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
 			$policy_payments=\App\Models\PolicyPayment::all(['conditions'=>['DATE(created_at) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);

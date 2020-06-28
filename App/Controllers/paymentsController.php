@@ -26,7 +26,10 @@ class paymentsController extends Controller{
 			$payment['payment_date']=\App\Libs\Time::format($payment['payment_date'],'d-m-Y');
 			$payment['client']=$client->first_name;
 			$payment['collector']=$client->collector->name;
+			$payment['plan']=$client->plan.'/'.$client->option;
+			$payment['company']=$client->company;
 			$result[] = $payment;
+
 		}
 
 		$this->response(['errors'=>false,'data'=>$result]);
