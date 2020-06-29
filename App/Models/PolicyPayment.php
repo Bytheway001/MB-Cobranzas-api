@@ -10,6 +10,7 @@ class PolicyPayment extends \ActiveRecord\Model{
 		$payment['account']=$this->account->name;
 		$payment['client']=$this->client->first_name;
 		$payment['company']=$this->client->company;
+		$payment['plan']=$this->client->plan;
 		return $payment;
 	}
 }
