@@ -25,6 +25,10 @@ class agentsController extends Controller{
 	}
 
 	public function createPayment(){
+		if(!$this->payload['account_id']){
+			$this->payload['account_id'] = null;
+		}
+
 		$payment=new Payment($this->payload);
 		$payment->user_id = $this->current_id;
 		$payment->payment_date =$this->setDateFormat($this->payload['payment_date'],'Y-m-d');
