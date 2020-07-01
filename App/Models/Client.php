@@ -15,8 +15,8 @@ class Client extends \ActiveRecord\Model{
 		$r['collector']=$this->collector->name;
 		$r['name']=$this->first_name;
 		$r['policy_status']=$this->status;
-		$r['plan']=$this->client->plan;
-		$r['company']=$this->client->company;
+		$r['plan']=$this->plan;
+		$r['company']=$this->company;
 		return $r;
 	}
 
