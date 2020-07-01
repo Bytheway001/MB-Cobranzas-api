@@ -28,6 +28,16 @@ class homeController extends Controller{
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
 
+	public function listCategories(){
+		$result=[];
+		$categories = \App\Models\Category::all(['order'=>'name ASC']);
+		foreach($categories as $category){
+			$result[]=$category->to_array();
+		}
+
+		$this->response(['errors'=>false,'data'=>$result]);
+	}
+
 	public function auth(){
 		$user=User::find_by_email($_GET['id']);
 		$this->response(['errors'=>false,'data'=>$user->to_array()]);

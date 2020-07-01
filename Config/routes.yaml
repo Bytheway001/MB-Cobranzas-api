@@ -21,6 +21,7 @@ routes:
   create_transfer: [/transfers,\App\Controllers\operationsController.createTransfer,POST]
   list_checks: [/checks,\App\Controllers\homeController.listChecks,GET]
   collect_check: [/checks/collect,\App\Controllers\operationsController.collect_check,POST]
+  list_categories: [/categories,\App\Controllers\homeController.listCategories,GET]
   auth: [/auth,\App\Controllers\homeController.auth,GET]
 
 
