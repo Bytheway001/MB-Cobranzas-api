@@ -2,6 +2,7 @@
 namespace App\Controllers;
 use \Core\View;
 use \App\Models\User;
+use \App\Models\Account;
 class homeController extends Controller{
 	public function index(){
 		$this->response(['errors'=>false,'data'=>'Welcome to MB-Cobranzas']);
@@ -42,6 +43,41 @@ class homeController extends Controller{
 		$user=User::find_by_email($_GET['id']);
 		$this->response(['errors'=>false,'data'=>$user->to_array()]);
 	}
+
+	public function convert(){
+		$currencies = explode('/',$this->payload['type']);
+		$coinFrom = strtolower($currencies[0]);
+		$coinTo=  strtolower($currencies[1]);
+		$amount = $this->payload['amount'];
+		$accountFrom = Account::find([$this->payload['from']]);
+		if($coinFrom==='usd'){
+			$converted = $amount * $this->payload['rate'];
+		}
+		else{
+			$converted = $amount / $this->payload['rate'];
+		}
+
+		if($accountFrom->$coinFrom>=$amount){
+			/* La cuenta tiene saldo */
+
+			$accountTo = Account::find([$this->payload['to']]);
+			$accountFrom->$coinFrom =$accountFrom->$coinFrom - $amount;
+			$accountTo->$coinTo =$accountTo->$coinTo + $converted;
+			$accountFrom->save();
+			$accountTo->save();
+			$this->response(['errors'=>false,'data'=>'Conversion Exitosa']);
+		}
+		else{
+			http_response_code(401);
+			$this->response(['errors'=>true,'data'=>'Saldo insuficiente en cuenta saliente']);
+		}
+
+
+		
+
+	}
+
+	
 
 }
 
