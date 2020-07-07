@@ -5,6 +5,8 @@ use \App\Models\Account;
 use \App\Models\PolicyPayment;
 class expensesController extends Controller{
 	public function create(){
+		$this->payload['category']=$this->payload['category_id'];
+		unset($this->payload['category_id']);
 		$expense = new Expense($this->payload);
 		$payingAccount = $expense->account;
 		$currency = strtolower($expense->currency);

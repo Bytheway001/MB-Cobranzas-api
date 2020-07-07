@@ -22,5 +22,8 @@
             "type": "vcs",
             "url": "https://github.com/Bytheway001/PHP-Router"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "9"
+    }
 }
