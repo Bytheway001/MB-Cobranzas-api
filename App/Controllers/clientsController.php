@@ -31,6 +31,8 @@ class clientsController extends Controller{
 			
 			$client['effective_date']=$this->setDateFormat($client['effective_date'],'Y-m-d');
 			$client['renovation_date']=$this->setDateFormat($client['renovation_date'],'Y-m-d');
+			$client['first_name']=$client['name'];
+			unset($client['name']);
 			unset($client['agent']);
 			unset($client['collector']);
 
