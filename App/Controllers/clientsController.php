@@ -4,6 +4,10 @@ use \App\Models\Client;
 use \App\Models\Agent;
 use \App\Models\User;
 class clientsController extends Controller{
+	private function clientExists($client){
+		return Client::count(['conditions'=>['policy_number = ? and company = ?',$client['policy_number'],$client['company']]]);
+	}
+
 	public function create(){
 		$client=new Client($this->payload);
 		$client->save();
@@ -11,6 +15,7 @@ class clientsController extends Controller{
 	}
 
 	public function bulk(){
+		$count=0;
 		foreach($this->payload as $client){
 			$agent=Agent::find_by_name($client['agent']);
 			if(!$agent){
@@ -29,17 +34,22 @@ class clientsController extends Controller{
 			}
 			$client['agent_id']=$agent->id;
 			
-			$client['effective_date']=$this->setDateFormat($client['effective_date'],'Y-m-d');
-			$client['renovation_date']=$this->setDateFormat($client['renovation_date'],'Y-m-d');
+			
 			$client['first_name']=$client['name'];
 			unset($client['name']);
 			unset($client['agent']);
 			unset($client['collector']);
-
-			Client::create($client);
+			
+			if(!$this->clientExists($client)){
+				Client::create($client);
+			}
+			else{
+				$count=$count+1;
+			}
+			
 
 		}
-		$this->response(['errors'=>false,'data'=>"Clientes creados con exito"]);
+		$this->response(['errors'=>false,'data'=>"Clientes creados con exito, $count clientes ya existian y no han sido agregados"]);
 
 		
 		
