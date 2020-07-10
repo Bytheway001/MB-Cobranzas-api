@@ -35,6 +35,17 @@ class paymentsController extends Controller{
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
 
+	public function getClientPayments($id){
+		$result=[];
+		$client=\App\Models\Client::find([$id]);
+		foreach($client->payments as $payment){
+			$p=$payment->to_array();
+			$p['payment_date']=$payment->payment_date->format('d-m-Y');
+			$result[]=$p;
+		}
+		$this->response(['errors'=>false,'data'=>$result]);
+	}
+
 	public function validate($id){
 		$payment=Payment::find([$id]);
 		$payment->processed=1;

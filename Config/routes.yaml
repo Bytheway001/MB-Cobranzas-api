@@ -10,6 +10,7 @@ routes:
   get_agents : [/agents,App\Controllers\agentsController.index,GET]
   get_collectors: ['/collectors',App\Controllers\agentsController.getCollectors,GET]
   create_payment: [/payments/create,\App\Controllers\agentsController.createPayment,POST]
+
   # clients
   get_client_list: [/clients/list,App\Controllers\clientsController.index,GET]
   update_client_profile: [/clients/:id/update,App\Controllers\clientsController.updatePolicy,PUT]
@@ -19,6 +20,7 @@ routes:
   create_bulk_clients: [/clients/bulk,App\Controllers\clientsController.bulk,POST]
   # payments
   get_payment_list: [/payments,\App\Controllers\paymentsController.index,GET]
+  get_payment: [/payments/:id,\App\Controllers\paymentsController.getClientPayments,GET]
   validate_payment: [/payments/validate/:id,\App\Controllers\paymentsController.validate,GET]
   # reports
   get_reports_list: [/reports,\App\Controllers\reportsController.getReports,GET]
