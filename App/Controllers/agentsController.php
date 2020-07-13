@@ -53,7 +53,7 @@ class agentsController extends Controller{
 		if($payment->save()){
 			$data='Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount;
 			if($payment->client->isLinkedToHubSpot()){
-				//$payment->client->addHubSpotNote('Cobranza creada con exito',$data);
+				$payment->client->addHubSpotNote('Cobranza creada con exito',$data);
 			}
 
 			$this->response(['errors'=>false,'data'=>"Cobranza Registrada exitosamente"]);
