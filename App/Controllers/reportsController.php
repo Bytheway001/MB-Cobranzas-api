@@ -86,6 +86,17 @@ class reportsController extends Controller{
 		$newDate = date($format, strtotime($date));  
 		return $newDate;  
 	}
+
+	public function accountMovements($id){
+		$movements = \App\Models\Movement::all(['conditions'=>['cuenta = ?',$id]]);
+		$result=[];
+		foreach($movements as $movement){
+			$m = $movement->to_array();
+			$m['fecha']=$movement->fecha->format('d-m-Y');
+			$result[]=$m;
+		}
+		$this->response(['errors'=>false,'data'=>$result]);
+	}
 }
 
 ?>

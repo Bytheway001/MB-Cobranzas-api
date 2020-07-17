@@ -25,6 +25,7 @@ routes:
   # reports
   get_reports_list: [/reports,\App\Controllers\reportsController.getReports,GET]
   test: [/test,\App\Controllers\reportsController.payments_per_company,GET]
+  movements: [/movements/:id,\App\Controllers\reportsController.accountMovements,GET]
   # expenses
   get_expenses_list: [/expenses,\App\Controllers\expensesController.index,GET]
   create_expense: [/expenses,\App\Controllers\expensesController.create,POST]
