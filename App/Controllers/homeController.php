@@ -46,35 +46,41 @@ class homeController extends Controller{
 
 	public function convert(){
 		$currencies = explode('/',$this->payload['type']);
-		$coinFrom = strtolower($currencies[0]);
-		$coinTo=  strtolower($currencies[1]);
+		$coinFrom = $currencies[0];
+		$coinTo=  $currencies[1];
 		$amount = $this->payload['amount'];
+
+
 		$accountFrom = Account::find([$this->payload['from']]);
-		if($coinFrom==='usd'){
+		if($coinFrom==='USD'){
 			$converted = $amount * $this->payload['rate'];
 		}
 		else{
 			$converted = $amount / $this->payload['rate'];
 		}
 
-		if($accountFrom->$coinFrom>=$amount){
-			/* La cuenta tiene saldo */
-
+		if($accountFrom->has($amount,$coinFrom)){
 			$accountTo = Account::find([$this->payload['to']]);
-			$accountFrom->$coinFrom =$accountFrom->$coinFrom - $amount;
-			$accountTo->$coinTo =$accountTo->$coinTo + $converted;
-			$accountFrom->save();
-			$accountTo->save();
+			$accountTo->deposit($converted,$coinTo);
+			$accountFrom->withdraw($amount,$coinFrom);
+			\App\Models\Movement::create(['type'=>"OUT",'description'=>"Cambio de Moneda",'amount'=>$amount,'currency'=>$coinFrom,'from'=>$accountFrom->id]);
+			\App\Models\Movement::create(['type'=>"IN",'description'=>"Cambio de Moneda",'amount'=>$converted,'currency'=>$coinTo,'to'=>$accountTo->id]);
 			$this->response(['errors'=>false,'data'=>'Conversion Exitosa']);
 		}
 		else{
 			http_response_code(401);
 			$this->response(['errors'=>true,'data'=>'Saldo insuficiente en cuenta saliente']);
 		}
+	}
 
-
-		
-
+	public function test(){
+		$m= new \App\Models\MovementNew(['from'=>5,'to'=>1,'description'=>'Test','currency'=>'USD','amount'=>'100']);
+		if($m->process()){
+			$this->response(['errors'=>false,'data'=>'created']);
+		}
+		else{
+			$this->response(['errors'=>false,'data'=>'error']);
+		}
 	}
 
 	
@@ -82,4 +88,4 @@ class homeController extends Controller{
 }
 
 
- ?>
+?>

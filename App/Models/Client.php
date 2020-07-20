@@ -82,10 +82,12 @@ class Client extends \ActiveRecord\Model{
 		}
 	}
 
-	public function addHubSpotNote($note,$body){
+	public function addHubSpotNote($text){
+		if(!$this->isLinkedToHubSpot()){
+			$this->linkToHubSpot();
+		}
 		$apikey='abcb7c3c-c65a-4985-bc11-58892ac09f3f';
 		$h_id=$this->h_id;
-		$data=new \stdClass();
 		$data=[
 			'engagement'=>[
 				'active'=>true,
@@ -93,10 +95,10 @@ class Client extends \ActiveRecord\Model{
 
 			],
 			'associations'=>[
-				'contactIds'=>[$h_id]
+				'contactIds'=>[$this->h_id]
 			],
 			"metadata"=>[
-				"body"=> $body
+				"body"=> $text
 			]
 		];
 		

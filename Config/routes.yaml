@@ -9,7 +9,7 @@ routes:
   # agents
   get_agents : [/agents,App\Controllers\agentsController.index,GET]
   get_collectors: ['/collectors',App\Controllers\agentsController.getCollectors,GET]
-  create_payment: [/payments/create,\App\Controllers\agentsController.createPayment,POST]
+  create_payment: [/payments/create,\App\Controllers\paymentsController.create,POST]
 
   # clients
   get_client_list: [/clients/list,App\Controllers\clientsController.index,GET]
@@ -24,7 +24,7 @@ routes:
   validate_payment: [/payments/validate/:id,\App\Controllers\paymentsController.validate,GET]
   # reports
   get_reports_list: [/reports,\App\Controllers\reportsController.getReports,GET]
-  test: [/test,\App\Controllers\reportsController.payments_per_company,GET]
+  test: [/test,\App\Controllers\homeController.test,GET]
   movements: [/movements/:id,\App\Controllers\reportsController.accountMovements,GET]
   # expenses
   get_expenses_list: [/expenses,\App\Controllers\expensesController.index,GET]
@@ -33,10 +33,12 @@ routes:
   # operations
   create_transfer: [/transfers,\App\Controllers\operationsController.createTransfer,POST]
   collect_check: [/checks/collect,\App\Controllers\operationsController.collect_check,POST]
+  register_income: [/income,\App\Controllers\operationsController.createIncome,POST]
   # categories
   create_category: [/categories,\App\Controllers\categoriesController.create,POST]
   update_category: [/categories/:id,\App\Controllers\categoriesController.update,PUT]
   list_categories: [/categories,\App\Controllers\categoriesController.list,GET]
+
 
 
 

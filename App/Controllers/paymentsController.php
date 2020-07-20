@@ -3,17 +3,39 @@ namespace App\Controllers;
 use \App\Models\Payment;
 class paymentsController extends Controller{
 	
+	/* Registro de cobranza */
 	public function create(){
-		$expense = new Expense($this->payload);
-		print_r($this->current_id);
-		$expense->user_id = $this->current_id;
-		print_r($expense);
-		die();
-		if($expense->save()){
-			$this->response(['errors'=>false,'data'=>"Creado con exito"]);
+
+		/* Caso de pagos directos a la aseguradora */
+		if(!$this->payload['account_id']){
+			$this->payload['account_id'] = null;
+		}
+
+		$payment=new Payment($this->payload);
+		$payment->user_id = $this->current_id;
+		if(!$payment->client->isLinkedToHubSpot()){
+			$payment->client->linkToHubSpot();
+		}
+		/* Creamos el cheque si es un pago en cheque */
+		if($payment->isCheck()){
+			$check= \App\Models\Check::create(['amount'=>$payment->amount,'currency'=>$payment->currency,'client_id'=>$payment->client_id]);
+			$check->save();
+		}
+
+		/* Guardamos, creamos la nota de  hubspot y el movimiento de cuenta (si es caja)*/
+		if($payment->save()){
+			//$payment->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
+			if($payment->account_id){
+				$payment->account->deposit($payment->amount,$payment->currency);
+			}
+			
+			if($payment->isCash()){
+				\App\Models\Movement::create(['type'=>"IN",'description'=>"Cobranza Realizada",'amount'=>$payment->amount,'currency'=>$payment->currency,'to'=>$payment->account->id]);
+			}
+			$this->response(['errors'=>false,'data'=>"Cobranza Registrada exitosamente"]);
 		}
 		else{
-				$this->response(['errors'=>true,'data'=>"No se pudo crear"]);
+			$this->response(['errors'=>true,'data'=>"No se pudo registrar la cobranza"]);
 		}
 	}
 
@@ -54,4 +76,4 @@ class paymentsController extends Controller{
 	}
 }
 
- ?>
+?>

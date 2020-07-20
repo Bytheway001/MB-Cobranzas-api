@@ -8,23 +8,23 @@ class expensesController extends Controller{
 		$this->payload['category']=$this->payload['category_id'];
 		unset($this->payload['category_id']);
 		$expense = new Expense($this->payload);
-		$payingAccount = $expense->account;
-		$currency = strtolower($expense->currency);
-		if($payingAccount->$currency<$expense->amount){
+		if(!$expense->account->has($expense->amount,$expense->currency)){
 			http_response_code(403);
 			$this->response(['errors'=>true,'data'=>"La cuenta seleccionada no posee el saldo suficiente para registrar esta salida"]);
 		}
 		else{
 			if($expense->save()){
-				$payingAccount->$currency = $payingAccount->$currency-$expense->amount;
-				$payingAccount->save();
+				$expense->account->withdraw($expense->amount,$expense->currency);
+				if($expense->account->type==='Cash'){
+					\App\Models\Movement::create(['type'=>"OUT",'description'=>$expense->description,'amount'=>$expense->amount,'currency'=>$expense->currency,'from'=>$expense->account->id]);
+				}
 				$this->response(['errors'=>false,'data'=>"Creado con exito"]);
 			}
 			else{
+				http_response_code(403);
 				$this->response(['errors'=>true,'data'=>"No se pudo crear"]);
 			}
 		}
-		
 	}
 
 	public function index(){
@@ -62,22 +62,23 @@ class expensesController extends Controller{
 		$client->status=$payment->policy_status;
 		$client->save();
 		$account  = $payment->account;
-		$currency = strtolower($payment->currency);
-		if($account->$currency<$payment->amount){
+		if(!$account->has($payment->amount,$payment->currency)){
 			http_response_code(403);
 			$this->response(['errors'=>true,'data'=>"La cuenta seleccionada no posee el saldo suficiente para registrar esta salida"]);
 		}
 		else{
 			if($payment->save()){
-				$account->$currency = $account->$currency-$payment->amount;
-				$account->save();
+				$account->withdraw($payment->amount,$payment->currency);
+				if($payment->account->type === 'Cash'){
+					\App\Models\Movement::create(['type'=>"OUT",'description'=>"Pago de Poliza #".$payment->client->policy_number,'amount'=>$payment->amount,'currency'=>$payment->currency,'from'=>$payment->account->id]);
+				}
 				$this->response(['errors'=>false,'data'=>'Creado con exito']);
+
 			}
 			else{
 				$this->response(['errors'=>true,'data'=>"No se pudo crear"]);
 			}
 		}
-		
 	}
 }
 

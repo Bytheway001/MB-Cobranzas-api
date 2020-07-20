@@ -89,6 +89,7 @@ class reportsController extends Controller{
 
 	public function accountMovements($id){
 		$movements = \App\Models\Movement::all(['conditions'=>['cuenta = ?',$id]]);
+		
 		$result=[];
 		foreach($movements as $movement){
 			$m = $movement->to_array();

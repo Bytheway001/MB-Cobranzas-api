@@ -31,6 +31,21 @@ class Payment extends \ActiveRecord\Model{
 		];
 		return $methods[$method];
 	}
+
+	public function isCheck(){
+		return $this->payment_method == 'check_to_agency_local' || $this->payment_method == 'check_to_agency_foreign';
+	}
+
+	public function isAgencyPayment(){
+		$agencyMethods = ['cash_to_agency','check_to_agency_foreign','check_to_agency_local','transfer_to_agency_foreign','transfer_to_agency_local'];
+		return in_array($this->payment_method, $agengyMethods);
+	}
+
+	public function isCash(){
+		return $this->payment_method==='cash_to_agency';
+	}
+
+
 }
 
  ?>
