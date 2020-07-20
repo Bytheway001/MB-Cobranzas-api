@@ -89,7 +89,7 @@ class reportsController extends Controller{
 
 	public function accountMovements($id){
 		try{
-				$movements = \App\Models\Movement::all(['conditions'=>['origin = ? or destiny = ?',$id,$id]]);
+				$movements = \App\Models\Movement::all(['order'=>'date','conditions'=>['origin = ? or destiny = ?',$id,$id]]);
 		}
 		catch(\Exception $e){
 			print_r(\App\Models\Movement::table()->conn->last_query);
