@@ -63,8 +63,8 @@ class homeController extends Controller{
 			$accountTo = Account::find([$this->payload['to']]);
 			$accountTo->deposit($converted,$coinTo);
 			$accountFrom->withdraw($amount,$coinFrom);
-			\App\Models\Movement::create(['type'=>"OUT",'description'=>"Cambio de Moneda",'amount'=>$amount,'currency'=>$coinFrom,'from'=>$accountFrom->id]);
-			\App\Models\Movement::create(['type'=>"IN",'description'=>"Cambio de Moneda",'amount'=>$converted,'currency'=>$coinTo,'to'=>$accountTo->id]);
+			\App\Models\Movement::create(['type'=>"OUT",'description'=>"Cambio de Moneda",'amount'=>$amount,'currency'=>$coinFrom,'origin'=>$accountFrom->id]);
+			\App\Models\Movement::create(['type'=>"IN",'description'=>"Cambio de Moneda",'amount'=>$converted,'currency'=>$coinTo,'destiny'=>$accountTo->id]);
 			$this->response(['errors'=>false,'data'=>'Conversion Exitosa']);
 		}
 		else{

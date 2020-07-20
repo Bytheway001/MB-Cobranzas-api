@@ -88,7 +88,14 @@ class reportsController extends Controller{
 	}
 
 	public function accountMovements($id){
-		$movements = \App\Models\Movement::all(['conditions'=>['cuenta = ?',$id]]);
+		try{
+				$movements = \App\Models\Movement::all(['conditions'=>['origin = ? or destiny = ?',$id,$id]]);
+		}
+		catch(\Exception $e){
+			print_r(\App\Models\Movement::table()->conn->last_query);
+			die();
+		}
+	
 		
 		$result=[];
 		foreach($movements as $movement){
