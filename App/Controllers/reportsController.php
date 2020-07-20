@@ -100,7 +100,7 @@ class reportsController extends Controller{
 		$result=[];
 		foreach($movements as $movement){
 			$m = $movement->to_array();
-			$m['fecha']=$movement->fecha->format('d-m-Y');
+			$m['fecha']=$movement->date->format('d-m-Y');
 			$result[]=$m;
 		}
 		$this->response(['errors'=>false,'data'=>$result]);
