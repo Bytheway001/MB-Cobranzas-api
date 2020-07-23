@@ -30,7 +30,7 @@ class paymentsController extends Controller{
 			}
 			
 			if($payment->isCash()){
-				\App\Models\Movement::create(['type'=>"IN",'description'=>"Cobranza Realizada",'amount'=>$payment->amount,'currency'=>$payment->currency,'destiny'=>$payment->account->id]);
+				\App\Models\Movement::create(['date'=>date('Y-m-d'),'type'=>"IN",'description'=>"Cobranza ".$payment->client->first_name,'amount'=>$payment->amount,'currency'=>$payment->currency,'destiny'=>$payment->account->id]);
 			}
 			$this->response(['errors'=>false,'data'=>"Cobranza Registrada exitosamente"]);
 		}

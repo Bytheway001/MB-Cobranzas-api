@@ -70,7 +70,7 @@ class expensesController extends Controller{
 			if($payment->save()){
 				$account->withdraw($payment->amount,$payment->currency);
 				if($payment->account->type === 'Cash'){
-					\App\Models\Movement::create(['type'=>"OUT",'description'=>"Pago de Poliza #".$payment->client->policy_number,'amount'=>$payment->amount,'currency'=>$payment->currency,'origin'=>$payment->account->id]);
+					\App\Models\Movement::create(['date'=>date('Y-m-d'),'type'=>"OUT",'description'=>"Pago de Poliza #".$payment->client->policy_number,'amount'=>$payment->amount,'currency'=>$payment->currency,'origin'=>$payment->account->id]);
 				}
 				$this->response(['errors'=>false,'data'=>'Creado con exito']);
 

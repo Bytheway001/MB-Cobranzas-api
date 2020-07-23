@@ -26,7 +26,7 @@ class operationsController extends Controller{
 		$income = new \App\Models\Income($this->payload);
 		if($income->save()){
 			$income->account->deposit($income->amount,$income->currency);
-			\App\Models\Movement::create(['type'=>"IN",'description'=>$income->description,'amount'=>$income->amount,'currency'=>$income->currency,'destiny'=>$income->account->id]);
+			\App\Models\Movement::create(['type'=>"IN",'description'=>$income->description,'amount'=>$income->amount,'currency'=>$income->currency,'destiny'=>$income->account->id)]);
 			$this->response(['errors'=>false,'data'=>"Operacion Exitosa"]);
 		}
 		else{
