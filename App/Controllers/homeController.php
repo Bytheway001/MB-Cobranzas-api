@@ -3,6 +3,8 @@ namespace App\Controllers;
 use \Core\View;
 use \App\Models\User;
 use \App\Models\Account;
+use \App\Models\Company;
+use \App\Models\Plan;
 class homeController extends Controller{
 	public function index(){
 		$this->response(['errors'=>false,'data'=>'Welcome to MB-Cobranzas']);
@@ -72,6 +74,28 @@ class homeController extends Controller{
 			$this->response(['errors'=>true,'data'=>'Saldo insuficiente en cuenta saliente']);
 		}
 	}
+
+	public function listCompanies(){
+		$result=[];
+		$companies = Company::all();
+		foreach($companies as $company){
+			$result[]=$company->to_array();
+		}
+		$this->response(['errors'=>false,'data'=>$result]);
+	}
+	public function listPlans($company_id){
+		$result=[];
+		$company = Company::find([$company_id]);
+
+		foreach($company->plans as $plan){
+			$result[]=$plan->to_array();
+		}
+		
+
+		
+		$this->response(['errors'=>false,'data'=>$result]);
+	}
+
 
 	public function test(){
 		$m= new \App\Models\MovementNew(['from'=>5,'to'=>1,'description'=>'Test','currency'=>'USD','amount'=>'100']);

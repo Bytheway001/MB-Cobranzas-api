@@ -4,6 +4,7 @@ use \Core\View;
 use \App\Models\Agent;
 use \App\Models\User;
 use \App\Models\Payment;
+
 class agentsController extends Controller{
 	public function index(){
 		$result = [];

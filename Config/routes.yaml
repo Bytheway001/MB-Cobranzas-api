@@ -10,7 +10,6 @@ routes:
   get_agents : [/agents,App\Controllers\agentsController.index,GET]
   get_collectors: ['/collectors',App\Controllers\agentsController.getCollectors,GET]
   create_payment: [/payments/create,\App\Controllers\paymentsController.create,POST]
-
   # clients
   get_client_list: [/clients/list,App\Controllers\clientsController.index,GET]
   update_client_profile: [/clients/:id/update,App\Controllers\clientsController.updatePolicy,PUT]
@@ -38,7 +37,9 @@ routes:
   create_category: [/categories,\App\Controllers\categoriesController.create,POST]
   update_category: [/categories/:id,\App\Controllers\categoriesController.update,PUT]
   list_categories: [/categories,\App\Controllers\categoriesController.list,GET]
-
+  #companies
+  list_companies: [/companies,\App\Controllers\homeController.listCompanies,GET]
+  list_plans: [/plans/:id,\App\Controllers\homeController.listPlans,GET]
 
 
 

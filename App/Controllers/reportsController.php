@@ -15,7 +15,7 @@ class reportsController extends Controller{
 
 
 		if($from && $to){
-		
+			
 			$payments=\App\Models\Payment::all(['conditions'=>['DATE(payment_date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
 			$expenses=\App\Models\Expense::all(['conditions'=>['DATE(date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
 			$policy_payments=\App\Models\PolicyPayment::all(['conditions'=>['DATE(created_at) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
@@ -89,18 +89,18 @@ class reportsController extends Controller{
 
 	public function accountMovements($id){
 		try{
-				$movements = \App\Models\Movement::all(['order'=>'date','conditions'=>['origin = ? or destiny = ?',$id,$id]]);
+			$movements = \App\Models\Movement::all(['order'=>'date','conditions'=>['origin = ? or destiny = ?',$id,$id]]);
 		}
 		catch(\Exception $e){
 			print_r(\App\Models\Movement::table()->conn->last_query);
 			die();
 		}
-	
+		
 		
 		$result=[];
 		foreach($movements as $movement){
 			$m = $movement->to_array();
-			$m['fecha']=$movement->date->format('d-m-Y');
+			$m['date']=$movement->date->format('d-m-Y');
 			$result[]=$m;
 		}
 		$this->response(['errors'=>false,'data'=>$result]);
