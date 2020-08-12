@@ -48,11 +48,14 @@ class operationsController extends Controller{
 			$income->account->deposit($income->amount,$income->currency);
 			Movement::create([
 				'type'=>"IN",
-				'description'=>$income->description,
+				'origin'=>null,
+				'destiny'=>$income->account->id,
+				'description'=>'Ingreso: '.$income->description,
 				'amount'=>$income->amount,
 				'currency'=>$income->currency,
 				'date'=>date('Y-m-d')
 			]);
+
 			$this->response(['errors'=>false,'data'=>"Operacion Exitosa"]);
 		}
 		else{
@@ -73,6 +76,16 @@ class operationsController extends Controller{
 		else{
 			$account->bob = $account->bob+$check->amount;
 		}
+
+		
+		Movement::create([
+			'destiny'=>$account->id,
+			'type'=>"IN",
+			'description'=>'Cobro de Cheque',
+			'amount'=>$check->amount,
+			'currency'=>$check->currency,
+			'date'=>date('Y-m-d')
+		]);
 
 		$account->save();
 		$this->response(['errors'=>false,'data'=>"Cheque abonado a cuenta"]);

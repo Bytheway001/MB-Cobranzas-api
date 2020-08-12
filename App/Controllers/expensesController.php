@@ -16,7 +16,14 @@ class expensesController extends Controller{
 			if($expense->save()){
 				$expense->account->withdraw($expense->amount,$expense->currency);
 				if($expense->account->type==='Cash'){
-					\App\Models\Movement::create(['type'=>"OUT",'description'=>$expense->description,'amount'=>$expense->amount,'currency'=>$expense->currency,'origin'=>$expense->account->id]);
+					\App\Models\Movement::create([
+						'type'=>"OUT",
+						'description'=>$expense->description,
+						'amount'=>$expense->amount,
+						'currency'=>$expense->currency,
+						'origin'=>$expense->account->id,
+						'date'=>date('Y-m-d')
+					]);
 				}
 				$this->response(['errors'=>false,'data'=>"Creado con exito"]);
 			}
@@ -33,7 +40,7 @@ class expensesController extends Controller{
 			'payments'=>[]
 		];
 
-		$expenses = Expense::all();
+		$expenses = Expense::all(['order'=>'date DESC']);
 		foreach($expenses as $expense){
 			$expense=$expense->to_array();
 			$expense['date']=\App\Libs\Time::format($expense['date'],'d-m-Y');

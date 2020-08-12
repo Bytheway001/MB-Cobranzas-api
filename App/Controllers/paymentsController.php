@@ -41,7 +41,7 @@ class paymentsController extends Controller{
 
 	public function index(){
 		$result=[];
-		$payments = Payment::all();
+		$payments = Payment::all(['order'=>'processed ASC,payment_date DESC']);
 		foreach($payments as $payment){
 			$payment=$payment->to_array();
 			$client = \App\Models\Client::find([$payment['client_id']]);
