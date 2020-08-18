@@ -99,7 +99,6 @@ class clientsController extends Controller{
 		$client=Client::find_by_id($id);
 		if($client){
 			if($client->update_attributes($this->payload)){
-
 				$this->response(['errors'=>false,'data'=>$client->serialize()]);
 			}
 			else{

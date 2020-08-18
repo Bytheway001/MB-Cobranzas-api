@@ -43,7 +43,9 @@ class homeController extends Controller{
 
 	public function auth(){
 		$user=User::find_by_email($_GET['id']);
-		$this->response(['errors'=>false,'data'=>$user->to_array()]);
+		$response=$user->to_array(['include'=>'account']);
+
+		$this->response(['errors'=>false,'data'=>$response]);
 	}
 
 	public function convert(){

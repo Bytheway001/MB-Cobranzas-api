@@ -11,8 +11,8 @@ class reportsController extends Controller{
 			'policy_payments'=>[],
 			'payments'=>[],
 			'checks'=>[],
+			'pending'=>[]
 		];
-
 
 		if($from && $to){
 			
@@ -51,6 +51,10 @@ class reportsController extends Controller{
 
 
 		}
+		foreach(\App\Models\Client::all(['conditions'=>['status = ? or status = ? or status = ?','Pendiente','Cobrada','Financiada']]) as $client){
+			$result['pending'][]=$client->to_array();
+		}
+
 
 		$this->response($result);
 

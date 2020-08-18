@@ -8,21 +8,46 @@ class Client extends \ActiveRecord\Model{
 	static $belongs_to=[['agent'],['collector','class_name'=>'User','foreign_key'=>'collector_id']];
 	static $has_many=[['payments'],['policy_payments']];
 	public function serialize(){
-		$r=$this->to_array();
-		$r['effective_date']=setDateFormat($this->effective_date,'d-m-Y');
-		$r['renovation_date']=setDateFormat($this->renovation_date,'d-m-Y');
-		$r['agent']=$this->agent->name;
-		$r['collector']=$this->collector->name;
-		$r['name']=$this->first_name;
-		$r['policy_status']=$this->status;
-		$r['plan']=$this->plan;
-		$r['company']=$this->company;
-		return $r;
+		try{
+			$r=$this->to_array();
+			$r['effective_date']=setDateFormat($this->effective_date,'d-m-Y');
+			$r['renovation_date']=setDateFormat($this->renovation_date,'d-m-Y');
+			$r['agent']=$this->agent->name;
+			$r['collector']=$this->collector->name;
+			$r['name']=$this->first_name;
+			$r['policy_status']=$this->status;
+			$r['plan']=$this->plan;
+			$r['company']=$this->company;
+			$r['balance']=round($this->calculateDebt(),2);
+			return $r;
+		}
+		catch(\Exception $e){
+			print_r($this);
+			die();
+		}
+		
+		
 	}
 
 	public function isLinkedToHubSpot(){
 		return $this->h_id!=null;
 		
+	}
+
+	public function calculateDebt(){
+		$amountToPay = $this->prima;
+		$payed=0;
+		foreach($this->payments as $payment){
+			$amountToPay = $amountToPay-$payment->calculateDiscount();
+			if($payment->currency==='BOB'){
+				$real = round($payment->amount/$payment->change_rate,2);
+				$payed = $payed+$real;
+			}
+			else{
+				$payed = $payed+$payment->amount;
+			}
+		}
+		return $amountToPay - $payed;
 	}
 
 	public function linkToHubSpot(){

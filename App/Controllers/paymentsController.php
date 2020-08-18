@@ -1,6 +1,23 @@
 <?php 
 namespace App\Controllers;
 use \App\Models\Payment;
+
+function clientHasDebt($client){
+	$amount_to_pay = $client_prima;
+	$payed_amount=0;
+	$payments = $client->payments;
+	foreach($payments as $payment){
+		if($payment->currency === 'BOB'){
+			$payed_amount = $payed_amount+($payment->amount / $payment->change_rate);
+			$amount_to_pay = $amount_to_pay - $payment->calculateDiscount();
+		}
+		else{
+			$payed_amount = $payed_amount+$payment->amount
+		}
+	}
+	return  $payed_amount < $client->prima
+}
+
 class paymentsController extends Controller{
 	
 	/* Registro de cobranza */
@@ -24,7 +41,20 @@ class paymentsController extends Controller{
 
 		/* Guardamos, creamos la nota de  hubspot y el movimiento de cuenta (si es caja)*/
 		if($payment->save()){
-			//$payment->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
+			if($payment->payment_type==='complete'){
+				$client=$payment->client;
+				$client->status='Cobrada';
+				$client->save();
+			}
+
+			else{
+				if(clientHasDebt($client)){
+					$client->status='Pendiente';
+					$client->save();
+				}
+			}
+
+			$payment->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
 			if($payment->account_id){
 				$payment->account->deposit($payment->amount,$payment->currency);
 			}

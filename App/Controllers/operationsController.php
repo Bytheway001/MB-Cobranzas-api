@@ -19,7 +19,7 @@ class operationsController extends Controller{
 					Movement::create([
 						'origin'=>$transfer->from,
 						'type'=>"OUT",
-						'description'=>'Transf. Interna',
+						'description'=>'(Transf) '.$transfer->comment,
 						'amount'=>$transfer->amount,
 						'currency'=>$transfer->currency,
 						'date'=>date('Y-m-d')
@@ -27,7 +27,7 @@ class operationsController extends Controller{
 					Movement::create([
 						'destiny'=>$transfer->to,
 						'type'=>"IN",
-						'description'=>'Transf. Interna',
+						'description'=>'(Transf) '.$transfer->comment,
 						'amount'=>$transfer->amount,
 						'currency'=>$transfer->currency,
 						'date'=>date('Y-m-d')

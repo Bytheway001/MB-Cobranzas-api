@@ -16,6 +16,16 @@ class Payment extends \ActiveRecord\Model{
 		return $payment;
 	}
 
+	public function calculateDiscount(){
+		$discount = $this->agency_discount + $this->agent_discount + $this->company_discount;
+		if($this->currency==='BOB'){
+			return $discount/$this->change_rate;
+		}
+		else{
+			return $discount;
+		}
+	}
+
 	private function serializePaymentMethods($method){
 		$methods=[
 			'cash_to_agency'=>'Efectivo la agencia',
