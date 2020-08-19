@@ -15,7 +15,7 @@ function clientHasDebt($client){
 			$payed_amount = $payed_amount+$payment->amount;
 		}
 	}
-	return  $payed_amount < $client->prima
+	return  $payed_amount < $client->prima;
 }
 
 class paymentsController extends Controller{
