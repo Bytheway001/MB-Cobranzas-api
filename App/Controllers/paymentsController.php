@@ -12,7 +12,7 @@ function clientHasDebt($client){
 			$amount_to_pay = $amount_to_pay - $payment->calculateDiscount();
 		}
 		else{
-			$payed_amount = $payed_amount+$payment->amount
+			$payed_amount = $payed_amount+$payment->amount;
 		}
 	}
 	return  $payed_amount < $client->prima

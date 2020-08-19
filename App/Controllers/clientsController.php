@@ -62,8 +62,6 @@ class clientsController extends Controller{
 		try{
 			$criteria = isset($_GET['criteria'])?$_GET['criteria']:null;
 			$term = isset($_GET['term'])?$_GET['term']:null;
-		
-
 			$clients=[];
 			$result=[];
 			if($criteria){
