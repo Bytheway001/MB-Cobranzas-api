@@ -10,7 +10,6 @@ class clientsController extends Controller{
 
 	public function create(){
 		$client=new Client($this->payload);
-		$client->company = \App\Models\Company::find([$client->company])->name;
 		$client->save();
 		$this->response(['errors'=>false,'data'=>$client->to_array()]);
 	}

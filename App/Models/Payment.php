@@ -10,7 +10,7 @@ class Payment extends \ActiveRecord\Model{
 		$payment['client']=$this->client->first_name;
 		$payment['collector']=$this->client->collector->name;
 		$payment['plan']=$this->client->plan;
-		$payment['company']=$this->client->company;
+		$payment['company']=$this->client->company->name;
 		$payment['account_name']=$this->account?$this->account->name:'--';
 		$payment['payment_method']=$this->serializePaymentMethods($this->payment_method);
 		return $payment;

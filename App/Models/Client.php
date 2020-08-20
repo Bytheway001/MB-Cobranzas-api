@@ -5,7 +5,7 @@ function setDateFormat($date,$format){
 	return $newDate;  
 }
 class Client extends \ActiveRecord\Model{
-	static $belongs_to=[['agent'],['collector','class_name'=>'User','foreign_key'=>'collector_id']];
+	static $belongs_to=[['agent'],['collector','class_name'=>'User','foreign_key'=>'collector_id'],['company']];
 	static $has_many=[['payments'],['policy_payments']];
 	public function serialize(){
 		try{
@@ -17,12 +17,12 @@ class Client extends \ActiveRecord\Model{
 			$r['name']=$this->first_name;
 			$r['policy_status']=$this->status;
 			$r['plan']=$this->plan;
-			$r['company']=$this->company;
+			$r['company']=$this->company->name;
 			$r['balance']=round($this->calculateDebt(),2);
 			return $r;
 		}
 		catch(\Exception $e){
-			print_r($this);
+			print_r($e->getMessage());
 			die();
 		}
 		

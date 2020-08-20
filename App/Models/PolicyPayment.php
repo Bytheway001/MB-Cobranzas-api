@@ -8,7 +8,7 @@ class PolicyPayment extends \ActiveRecord\Model{
 		$payment['date']=$this->created_at->format('d-m-Y');
 		$payment['account']=$this->account->name;
 		$payment['client']=$this->client->first_name;
-		$payment['company']=$this->client->company;
+		$payment['company']=$this->client->company->name;
 		$payment['plan']=$this->client->plan;
 		return $payment;
 	}

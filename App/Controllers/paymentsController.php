@@ -79,7 +79,7 @@ class paymentsController extends Controller{
 			$payment['client']=$client->first_name;
 			$payment['collector']=$client->collector->name;
 			$payment['plan']=$client->plan.'/'.$client->option;
-			$payment['company']=$client->company;
+			$payment['company']=$client->company->name;
 			$result[] = $payment;
 
 		}
