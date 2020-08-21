@@ -17,7 +17,7 @@ class agentsController extends Controller{
 
 	public function getCollectors(){
 		$result=[];
-		$collectors = User::all(['conditions'=>['role = ?','collector']]);
+		$collectors = User::all();
 		foreach($collectors as $collector){
 			$result[]=$collector->to_array();
 		} 
