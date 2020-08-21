@@ -22,6 +22,7 @@ class Client extends \ActiveRecord\Model{
 			return $r;
 		}
 		catch(\Exception $e){
+			print_r($this->id);
 			print_r($e->getMessage());
 			die();
 		}
