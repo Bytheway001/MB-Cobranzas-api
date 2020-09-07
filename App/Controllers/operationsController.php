@@ -56,7 +56,7 @@ class operationsController extends Controller{
 				'date'=>date('Y-m-d')
 			]);
 
-			$this->response(['errors'=>false,'data'=>"Operacion Exitosa"]);
+			$this->response(['errors'=>false,'data'=>$income->serialize()]);
 		}
 		else{
 			http_response_code(401);

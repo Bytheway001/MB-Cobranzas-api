@@ -6,7 +6,8 @@
         "symfony/yaml": "^3.4",
         "plasticbrain/php-flash-messages": "^1.0",
         "mikehaertl/phpwkhtmltopdf": "^2.2",
-        "filp/whoops": "^2.1"
+        "filp/whoops": "^2.1",
+        "phpmailer/phpmailer": "dev-master"
     },
     "autoload": {
         "psr-4": {

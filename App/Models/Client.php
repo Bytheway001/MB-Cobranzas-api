@@ -20,12 +20,14 @@ class Client extends \ActiveRecord\Model{
 			$r['company']=$this->company->name;
 			$r['balance']=round($this->calculateDebt(),2);
 			return $r;
-		}
-		catch(\Exception $e){
-			print_r($this->id);
-			print_r($e->getMessage());
-			die();
-		}
+			}
+			catch(\Exception $e){
+				print_r($this);
+				die();
+
+			}
+	
+	
 		
 		
 	}

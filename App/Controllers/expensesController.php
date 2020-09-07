@@ -25,7 +25,7 @@ class expensesController extends Controller{
 						'date'=>date('Y-m-d')
 					]);
 				}
-				$this->response(['errors'=>false,'data'=>"Creado con exito"]);
+				$this->response(['errors'=>false,'data'=>$expense->serialize()]);
 			}
 			else{
 				http_response_code(403);

@@ -12,8 +12,6 @@ class Expense extends \ActiveRecord\Model{
 		$expense['office']=Translate::officeName($this->office);
 		$expense['account']=$this->account->name;
 		$expense['category']=$this->cat->name;
-		
-
 		return $expense;
 	}
 }

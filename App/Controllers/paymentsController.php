@@ -3,7 +3,7 @@ namespace App\Controllers;
 use \App\Models\Payment;
 
 function clientHasDebt($client){
-	$amount_to_pay = $client_prima;
+	$amount_to_pay = $client->prima;
 	$payed_amount=0;
 	$payments = $client->payments;
 	foreach($payments as $payment){
@@ -33,6 +33,7 @@ class paymentsController extends Controller{
 		if(!$payment->client->isLinkedToHubSpot()){
 			$payment->client->linkToHubSpot();
 		}
+
 		/* Creamos el cheque si es un pago en cheque */
 		if($payment->isCheck()){
 			$check= \App\Models\Check::create(['amount'=>$payment->amount,'currency'=>$payment->currency,'client_id'=>$payment->client_id]);
@@ -41,8 +42,8 @@ class paymentsController extends Controller{
 
 		/* Guardamos, creamos la nota de  hubspot y el movimiento de cuenta (si es caja)*/
 		if($payment->save()){
+			$client=$payment->client;
 			if($payment->payment_type==='complete'){
-				$client=$payment->client;
 				$client->status='Cobrada';
 				$client->save();
 			}
@@ -54,7 +55,7 @@ class paymentsController extends Controller{
 				}
 			}
 
-			$payment->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
+			//$payment->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
 			if($payment->account_id){
 				$payment->account->deposit($payment->amount,$payment->currency);
 			}

@@ -11,20 +11,22 @@ class reportsController extends Controller{
 			'policy_payments'=>[],
 			'payments'=>[],
 			'checks'=>[],
+			'incomes'=>[],
 			'pending'=>[]
 		];
 
 		if($from && $to){
-			
 			$payments=\App\Models\Payment::all(['conditions'=>['DATE(payment_date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
 			$expenses=\App\Models\Expense::all(['order'=>'date DESC','conditions'=>['DATE(date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
 			$policy_payments=\App\Models\PolicyPayment::all(['conditions'=>['DATE(created_at) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
+			$incomes=\App\Models\Income::all(['order'=>'date DESC','conditions'=>['DATE(date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
 		}
 
 		else{
 			$payments=\App\Models\Payment::all(['order'=>'payment_date DESC']);
 			$expenses=\App\Models\Expense::all(['order'=>'date DESC']);
 			$policy_payments=\App\Models\PolicyPayment::all(['order'=>'created_at DESC']);
+			$incomes=\App\Models\Income::all(['order'=>'date DESC']);
 		}
 
 		foreach($payments as $payment){
@@ -35,6 +37,12 @@ class reportsController extends Controller{
 		}
 		foreach($policy_payments as $policy_payment){
 			$result['policy_payments'][]=$policy_payment->serialize();
+		}
+		foreach($policy_payments as $policy_payment){
+			$result['policy_payments'][]=$policy_payment->serialize();
+		}
+		foreach($incomes as $income){
+			$result['incomes'][]=$income->serialize();
 		}
 		foreach(\App\Models\Check::all(['conditions'=>['status = ?','Abonado en cuenta']]) as $check){
 			$c = $check->to_array();
