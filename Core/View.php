@@ -58,6 +58,20 @@ class View{
 		ob_end_clean();
 		echo $str;
 	}
+	public static function get_partial($folder,$partial,$local=null){
+		if(!file_exists(self::VIEWS_PATH .$folder.'/_'.$partial . "." . self::EXTENSION_TEMPLATES)){
+			throw new \Exception("Error: El archivo " . self::VIEWS_PATH . $folder.'/_'.$partial . "." . self::EXTENSION_TEMPLATES . " no existe", 1);
+		}
+		ob_start();
+		if(self::$data){
+			extract(self::$data);
+		}
+		include(self::VIEWS_PATH .$folder.'/_'.$partial . "." . self::EXTENSION_TEMPLATES);
+		$str = ob_get_contents();
+		
+		ob_end_clean();
+		return $str;
+	}
 
 	/**
 	* Passes a variable down to the view

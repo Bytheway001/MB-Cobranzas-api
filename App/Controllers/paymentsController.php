@@ -22,13 +22,12 @@ class paymentsController extends Controller{
 	
 	/* Registro de cobranza */
 	public function create(){
-
+		
 		/* Caso de pagos directos a la aseguradora */
-		if(!$this->payload['account_id']){
-			$this->payload['account_id'] = null;
+		if(!$this->payload['payment']['account_id']){
+			$this->payload['payment']['account_id'] = null;
 		}
-
-		$payment=new Payment($this->payload);
+		$payment=new Payment($this->payload['payment']);
 		$payment->user_id = $this->current_id;
 		if(!$payment->client->isLinkedToHubSpot()){
 			$payment->client->linkToHubSpot();
@@ -62,6 +61,13 @@ class paymentsController extends Controller{
 			
 			if($payment->isCash()){
 				\App\Models\Movement::create(['date'=>date('Y-m-d'),'type'=>"IN",'description'=>"Cobranza ".$payment->client->first_name,'amount'=>$payment->amount,'currency'=>$payment->currency,'destiny'=>$payment->account->id]);
+			}
+			if($this->payload['tags']){
+				$users=\App\Models\User::all(['conditions'=>['name in (?)',$this->payload['tags']]]);
+
+				$mailer = new \App\Libs\Mailer([['name'=>'rafael','email'=>'rafael@megabadvisors.com']],\Core\View::get_partial('partials','payment_created',$payment));
+				$mailer->mail->send();
+				
 			}
 			$this->response(['errors'=>false,'data'=>"Cobranza Registrada exitosamente"]);
 		}

@@ -347,12 +347,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "4091addf9f6abd2daf3fffcd1ac4cdd0144c98b9"
+                "reference": "e78d99fb89405109e2e9964d7e177c23d4c0141d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/4091addf9f6abd2daf3fffcd1ac4cdd0144c98b9",
-                "reference": "4091addf9f6abd2daf3fffcd1ac4cdd0144c98b9",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/e78d99fb89405109e2e9964d7e177c23d4c0141d",
+                "reference": "e78d99fb89405109e2e9964d7e177c23d4c0141d",
                 "shasum": ""
             },
             "require": {
@@ -402,7 +402,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2020-09-03T07:27:53+00:00"
+            "time": "2020-09-21T08:33:15+00:00"
         },
         {
             "name": "plasticbrain/php-flash-messages",
