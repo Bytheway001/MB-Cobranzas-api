@@ -65,7 +65,7 @@ class paymentsController extends Controller{
 			if($this->payload['tags']){
 
 				$users=\App\Models\User::all(['conditions'=>['name in (?)',$this->payload['tags']]]);
-				$tags = array_map(function($t){return ['name'=>$t->name,'email'=>$t->email]},$users);
+				$tags = array_map(function($t){return ['name'=>$t->name,'email'=>$t->email];},$users);
 				$mailer = new \App\Libs\Mailer($tags,\Core\View::get_partial('partials','payment_created',$payment));
 				$mailer->mail->send();
 				
