@@ -63,9 +63,10 @@ class paymentsController extends Controller{
 				\App\Models\Movement::create(['date'=>date('Y-m-d'),'type'=>"IN",'description'=>"Cobranza ".$payment->client->first_name,'amount'=>$payment->amount,'currency'=>$payment->currency,'destiny'=>$payment->account->id]);
 			}
 			if($this->payload['tags']){
-				$users=\App\Models\User::all(['conditions'=>['name in (?)',$this->payload['tags']]]);
 
-				$mailer = new \App\Libs\Mailer([['name'=>'rafael','email'=>'rafael@megabadvisors.com']],\Core\View::get_partial('partials','payment_created',$payment));
+				$users=\App\Models\User::all(['conditions'=>['name in (?)',$this->payload['tags']]]);
+				$tags = array_map(function($t){return ['name'=>$t->name,'email'=>$t->email]},$users);
+				$mailer = new \App\Libs\Mailer($tags,\Core\View::get_partial('partials','payment_created',$payment));
 				$mailer->mail->send();
 				
 			}
