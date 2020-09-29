@@ -16,17 +16,34 @@ class reportsController extends Controller{
 		];
 
 		if($from && $to){
-			$payments=\App\Models\Payment::all(['conditions'=>['DATE(payment_date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
-			$expenses=\App\Models\Expense::all(['order'=>'date DESC','conditions'=>['DATE(date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
-			$policy_payments=\App\Models\PolicyPayment::all(['conditions'=>['DATE(created_at) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
-			$incomes=\App\Models\Income::all(['order'=>'date DESC','conditions'=>['DATE(date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
+			if(isset($_GET['id'])){
+				$payments=\App\Models\Payment::all(['conditions'=>['DATE(payment_date) BETWEEN ? AND ? and user_id = ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d'),$_GET['id']]]);
+				$expenses=\App\Models\Expense::all(['order'=>'date DESC','conditions'=>['DATE(date) BETWEEN ? AND ? and user_id = ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d'),$_GET['id']]]);
+				$policy_payments=\App\Models\PolicyPayment::all(['conditions'=>['DATE(created_at) BETWEEN ? AND ? and user_id = ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d'),$_GET['id']]]);
+				$incomes=\App\Models\Income::all(['order'=>'date DESC','conditions'=>['DATE(date) BETWEEN ? AND ? and user_id = ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d'),$_GET['id']]]);
+			}
+			else{
+				$payments=\App\Models\Payment::all(['conditions'=>['DATE(payment_date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
+				$expenses=\App\Models\Expense::all(['order'=>'date DESC','conditions'=>['DATE(date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
+				$policy_payments=\App\Models\PolicyPayment::all(['conditions'=>['DATE(created_at) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
+				$incomes=\App\Models\Income::all(['order'=>'date DESC','conditions'=>['DATE(date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
+			}
 		}
 
 		else{
-			$payments=\App\Models\Payment::all(['order'=>'payment_date DESC']);
-			$expenses=\App\Models\Expense::all(['order'=>'date DESC']);
-			$policy_payments=\App\Models\PolicyPayment::all(['order'=>'created_at DESC']);
-			$incomes=\App\Models\Income::all(['order'=>'date DESC']);
+			if(isset($_GET['id'])){
+				$payments=\App\Models\Payment::all(['order'=>'payment_date DESC','conditions'=>['user_id = ?',$_GET['id']]]);
+				$expenses=\App\Models\Expense::all(['order'=>'date DESC','conditions'=>['user_id = ?',$_GET['id']]]);
+				$policy_payments=\App\Models\PolicyPayment::all(['order'=>'created_at DESC','conditions'=>['user_id = ?',$_GET['id']]]);
+				$incomes=\App\Models\Income::all(['order'=>'date DESC','conditions'=>['user_id = ?',$_GET['id']]]);
+			}
+			else{
+				$payments=\App\Models\Payment::all(['order'=>'payment_date DESC']);
+				$expenses=\App\Models\Expense::all(['order'=>'date DESC']);
+				$policy_payments=\App\Models\PolicyPayment::all(['order'=>'created_at DESC']);
+				$incomes=\App\Models\Income::all(['order'=>'date DESC']);
+			}
+			
 		}
 
 		foreach($payments as $payment){

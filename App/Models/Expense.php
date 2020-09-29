@@ -4,7 +4,8 @@ use \App\Libs\Translate;
 class Expense extends \ActiveRecord\Model{
 	static $belongs_to =[
 		['account'],
-		['cat','class_name'=>'Category','foreign_key'=>'category']
+		['cat','class_name'=>'Category','foreign_key'=>'category'],
+		['user']
 	];
 	public function serialize(){
 		$expense=$this->to_array(['except'=>['account_id']]);
@@ -12,6 +13,7 @@ class Expense extends \ActiveRecord\Model{
 		$expense['office']=Translate::officeName($this->office);
 		$expense['account']=$this->account->name;
 		$expense['category']=$this->cat->name;
+		$expense['user']=$this->user?$this->user->name:'None';
 		return $expense;
 	}
 }
