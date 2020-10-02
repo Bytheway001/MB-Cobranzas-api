@@ -54,7 +54,7 @@ class paymentsController extends Controller{
 				}
 			}
 
-			//$payment->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
+			$payment->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
 			if($payment->account_id){
 				$payment->account->deposit($payment->amount,$payment->currency);
 			}
