@@ -6,6 +6,7 @@ routes:
   accounts: [/accounts,\App\Controllers\homeController.listAccounts,GET]
   list_checks: [/checks,\App\Controllers\homeController.listChecks,GET]
   convert: [/convert,\App\Controllers\homeController.convert,POST]
+  rc: [/changes,\App\Controllers\homeController.reportCorrection,POST]
   # agents
   get_agents : [/agents,App\Controllers\agentsController.index,GET]
   get_collectors: ['/collectors',App\Controllers\agentsController.getCollectors,GET]
@@ -41,6 +42,8 @@ routes:
   #companies
   list_companies: [/companies,\App\Controllers\homeController.listCompanies,GET]
   list_plans: [/plans/:id,\App\Controllers\homeController.listPlans,GET]
+  #changes
+
 
 
 

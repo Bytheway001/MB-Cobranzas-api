@@ -2,21 +2,25 @@
     "minimum-stability": "dev",
     "require": {
         "php-activerecord/php-activerecord": "^1.2",
-        "dannyvankooten/php-router":"master",
+        "dannyvankooten/php-router": "master",
         "symfony/yaml": "^3.4",
         "plasticbrain/php-flash-messages": "^1.0",
         "mikehaertl/phpwkhtmltopdf": "^2.2",
         "filp/whoops": "^2.1",
-        "phpmailer/phpmailer": "dev-master"
+        "phpmailer/phpmailer": "dev-master",
+        "robmorgan/phinx": "dev-master"
     },
     "autoload": {
         "psr-4": {
-            "App\\":"App",
-            "Core\\":"Core"
+            "App\\": "App",
+            "Core\\": "Core"
         }
     },
-    "scripts":{
-        "run":"php -S 127.0.0.1:200 -t public_html/"
+    "scripts": {
+        "run": "php -S 127.0.0.1:200 -t public_html/",
+        "create-migration": "vendor\\bin\\phinx create",
+        "migrate": "vendor\\bin\\phinx migrate -e development",
+        "rollback": "vendor\\bin\\phinx rollback -e development"
     },
     "repositories": [
         {

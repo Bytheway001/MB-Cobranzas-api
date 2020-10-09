@@ -55,9 +55,7 @@ class reportsController extends Controller{
 		foreach($policy_payments as $policy_payment){
 			$result['policy_payments'][]=$policy_payment->serialize();
 		}
-		foreach($policy_payments as $policy_payment){
-			$result['policy_payments'][]=$policy_payment->serialize();
-		}
+	
 		foreach($incomes as $income){
 			$result['incomes'][]=$income->serialize();
 		}

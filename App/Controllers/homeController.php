@@ -109,6 +109,17 @@ class homeController extends Controller{
 		}
 	}
 
+	public function reportCorrection(){
+		$this->payload['user_id']=$this->current_id;
+		$correction = new \App\Models\Change($this->payload);
+		if($correction->save()){
+			$this->response(['errors'=>false,'data'=>'Reportado!']);
+		}
+		else{
+			$this->response(['errors'=>true,'data'=>"No se pudo reportar"]);
+		}
+	}
+
 	
 
 }
