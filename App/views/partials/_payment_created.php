@@ -3,8 +3,9 @@
 
 <p>DATOS:</p>
 <ul>
-	<li>Aseguradora: <?= $local->client->company->name ?>
-	<li>Fecha: <?= $local->payment_date->format('d/m/Y') ?>
+
+	<li>Aseguradora: <?= $local->client->company->name ?> </li>
+	<li>Fecha: <?= $local->payment_date->format('d/m/Y') ?> </li>
 	<li>Cliente: <?= $local->client->first_name ?></li>
 	<li>Poliza: <?= $local->client->policy_number ?></li>
 	<li>Operador: <?= $local->user->name ?> </li>
