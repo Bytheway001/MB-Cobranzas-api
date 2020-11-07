@@ -4,8 +4,9 @@ use \App\Models\Client;
 use \App\Models\Payment;
 class reportsController extends Controller{
 	public function getReports(){
-		$from = $_GET['f']??null;
-		$to = $_GET['t']??null;
+		$from = $_GET['f']??'01/'.date('m/Y');
+		$to = $_GET['t']??cal_days_in_month(CAL_GREGORIAN, 8, 2009).'/'.date('m/Y');
+		
 		$result=[
 			'expenses'=>[],
 			'policy_payments'=>[],
@@ -109,12 +110,12 @@ class reportsController extends Controller{
 	}
 	private function setDateFormat($date,$format){
 		$date = str_replace('/', '-', $date);
-		
 		$newDate = date($format, strtotime($date));  
 		return $newDate;  
 	}
 
 	public function accountMovements($id){
+		
 		try{
 			$movements = \App\Models\Movement::all(['order'=>'date','conditions'=>['origin = ? or destiny = ?',$id,$id]]);
 		}
