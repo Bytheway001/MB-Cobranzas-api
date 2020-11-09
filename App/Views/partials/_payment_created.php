@@ -3,7 +3,6 @@
 
 <p>DATOS:</p>
 <ul>
-	<li><?php echo 'a'; print_r($local); ?>
 	<li>Aseguradora: <?= $local->client->company->name ?> </li>
 	<li>Fecha: <?= $local->payment_date->format('d/m/Y') ?> </li>
 	<li>Cliente: <?= $local->client->first_name ?></li>
