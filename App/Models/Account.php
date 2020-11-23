@@ -2,7 +2,6 @@
 
 namespace App\Models;
 class Account extends \ActiveRecord\Model{
-
 	public function deposit($amount,$currency){
 		$currency = strtolower($currency);
 		$this->$currency = $this->$currency+$amount;

@@ -12,7 +12,7 @@ class Expense extends \ActiveRecord\Model{
 		$expense['date']=$this->date->format('d-m-Y');
 		$expense['office']=Translate::officeName($this->office);
 		$expense['account']=$this->account->name;
-		$expense['category']=$this->cat->name;
+		$expense['category']=$this->cat->name??"INterno";
 		$expense['user']=$this->user?$this->user->name:'None';
 		return $expense;
 	}

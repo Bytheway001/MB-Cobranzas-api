@@ -15,16 +15,6 @@ class expensesController extends Controller{
 		else{
 			if($expense->save()){
 				$expense->account->withdraw($expense->amount,$expense->currency);
-				if($expense->account->type==='Cash'){
-					\App\Models\Movement::create([
-						'type'=>"OUT",
-						'description'=>$expense->description,
-						'amount'=>$expense->amount,
-						'currency'=>$expense->currency,
-						'origin'=>$expense->account->id,
-						'date'=>date('Y-m-d')
-					]);
-				}
 				$this->response(['errors'=>false,'data'=>$expense->serialize()]);
 			}
 			else{
@@ -76,9 +66,7 @@ class expensesController extends Controller{
 		else{
 			if($payment->save()){
 				$account->withdraw($payment->amount,$payment->currency);
-				if($payment->account->type === 'Cash'){
-					\App\Models\Movement::create(['date'=>date('Y-m-d'),'type'=>"OUT",'description'=>"Pago de Poliza #".$payment->client->policy_number,'amount'=>$payment->amount,'currency'=>$payment->currency,'origin'=>$payment->account->id]);
-				}
+				
 				$this->response(['errors'=>false,'data'=>'Creado con exito']);
 
 			}

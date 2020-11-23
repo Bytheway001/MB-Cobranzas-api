@@ -67,8 +67,26 @@ class homeController extends Controller{
 			$accountTo = Account::find([$this->payload['to']]);
 			$accountTo->deposit($converted,$coinTo);
 			$accountFrom->withdraw($amount,$coinFrom);
-			\App\Models\Movement::create(['date'=>date('Y-m-d'),'type'=>"OUT",'description'=>"Cambio de Moneda",'amount'=>$amount,'currency'=>$coinFrom,'origin'=>$accountFrom->id]);
-			\App\Models\Movement::create(['date'=>date('Y-m-d'),'type'=>"IN",'description'=>"Cambio de Moneda",'amount'=>$converted,'currency'=>$coinTo,'destiny'=>$accountTo->id]);
+			\App\Models\Expense::create([
+					'user_id'=>$this->current_id,
+					'bill_number'=>'S/N',
+					'description'=>'Cambio de divisas',
+					'currency'=>$coinFrom,
+					'amount'=>$amount,
+					'account_id'=>$accountFrom->id,
+					'category'=>1,
+					'date'=>date('Y-m-d H:i:s')
+				]);
+				\App\Models\Income::create([
+					'user_id'=>$this->current_id,
+					'description'=>'Cambio de divisas',
+					'currency'=>$coinTo,
+					'amount'=>$converted,
+					'account_id'=>$accountTo->id,
+					'date'=>date('Y-m-d H:i:s')
+					
+				]);
+			
 			$this->response(['errors'=>false,'data'=>'Conversion Exitosa']);
 		}
 		else{

@@ -12,8 +12,8 @@ class Client extends \ActiveRecord\Model{
 			$r=$this->to_array();
 			$r['effective_date']=setDateFormat($this->effective_date,'d-m-Y');
 			$r['renovation_date']=setDateFormat($this->renovation_date,'d-m-Y');
-			$r['agent']=$this->agent->name;
-			$r['collector']=$this->collector->name;
+			$r['agent']=$this->agent->name??"--";
+			$r['collector']=$this->collector->name??"--";
 			$r['name']=$this->first_name;
 			$r['policy_status']=$this->status;
 			$r['plan']=$this->plan;
@@ -22,21 +22,17 @@ class Client extends \ActiveRecord\Model{
 			return $r;
 			}
 			catch(\Exception $e){
+				print($e->getMessage());
 				print_r($this);
 				die();
 
 			}
-	
-	
-		
-		
 	}
 
 	public function isLinkedToHubSpot(){
 		return $this->h_id!=null;
 		
 	}
-
 	public function calculateDebt(){
 		$amountToPay = $this->prima;
 		$payed=0;

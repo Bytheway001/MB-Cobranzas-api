@@ -81,8 +81,6 @@ class reportsController extends Controller{
 
 
 		$this->response($result);
-
-
 	}
 
 	public function payments_per_company(){
@@ -106,8 +104,8 @@ class reportsController extends Controller{
 
 		$this->response($result);
 		die();
-
 	}
+
 	private function setDateFormat($date,$format){
 		$date = str_replace('/', '-', $date);
 		$newDate = date($format, strtotime($date));  
@@ -115,24 +113,19 @@ class reportsController extends Controller{
 	}
 
 	public function accountMovements($id){
-		
-		try{
-			$movements = \App\Models\Movement::all(['order'=>'date','conditions'=>['origin = ? or destiny = ?',$id,$id]]);
-		}
-		catch(\Exception $e){
-			print_r(\App\Models\Movement::table()->conn->last_query);
-			die();
-		}
-		
-		
 		$result=[];
-		foreach($movements as $movement){
-			$m = $movement->to_array();
-			$m['date']=$movement->date->format('d-m-Y');
-			$result[]=$m;
+		$data = \App\Models\Income::find_by_sql("SELECT * from movimiento_de_cuenta where account_id = '".$id."'");
+		foreach($data as $row){
+			$r=$row->to_array();
+			$r['date']=$row->date->format('d-m-Y');
+			$result[]=$r;
 		}
 		$this->response(['errors'=>false,'data'=>$result]);
+		
 	}
+
+	
+
 }
 
 ?>

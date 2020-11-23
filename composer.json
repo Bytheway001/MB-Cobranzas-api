@@ -8,7 +8,8 @@
         "mikehaertl/phpwkhtmltopdf": "^2.2",
         "filp/whoops": "^2.1",
         "phpmailer/phpmailer": "dev-master",
-        "robmorgan/phinx": "dev-master"
+        "robmorgan/phinx": "dev-master",
+        "phpoffice/phpspreadsheet": "dev-master"
     },
     "autoload": {
         "psr-4": {

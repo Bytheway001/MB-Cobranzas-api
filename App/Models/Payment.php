@@ -5,15 +5,18 @@ class Payment extends \ActiveRecord\Model{
 	static $belongs_to=[['client'],['user'],['account']];
 
 	public function serialize(){
+		
 		$payment = $this->to_array();
 		$payment['payment_date']=$this->payment_date->format('d-m-Y');
 		$payment['client']=$this->client->first_name;
-		$payment['collector']=$this->client->collector->name;
+		$payment['collector']=$this->client->collector->name??"--";
 		$payment['plan']=$this->client->plan;
 		$payment['company']=$this->client->company->name;
 		$payment['account_name']=$this->account?$this->account->name:'--';
 		$payment['payment_method']=$this->serializePaymentMethods($this->payment_method);
 		return $payment;
+		
+	
 	}
 
 	public function calculateDiscount(){
