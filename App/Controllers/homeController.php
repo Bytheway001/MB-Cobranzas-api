@@ -23,8 +23,8 @@ class homeController extends Controller{
 		$result=[];
 		$checks =\App\Models\Check::all();
 		foreach($checks as $check){
-			$arr= $check->to_array();
-			$arr['client']=$check->client->first_name;
+			$arr= $check->to_array(['include'=>'client']);
+			
 			$result[] =$arr;
 
 		}
@@ -99,7 +99,7 @@ class homeController extends Controller{
 		$result=[];
 		$companies = Company::all();
 		foreach($companies as $company){
-			$result[]=$company->to_array();
+			$result[]=$company->to_array(['include'=>'plans']);
 		}
 		$this->response(['errors'=>false,'data'=>$result]);
 	}

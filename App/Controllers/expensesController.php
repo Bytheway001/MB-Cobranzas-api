@@ -5,8 +5,6 @@ use \App\Models\Account;
 use \App\Models\PolicyPayment;
 class expensesController extends Controller{
 	public function create(){
-		$this->payload['category']=$this->payload['category_id'];
-		unset($this->payload['category_id']);
 		$expense = new Expense($this->payload);
 		if(!$expense->account->has($expense->amount,$expense->currency)){
 			http_response_code(403);
@@ -15,7 +13,7 @@ class expensesController extends Controller{
 		else{
 			if($expense->save()){
 				$expense->account->withdraw($expense->amount,$expense->currency);
-				$this->response(['errors'=>false,'data'=>$expense->serialize()]);
+				$this->response(['errors'=>false,'data'=>$expense->to_array(['include'=>['account','category']])]);
 			}
 			else{
 				http_response_code(403);
@@ -32,10 +30,8 @@ class expensesController extends Controller{
 
 		$expenses = Expense::all(['order'=>'date DESC']);
 		foreach($expenses as $expense){
-			$expense=$expense->to_array();
-			$expense['date']=\App\Libs\Time::format($expense['date'],'d-m-Y');
-			$expense['account_name']=\App\Models\Account::find([$expense['account_id']])->name;
-			$result['expenses'][] =$expense; 
+			$expense=$expense->to_array(['include'=>'category']);
+			
 		}
 
 		$policy_payments = PolicyPayment::all();

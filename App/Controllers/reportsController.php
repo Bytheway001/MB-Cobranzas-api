@@ -18,13 +18,13 @@ class reportsController extends Controller{
 
 		if($from && $to){
 			if(isset($_GET['id'])){
-				$payments=\App\Models\Payment::all(['conditions'=>['DATE(payment_date) BETWEEN ? AND ? and user_id = ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d'),$_GET['id']]]);
+				$payments=\App\Models\Payment::all(['conditions'=>['DATE(created_at) BETWEEN ? AND ? and user_id = ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d'),$_GET['id']]]);
 				$expenses=\App\Models\Expense::all(['order'=>'date DESC','conditions'=>['DATE(date) BETWEEN ? AND ? and user_id = ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d'),$_GET['id']]]);
 				$policy_payments=\App\Models\PolicyPayment::all(['conditions'=>['DATE(created_at) BETWEEN ? AND ? and user_id = ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d'),$_GET['id']]]);
 				$incomes=\App\Models\Income::all(['order'=>'date DESC','conditions'=>['DATE(date) BETWEEN ? AND ? and user_id = ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d'),$_GET['id']]]);
 			}
 			else{
-				$payments=\App\Models\Payment::all(['conditions'=>['DATE(payment_date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
+				$payments=\App\Models\Payment::all(['conditions'=>['DATE(created_at) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
 				$expenses=\App\Models\Expense::all(['order'=>'date DESC','conditions'=>['DATE(date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
 				$policy_payments=\App\Models\PolicyPayment::all(['conditions'=>['DATE(created_at) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
 				$incomes=\App\Models\Income::all(['order'=>'date DESC','conditions'=>['DATE(date) BETWEEN ? AND ?',$this->setDateFormat($from,'Y-m-d'),$this->setDateFormat($to,'Y-m-d')]]);
@@ -33,13 +33,13 @@ class reportsController extends Controller{
 
 		else{
 			if(isset($_GET['id'])){
-				$payments=\App\Models\Payment::all(['order'=>'payment_date DESC','conditions'=>['user_id = ?',$_GET['id']]]);
+				$payments=\App\Models\Payment::all(['order'=>'created_at DESC','conditions'=>['user_id = ?',$_GET['id']]]);
 				$expenses=\App\Models\Expense::all(['order'=>'date DESC','conditions'=>['user_id = ?',$_GET['id']]]);
 				$policy_payments=\App\Models\PolicyPayment::all(['order'=>'created_at DESC','conditions'=>['user_id = ?',$_GET['id']]]);
 				$incomes=\App\Models\Income::all(['order'=>'date DESC','conditions'=>['user_id = ?',$_GET['id']]]);
 			}
 			else{
-				$payments=\App\Models\Payment::all(['order'=>'payment_date DESC']);
+				$payments=\App\Models\Payment::all(['order'=>'created_at DESC']);
 				$expenses=\App\Models\Expense::all(['order'=>'date DESC']);
 				$policy_payments=\App\Models\PolicyPayment::all(['order'=>'created_at DESC']);
 				$incomes=\App\Models\Income::all(['order'=>'date DESC']);
@@ -48,17 +48,31 @@ class reportsController extends Controller{
 		}
 
 		foreach($payments as $payment){
-			$result['payments'][]=$payment->serialize();
+			$result['payments'][]=$payment->to_array([
+				'include'=>[
+					'account',
+					'policy'=>[
+						'include'=>[
+							'client',
+							'plan'=>[
+								'include'=>[
+									'company'
+								]
+							]
+						]
+					]
+				]
+			]);
 		}
 		foreach($expenses as $expense){
-			$result['expenses'][]=$expense->serialize();
+			$result['expenses'][]=$expense->to_array(['include'=>['category','account']]);
 		}
 		foreach($policy_payments as $policy_payment){
 			$result['policy_payments'][]=$policy_payment->serialize();
 		}
-	
+
 		foreach($incomes as $income){
-			$result['incomes'][]=$income->serialize();
+			$result['incomes'][]=$income->to_array(['include'=>['category','account']]);
 		}
 		foreach(\App\Models\Check::all(['conditions'=>['status = ?','Abonado en cuenta']]) as $check){
 			$c = $check->to_array();
@@ -75,9 +89,7 @@ class reportsController extends Controller{
 
 
 		}
-		foreach(\App\Models\Client::all(['conditions'=>['status = ? or status = ? or status = ?','Pendiente','Cobrada','Financiada']]) as $client){
-			$result['pending'][]=$client->to_array();
-		}
+
 
 
 		$this->response($result);

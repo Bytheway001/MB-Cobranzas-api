@@ -5,28 +5,30 @@ function setDateFormat($date,$format){
 	return $newDate;  
 }
 class Client extends \ActiveRecord\Model{
-	static $belongs_to=[['agent'],['collector','class_name'=>'User','foreign_key'=>'collector_id'],['company']];
-	static $has_many=[['payments'],['policy_payments']];
-	public function serialize(){
-		try{
-			$r=$this->to_array();
-			$r['effective_date']=setDateFormat($this->effective_date,'d-m-Y');
-			$r['renovation_date']=setDateFormat($this->renovation_date,'d-m-Y');
-			$r['agent']=$this->agent->name??"--";
-			$r['collector']=$this->collector->name??"--";
-			$r['name']=$this->first_name;
-			$r['policy_status']=$this->status;
-			$r['plan']=$this->plan;
-			$r['company']=$this->company->name;
-			$r['balance']=round($this->calculateDebt(),2);
-			return $r;
-			}
-			catch(\Exception $e){
-				print($e->getMessage());
-				print_r($this);
-				die();
+	static $belongs_to=[
+		['agent'],
+		['collector','class_name'=>'User','foreign_key'=>'collector_id'],
+	];
+	
 
-			}
+	static $has_many=[['policies']];
+
+	public function serialize(){
+		
+			$r=$this->to_array([
+				'include'=>[
+					'agent',
+					'collector',
+					'policies'=>[
+						'include'=>['plan'],
+						'methods'=>['company']
+					]
+				]
+			]);
+			$r['h_id']=(string) $this->h_id;
+			return $r;
+		
+		
 	}
 
 	public function isLinkedToHubSpot(){

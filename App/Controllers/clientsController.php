@@ -3,15 +3,53 @@ namespace App\Controllers;
 use \App\Models\Client;
 use \App\Models\Agent;
 use \App\Models\User;
+use \App\Libs\Time;
 class clientsController extends Controller{
 	private function clientExists($client){
 		return Client::count(['conditions'=>['policy_number = ? and company = ?',$client['policy_number'],$client['company']]]);
 	}
 
 	public function create(){
-		$client=new Client($this->payload);
-		$client->save();
+		if(!isset($this->payload['id'])){
+			$client=new Client($this->payload);
+			$client->save();
+		}
+		else{
+			$client = Client::find([$this->payload['id']]);
+			$client->update_attributes($this->payload);
+		}
+
 		$this->response(['errors'=>false,'data'=>$client->to_array()]);
+	}
+
+	public function createPolicy(){
+		$client=Client::find([$this->payload['client_id']]);
+		if(!isset($this->payload['id'])){
+			$base_date = Time::getAsDate('d/m/Y',$this->payload['effective_date']);
+			$this->payload['created_by']=$this->current_id;
+			$this->payload['renovation_date']=Time::addDays($base_date,365);
+			$this->payload['effective_date']=$base_date->format('Y-m-d');
+			$this->payload['next_payment_date']=Time::addDays($base_date,60);
+			$this->payload['created_at'] = Time::getasDate('d/m/y',date('d/m/y'))->format('Y-m-d H:i:s');
+			
+
+			if($client->create_policy($this->payload)){
+				$this->response(['errors'=>false,'data'=>$client->reload()->serialize()]);
+			}
+			else{
+				$this->response(['errors','data'=>"Unknown"]);
+			}
+		}
+		else{
+			$policy=\App\Models\Policy::find([$this->payload['id']]);
+			if($policy->update_attributes($this->payload)){
+				$this->response(['errors'=>false,'data'=>$client->reload()->serialize()]);
+			}
+			else{
+				$this->response(['errors','data'=>"Unknown"]);
+			}	
+		}
+
 	}
 
 	public function bulk(){
@@ -46,31 +84,19 @@ class clientsController extends Controller{
 			else{
 				$count=$count+1;
 			}
-			
-
 		}
 		$this->response(['errors'=>false,'data'=>"Clientes creados con exito, $count clientes ya existian y no han sido agregados"]);
-
-		
-		
-		
-
 	}
 
 	public function index(){
+		
 		try{
-			$criteria = isset($_GET['criteria'])?$_GET['criteria']:null;
-			$term = isset($_GET['term'])?$_GET['term']:null;
 			$clients=[];
 			$result=[];
-			if($criteria){
-				if($criteria=='client'){
-					$clients=Client::all(['conditions'=>["first_name LIKE ?",'%'.$term.'%']]);
-				}
-				else{
-					$clients=Client::all(['conditions'=>['policy_number = ?',$term]]);
-				}
+			if(isset($_GET['q'])){
+				$clients=Client::all(['conditions'=>["first_name LIKE ? OR h_id LIKE ?",'%'.$_GET['q'].'%','%'.$_GET['q'].'%']]);
 			}
+			
 			else{
 				$clients=Client::all();
 			}

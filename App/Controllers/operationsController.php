@@ -22,7 +22,7 @@ class operationsController extends Controller{
 					'currency'=>$transfer->currency,
 					'amount'=>$transfer->amount,
 					'account_id'=>$transfer->origin->id,
-					'category'=>1,
+					'category_id'=>73,
 					'date'=>date('Y-m-d H:i:s')
 				]);
 				\App\Models\Income::create([
@@ -31,6 +31,7 @@ class operationsController extends Controller{
 					'currency'=>$transfer->currency,
 					'amount'=>$transfer->amount,
 					'account_id'=>$transfer->destiny->id,
+					'category_id'=>73,
 					'date'=>date('Y-m-d H:i:s')
 					
 				]);
@@ -47,7 +48,7 @@ class operationsController extends Controller{
 		$income = new \App\Models\Income($this->payload);
 		if($income->save()){
 			$income->account->deposit($income->amount,$income->currency);
-			$this->response(['errors'=>false,'data'=>$income->serialize()]);
+			$this->response(['errors'=>false,'data'=>$income->to_array(['include'=>['account','category']])]);
 		}
 		else{
 			http_response_code(401);
@@ -56,17 +57,17 @@ class operationsController extends Controller{
 	}
 
 	public function collect_check(){
-		$check = \App\Models\Check::find([$this->payload['checkId']]);
-		$account = Account::find([$this->payload['accountId']]);
+		$check = \App\Models\Check::find([$this->payload['check_id']]);
+		$account = Account::find([$this->payload['account_id']]);
 		$check->status = 'Abonado en cuenta';
 		$check->account_id = $account->id;
 		$check->save();
-		if($check->currency==='USD'){
-			$account->usd = $account->usd+$check->amount;
-		}
-		else{
-			$account->bob = $account->bob+$check->amount;
-		}
+		$check->reload();
+		
+		$check->account->deposit($check->amount,$check->currency);
+		$a=Account::find_by_name('Cheques en Transito');
+		$a->withdraw($check->amount,$check->currency);
+		$a->save();
 		$account->save();
 		$this->response(['errors'=>false,'data'=>"Cheque abonado a cuenta"]);
 	}

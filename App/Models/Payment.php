@@ -2,16 +2,16 @@
 namespace App\Models;
 
 class Payment extends \ActiveRecord\Model{
-	static $belongs_to=[['client'],['user'],['account']];
+	static $belongs_to=[['policy'],['user'],['account']];
 
 	public function serialize(){
 		
 		$payment = $this->to_array();
 		$payment['payment_date']=$this->payment_date->format('d-m-Y');
-		$payment['client']=$this->client->first_name;
-		$payment['collector']=$this->client->collector->name??"--";
-		$payment['plan']=$this->client->plan;
-		$payment['company']=$this->client->company->name;
+		$payment['client']=$this->policy->client->first_name;
+		$payment['collector']=$this->policy->client->collector->name??"--";
+		$payment['plan']=$this->policy->plan;
+		$payment['company']=$this->policy->plan->company->name;
 		$payment['account_name']=$this->account?$this->account->name:'--';
 		$payment['payment_method']=$this->serializePaymentMethods($this->payment_method);
 		return $payment;
@@ -57,7 +57,6 @@ class Payment extends \ActiveRecord\Model{
 	public function isCash(){
 		return $this->payment_method==='cash_to_agency';
 	}
-
 
 }
 

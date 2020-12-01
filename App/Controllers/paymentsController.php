@@ -19,56 +19,23 @@ function clientHasDebt($client){
 }
 
 class paymentsController extends Controller{
-	
-	/* Registro de cobranza */
 	public function create(){
-		
-		/* Caso de pagos directos a la aseguradora */
-		if(!$this->payload['payment']['account_id']){
-			$this->payload['payment']['account_id'] = null;
-		}
-		$payment=new Payment($this->payload['payment']);
-		$payment->user_id = $this->current_id;
-		if(!$payment->client->isLinkedToHubSpot()){
-			$payment->client->linkToHubSpot();
-		}
-
-		/* Creamos el cheque si es un pago en cheque */
+		$policy=\App\Models\Policy::find([$this->payload['policy_id']]);
+		$payment = array_diff_key($this->payload, array_flip(["tags"]));
+		$payment['user_id']=$this->current_id;
+		$payment=new \App\Models\Payment($payment);
 		if($payment->isCheck()){
-			$check= \App\Models\Check::create(['amount'=>$payment->amount,'currency'=>$payment->currency,'client_id'=>$payment->client_id]);
-			$check->save();
+			\App\Models\Check::create(['amount'=>$payment->amount,'currency'=>$payment->currency,'client_id'=>$payment->policy->client_id]);
+			$payment->account_id = \App\Models\Account::find_by_name("Cheques en transito")->id;
 		}
-
-		/* Guardamos, creamos la nota de  hubspot y el movimiento de cuenta (si es caja)*/
 		if($payment->save()){
-			$client=$payment->client;
-			if($payment->payment_type==='complete'){
-				$client->status='Cobrada';
-				$client->save();
-			}
-
-			else{
-				if(clientHasDebt($client)){
-					$client->status='Pendiente';
-					$client->save();
-				}
-			}
-
-			$payment->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
-			if($payment->account_id){
-				$payment->account->deposit($payment->amount,$payment->currency);
-			}
-			
-			if($payment->isCash()){
-				\App\Models\Movement::create(['date'=>date('Y-m-d'),'type'=>"IN",'description'=>"Cobranza ".$payment->client->first_name,'amount'=>$payment->amount,'currency'=>$payment->currency,'destiny'=>$payment->account->id]);
-			}
-			if($this->payload['tags']){
-
+			$payment->policy->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
+			if(isset($this->payload['tags'])){
 				$users=\App\Models\User::all(['conditions'=>['name in (?)',$this->payload['tags']]]);
 				$tags = array_map(function($t){return ['name'=>$t->name,'email'=>$t->email];},$users);
 				$mailer = new \App\Libs\Mailer($tags,\Core\View::get_partial('partials','payment_created',$payment));
 				$mailer->mail->send();
-				
+
 			}
 			$this->response(['errors'=>false,'data'=>"Cobranza Registrada exitosamente"]);
 		}
@@ -79,17 +46,24 @@ class paymentsController extends Controller{
 
 	public function index(){
 		$result=[];
-		$payments = Payment::all(['order'=>'processed ASC,payment_date DESC']);
+		$payments = Payment::all(['order'=>'processed ASC,payment_date DESC','conditions'=>['processed = 0']]);
 		foreach($payments as $payment){
-			$payment=$payment->to_array();
-			$client = \App\Models\Client::find([$payment['client_id']]);
-			$payment['payment_date']=\App\Libs\Time::format($payment['payment_date'],'d-m-Y');
-			$payment['client']=$client->first_name;
-			$payment['collector']=$client->collector->name;
-			$payment['plan']=$client->plan.'/'.$client->option;
-			$payment['company']=$client->company->name;
-			$result[] = $payment;
+			$result[]=$payment->to_array([
+				'include'=>[
+					'policy'=>[
+						'include'=>[
+							'client',
+							'plan'=>[
+								'include'=>[
+									'company'
+								]
+							]
 
+						],
+					]
+				]
+			]);
+			
 		}
 
 		$this->response(['errors'=>false,'data'=>$result]);
@@ -109,6 +83,21 @@ class paymentsController extends Controller{
 	public function validate($id){
 		$payment=Payment::find([$id]);
 		$payment->processed=1;
+		if($payment->currency==="BOB"){
+			$discounts_in_usd = ($payment->company_discount + $payment->agency_discount + $payment->agent_discount)/$payment->change_rate;
+			$amount_in_usd = $payment->amount / $payment->change_rate;
+			$amount_in_usd = $amount_in_usd + $discounts_in_usd;
+			$payment->policy->payed = $payment->policy->payed+$amount_in_usd;
+			$payment->policy->save();
+		}
+		else{
+			$payment->policy->payed = $payment->policy->payed+$payment->company_discount + $payment->agency_discount + $payment->agent_discount+$payment->amount;
+			$payment->policy->save();
+		}
+
+		if($payment->account){
+			$payment->account->deposit($payment->amount,$payment->currency);
+		}
 		$payment->save();
 		$this->response(['errors'=>false,'data'=>'Validated Successfully']);
 	}
