@@ -74,12 +74,13 @@ class homeController extends Controller{
 				'currency'=>$coinFrom,
 				'amount'=>$amount,
 				'account_id'=>$accountFrom->id,
-				'category'=>1,
+				'category_id'=>99,
 				'date'=>date('Y-m-d H:i:s')
 			]);
 			\App\Models\Income::create([
 				'user_id'=>$this->current_id,
 				'description'=>'Cambio de divisas',
+				'category_id'=>99,
 				'currency'=>$coinTo,
 				'amount'=>$converted,
 				'account_id'=>$accountTo->id,
@@ -131,7 +132,8 @@ class homeController extends Controller{
 		switch($this->payload['type']){
 			case 'expenses':
 			$expense = \App\Models\Expense::find([$this->payload['ref']]);
-			\App\Models\Income::create([
+
+			$income = new \App\Models\Income([
 				'date'=>date('Y-m-d H:i:s'),
 				'account_id'=>$expense->account_id,
 				'category_id'=>98,
@@ -140,25 +142,31 @@ class homeController extends Controller{
 				'currency'=>$expense->currency,
 				'amount'=>$expense->amount
 			]);
+			$income->save();
+			$expense->corrected_with = $income->id;
+			$expense->save();
 			break;
 			case 'incomes':
-			$expense = \App\Models\Income::find([$this->payload['ref']]);
-			\App\Models\Expense::create([
+			$income = \App\Models\Income::find([$this->payload['ref']]);
+			$expense = new \App\Models\Expense([
 				'date'=>date('Y-m-d H:i:s'),
-				'account_id'=>$expense->account_id,
+				'account_id'=>$income->account_id,
 				'category_id'=>97,
 				'user_id'=>$this->current_id,
-				'description'=>"Correccion de Ingreso #".$expense->id,
-				'currency'=>$expense->currency,
-				'amount'=>$expense->amount,
+				'description'=>"Correccion de Ingreso #".$income->id,
+				'currency'=>$income->currency,
+				'amount'=>$income->amount,
 				'office'=>'sc',
 				'bill_number'=>'S/N'
 			]);
+			$expense->save();
+			$income->corrected_with = $expense->id;
+			$income->save();
 			break;
 			case 'payments':
 			$payment = \App\Models\Payment::find([$this->payload['ref']]);
-			$payment->update_attributes(['valid'=>'N']);
-			\App\Models\Expense::create([
+			
+			$expense = new \App\Models\Expense([
 				'date'=>date('Y-m-d H:i:s'),
 				'account_id'=>$payment->account_id,
 				'category_id'=>97,
@@ -169,7 +177,9 @@ class homeController extends Controller{
 				'office'=>'sc',
 				'bill_number'=>'S/N'
 			]);
-
+			$expense->save();
+			$payment->corrected_with=$expense->id;
+			$payment->save();
 			break;
 			default:
 
