@@ -2,7 +2,7 @@
 
 namespace App\Models;
 class PolicyPayment extends \ActiveRecord\Model{
-	static $belongs_to=[['account'],['client'],['user']];
+	static $belongs_to=[['account'],['policy'],['user']];
 	public function serialize(){
 		$payment=$this->to_array(['only'=>['amount','currency','policy_status','id']]);
 		$payment['date']=$this->created_at->format('d-m-Y');

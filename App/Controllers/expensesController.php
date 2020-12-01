@@ -49,11 +49,17 @@ class expensesController extends Controller{
 	}
 
 	public function createPolicyPayment(){
-		$payment = new \App\Models\PolicyPayment($this->payload);
+		$payment = new \App\Models\PolicyPayment([
+			'user_id'=>$this->current_id,
+			'amount'=>$this->payload['amount'],
+			'policy_id'=>$this->payload['policy_id'],
+			'currency'=>$this->payload['currency'],
+			'comment'=>$this->payload['comment'],
+			'payment_date'=>$this->payload['payment_date'],
+			'account_id'=>$this->payload['account_id']
+		]);
+
 		$payment->user_id = $this->current_id;
-		$client = $payment->client;
-		$client->status=$payment->policy_status;
-		$client->save();
 		$account  = $payment->account;
 		if(!$account->has($payment->amount,$payment->currency)){
 			http_response_code(403);
@@ -61,10 +67,13 @@ class expensesController extends Controller{
 		}
 		else{
 			if($payment->save()){
+				$client = $payment->policy->client;
+				if(isset($this->payload['finance'])){
+					$payment->policy->financed = $payment->policy->financed + $payment->amount;
+					$payment->policy->save();
+				}
 				$account->withdraw($payment->amount,$payment->currency);
-				
 				$this->response(['errors'=>false,'data'=>'Creado con exito']);
-
 			}
 			else{
 				$this->response(['errors'=>true,'data'=>"No se pudo crear"]);
