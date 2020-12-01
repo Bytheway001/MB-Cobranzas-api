@@ -68,24 +68,24 @@ class homeController extends Controller{
 			$accountTo->deposit($converted,$coinTo);
 			$accountFrom->withdraw($amount,$coinFrom);
 			\App\Models\Expense::create([
-					'user_id'=>$this->current_id,
-					'bill_number'=>'S/N',
-					'description'=>'Cambio de divisas',
-					'currency'=>$coinFrom,
-					'amount'=>$amount,
-					'account_id'=>$accountFrom->id,
-					'category'=>1,
-					'date'=>date('Y-m-d H:i:s')
-				]);
-				\App\Models\Income::create([
-					'user_id'=>$this->current_id,
-					'description'=>'Cambio de divisas',
-					'currency'=>$coinTo,
-					'amount'=>$converted,
-					'account_id'=>$accountTo->id,
-					'date'=>date('Y-m-d H:i:s')
-					
-				]);
+				'user_id'=>$this->current_id,
+				'bill_number'=>'S/N',
+				'description'=>'Cambio de divisas',
+				'currency'=>$coinFrom,
+				'amount'=>$amount,
+				'account_id'=>$accountFrom->id,
+				'category'=>1,
+				'date'=>date('Y-m-d H:i:s')
+			]);
+			\App\Models\Income::create([
+				'user_id'=>$this->current_id,
+				'description'=>'Cambio de divisas',
+				'currency'=>$coinTo,
+				'amount'=>$converted,
+				'account_id'=>$accountTo->id,
+				'date'=>date('Y-m-d H:i:s')
+
+			]);
 			
 			$this->response(['errors'=>false,'data'=>'Conversion Exitosa']);
 		}
@@ -128,14 +128,55 @@ class homeController extends Controller{
 	}
 
 	public function reportCorrection(){
-		$this->payload['user_id']=$this->current_id;
-		$correction = new \App\Models\Change($this->payload);
-		if($correction->save()){
-			$this->response(['errors'=>false,'data'=>'Reportado!']);
+		switch($this->payload['type']){
+			case 'expenses':
+			$expense = \App\Models\Expense::find([$this->payload['ref']]);
+			\App\Models\Income::create([
+				'date'=>date('Y-m-d H:i:s'),
+				'account_id'=>$expense->account_id,
+				'category_id'=>98,
+				'user_id'=>$this->current_id,
+				'description'=>"Correccion de gasto #".$expense->id,
+				'currency'=>$expense->currency,
+				'amount'=>$expense->amount
+			]);
+			break;
+			case 'incomes':
+			$expense = \App\Models\Income::find([$this->payload['ref']]);
+			\App\Models\Expense::create([
+				'date'=>date('Y-m-d H:i:s'),
+				'account_id'=>$expense->account_id,
+				'category_id'=>97,
+				'user_id'=>$this->current_id,
+				'description'=>"Correccion de Ingreso #".$expense->id,
+				'currency'=>$expense->currency,
+				'amount'=>$expense->amount,
+				'office'=>'sc',
+				'bill_number'=>'S/N'
+			]);
+			break;
+			case 'payments':
+			$payment = \App\Models\Payment::find([$this->payload['ref']]);
+			$payment->update_attributes(['valid'=>'N']);
+			\App\Models\Expense::create([
+				'date'=>date('Y-m-d H:i:s'),
+				'account_id'=>$payment->account_id,
+				'category_id'=>97,
+				'user_id'=>$this->current_id,
+				'description'=>"Correccion de Cobranzas #".$payment->id,
+				'currency'=>$payment->currency,
+				'amount'=>$payment->amount,
+				'office'=>'sc',
+				'bill_number'=>'S/N'
+			]);
+
+			break;
+			default:
+
+			break;
+
 		}
-		else{
-			$this->response(['errors'=>true,'data'=>"No se pudo reportar"]);
-		}
+		$this->response(['errors'=>false,'data'=>'Correccion Realizada!']);
 	}
 
 	
