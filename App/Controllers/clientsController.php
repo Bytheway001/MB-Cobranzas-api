@@ -30,7 +30,6 @@ class clientsController extends Controller{
 			$base_date = Time::getAsDate('d/m/Y',$this->payload['effective_date']);
 			$this->payload['created_by']=$this->current_id;
 			$this->payload['created_at'] = Time::getasDate('d/m/y',date('d/m/y'))->format('Y-m-d H:i:s');
-			$this->payload['next_payment_date']=Time::addDays(Time::getAsDate('d/m/Y',$this->payload['effective_date']),60);
 			if($client->create_policy($this->payload)){
 				$this->response(['errors'=>false,'data'=>$client->reload()->serialize()]);
 			}
