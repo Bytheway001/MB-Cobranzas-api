@@ -31,7 +31,6 @@ class paymentsController extends Controller{
 
 	
 		if($payment->save()){
-		
 			$payment->policy->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
 
 			if(isset($this->payload['tags'])){

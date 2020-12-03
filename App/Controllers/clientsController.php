@@ -19,20 +19,18 @@ class clientsController extends Controller{
 			$client->update_attributes($this->payload);
 		}
 
-		$this->response(['errors'=>false,'data'=>$client->to_array()]);
+		$this->response(['errors'=>false,'data'=>$client->serialize()]);
 	}
 
 	public function createPolicy(){
 		$client=Client::find([$this->payload['client_id']]);
+			$this->payload['renovation_date']=Time::getAsDate('d/m/Y',$this->payload['renovation_date'])->format('Y-m-d');
+			$this->payload['effective_date']=Time::getAsDate('d/m/Y',$this->payload['effective_date'])->format('Y-m-d');
 		if(!isset($this->payload['id'])){
 			$base_date = Time::getAsDate('d/m/Y',$this->payload['effective_date']);
 			$this->payload['created_by']=$this->current_id;
-			$this->payload['renovation_date']=Time::addDays($base_date,365);
-			$this->payload['effective_date']=$base_date->format('Y-m-d');
-			$this->payload['next_payment_date']=Time::addDays($base_date,60);
 			$this->payload['created_at'] = Time::getasDate('d/m/y',date('d/m/y'))->format('Y-m-d H:i:s');
-			
-
+			$this->payload['next_payment_date']=Time::addDays($base_date,60);
 			if($client->create_policy($this->payload)){
 				$this->response(['errors'=>false,'data'=>$client->reload()->serialize()]);
 			}
@@ -41,6 +39,7 @@ class clientsController extends Controller{
 			}
 		}
 		else{
+
 			$policy=\App\Models\Policy::find([$this->payload['id']]);
 			if($policy->update_attributes($this->payload)){
 				$this->response(['errors'=>false,'data'=>$client->reload()->serialize()]);

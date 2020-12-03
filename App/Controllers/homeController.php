@@ -21,7 +21,7 @@ class homeController extends Controller{
 
 	public function listChecks(){
 		$result=[];
-		$checks =\App\Models\Check::all();
+		$checks =\App\Models\Check::all(['conditions'=>['status != ?',"Abonado en cuenta"]]);
 		foreach($checks as $check){
 			$arr= $check->to_array(['include'=>'client']);
 			

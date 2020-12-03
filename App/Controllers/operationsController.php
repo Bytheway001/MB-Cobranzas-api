@@ -61,9 +61,28 @@ class operationsController extends Controller{
 		$account = Account::find([$this->payload['account_id']]);
 		$check->status = 'Abonado en cuenta';
 		$check->account_id = $account->id;
-		$check->save();
+		if($check->save()){
+			\App\Models\Expense::create([
+					'user_id'=>$this->current_id,
+					'bill_number'=>'S/N',
+					'description'=>'Cobro de Cheque '.$check->client->first_name,
+					'currency'=>$check->currency,
+					'amount'=>$check->amount,
+					'account_id'=>9,
+					'category_id'=>73,
+					'date'=>date('Y-m-d H:i:s')
+				]);
+				\App\Models\Income::create([
+					'user_id'=>$this->current_id,
+					'description'=>'Cobro de cheque '.$check->client->first_name,
+					'currency'=>$check->currency,
+					'amount'=>$check->amount,
+					'account_id'=>$account->id,
+					'category_id'=>73,
+					'date'=>date('Y-m-d H:i:s')
+				]);
+		}
 		$check->reload();
-		
 		$check->account->deposit($check->amount,$check->currency);
 		$a=Account::find_by_name('Cheques en Transito');
 		$a->withdraw($check->amount,$check->currency);
