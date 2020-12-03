@@ -6,7 +6,7 @@ use \App\Models\PolicyPayment;
 class expensesController extends Controller{
 	public function create(){
 		$expense = new Expense($this->payload);
-	
+
 		if(!$expense->account->has($expense->amount,$expense->currency)){
 			http_response_code(403);
 			$this->response(['errors'=>true,'data'=>"La cuenta seleccionada no posee el saldo suficiente para registrar esta salida"]);
@@ -50,36 +50,32 @@ class expensesController extends Controller{
 	}
 
 	public function createPolicyPayment(){
-		$payment = new \App\Models\PolicyPayment([
-			'user_id'=>$this->current_id,
-			'amount'=>$this->payload['amount'],
-			'policy_id'=>$this->payload['policy_id'],
-			'currency'=>$this->payload['currency'],
-			'comment'=>$this->payload['comment'],
-			'payment_date'=>$this->payload['payment_date'],
-			'account_id'=>$this->payload['account_id']
-		]);
 
-		$payment->user_id = $this->current_id;
-		$account  = $payment->account;
-		if(!$account->has($payment->amount,$payment->currency)){
+		$policy_payment = new \App\Models\PolicyPayment($this->payload);
+		if($policy_payment->account->has($policy_payment->amount,$policy_payment->currency)){
+			if($policy_payment->save()){
+				$client = $policy_payment->policy->client;
+				$policy_payment->policy->financed = $policy_payment->policy->financed + $policy_payment->amount;
+				$policy_payment->policy->save();
+				$policy_payment->account->withdraw($policy_payment->amount,$policy_payment->currency);
+				$this->response(['errors'=>false,'data'=>'Creado con exito']);
+			}
+			
+		}
+		else{
 			http_response_code(403);
 			$this->response(['errors'=>true,'data'=>"La cuenta seleccionada no posee el saldo suficiente para registrar esta salida"]);
 		}
-		else{
-			if($payment->save()){
-				$client = $payment->policy->client;
-				if(isset($this->payload['finance'])){
-					$payment->policy->financed = $payment->policy->financed + $payment->amount;
-					$payment->policy->save();
-				}
-				$account->withdraw($payment->amount,$payment->currency);
-				$this->response(['errors'=>false,'data'=>'Creado con exito']);
-			}
-			else{
-				$this->response(['errors'=>true,'data'=>"No se pudo crear"]);
-			}
+	}
+
+	public function getPolicyPayments($id){
+		$result=[];
+		$policy = \App\Models\Policy::find([$id]);
+
+		foreach($policy->policy_payments as $payment){
+			$result[] = $payment->to_array();
 		}
+		$this->response(['errors'=>false,'data'=>$result]);
 	}
 }
 

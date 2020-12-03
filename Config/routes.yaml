@@ -32,6 +32,7 @@ routes:
   get_expenses_list: [/expenses,\App\Controllers\expensesController.index,GET]
   create_expense: [/expenses,\App\Controllers\expensesController.create,POST]
   create_policy_payment: [/payments/policy,\App\Controllers\expensesController.CreatePolicyPayment,POST]
+  get_policy_payments: [/payments/policy/:id,\App\Controllers\expensesController.getPolicyPayments,GET]
   # operations
   create_transfer: [/transfers,\App\Controllers\operationsController.createTransfer,POST]
   collect_check: [/checks/collect,\App\Controllers\operationsController.collect_check,POST]

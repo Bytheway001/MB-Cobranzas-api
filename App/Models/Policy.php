@@ -6,7 +6,7 @@ class Policy extends \ActiveRecord\Model{
 		['client'],
 		['plan'],
 	];
-	static $has_many=[['payments']];
+	static $has_many=[['payments'],['policy_payments']];
 
 	public function company(){
 		try{
