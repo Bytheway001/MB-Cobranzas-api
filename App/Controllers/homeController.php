@@ -132,51 +132,23 @@ class homeController extends Controller{
 		switch($this->payload['type']){
 			case 'expenses':
 			$expense = \App\Models\Expense::find([$this->payload['ref']]);
-
-			$income = new \App\Models\Income([
-				'date'=>date('Y-m-d H:i:s'),
-				'account_id'=>$expense->account_id,
-				'category_id'=>98,
-				'user_id'=>$this->current_id,
-				'description'=>"Correccion de gasto #".$expense->id,
-				'currency'=>$expense->currency,
-				'amount'=>$expense->amount
-			]);
+			$income = new \App\Models\Income(['date'=>date('Y-m-d H:i:s'),'account_id'=>$expense->account_id,'category_id'=>98,'user_id'=>$this->current_id,'description'=>"Correccion de gasto #".$expense->id,'currency'=>$expense->currency,'amount'=>$expense->amount]);
+			$income->account->deposit($income->currency,$income->amount);
 			$income->save();
 			$expense->corrected_with = $income->id;
 			$expense->save();
 			break;
 			case 'incomes':
 			$income = \App\Models\Income::find([$this->payload['ref']]);
-			$expense = new \App\Models\Expense([
-				'date'=>date('Y-m-d H:i:s'),
-				'account_id'=>$income->account_id,
-				'category_id'=>97,
-				'user_id'=>$this->current_id,
-				'description'=>"Correccion de Ingreso #".$income->id,
-				'currency'=>$income->currency,
-				'amount'=>$income->amount,
-				'office'=>'sc',
-				'bill_number'=>'S/N'
-			]);
+			$expense = new \App\Models\Expense(['date'=>date('Y-m-d H:i:s'),'account_id'=>$income->account_id,'category_id'=>97,'user_id'=>$this->current_id,'description'=>"Correccion de Ingreso #".$income->id,'currency'=>$income->currency,'amount'=>$income->amount,'office'=>'sc','bill_number'=>'S/N']);
 			$expense->save();
+			$expense->account->withdraw($expense->currenty,$expense->account);
 			$income->corrected_with = $expense->id;
 			$income->save();
 			break;
 			case 'payments':
 			$payment = \App\Models\Payment::find([$this->payload['ref']]);
-			
-			$expense = new \App\Models\Expense([
-				'date'=>date('Y-m-d H:i:s'),
-				'account_id'=>$payment->account_id,
-				'category_id'=>97,
-				'user_id'=>$this->current_id,
-				'description'=>"Correccion de Cobranzas #".$payment->id,
-				'currency'=>$payment->currency,
-				'amount'=>$payment->amount,
-				'office'=>'sc',
-				'bill_number'=>'S/N'
-			]);
+			$expense = new \App\Models\Expense(['date'=>date('Y-m-d H:i:s'),'account_id'=>$payment->account_id,'category_id'=>97,'user_id'=>$this->current_id,'description'=>"Correccion de Cobranzas #".$payment->id,'currency'=>$payment->currency,'amount'=>$payment->amount,'office'=>'sc','bill_number'=>'S/N']);
 			$expense->save();
 			$payment->corrected_with=$expense->id;
 			$payment->save();
