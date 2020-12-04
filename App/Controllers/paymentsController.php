@@ -52,9 +52,9 @@ class paymentsController extends Controller{
 		foreach($payments as $payment){
 			$result[]=$payment->to_array([
 				'include'=>[
+					'account',
 					'policy'=>[
 						'include'=>[
-							'account',
 							'client',
 							'plan'=>[
 								'include'=>[
