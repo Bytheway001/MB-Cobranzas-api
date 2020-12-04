@@ -54,7 +54,7 @@ class paymentsController extends Controller{
 				'include'=>[
 					'policy'=>[
 						'include'=>[
-							'account'
+							'account',
 							'client',
 							'plan'=>[
 								'include'=>[
