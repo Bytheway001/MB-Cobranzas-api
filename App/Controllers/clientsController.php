@@ -12,20 +12,30 @@ class clientsController extends Controller{
 	public function create(){
 		if(!isset($this->payload['id'])){
 			$client=new Client($this->payload);
-			$client->save();
+			if($client->save()){
+				$this->response(['errors'=>false,'data'=>$client->serialize()]);
+			}
+			else{
+				$this->response(['errors'=>true,'data'=>"No se pudo crear el cliente"]);
+			}
 		}
 		else{
 			$client = Client::find([$this->payload['id']]);
-			$client->update_attributes($this->payload);
+			if($client->update_attributes($this->payload)){
+				$this->response(['errors'=>false,'data'=>$client->serialize()]);
+			}
+			else{
+				$this->response(['errors'=>true,'data'=>"No se pudo crear el cliente"]);
+			}
 		}
 
-		$this->response(['errors'=>false,'data'=>$client->serialize()]);
+		
 	}
 
 	public function createPolicy(){
 		$client=Client::find([$this->payload['client_id']]);
-			$this->payload['renovation_date']=Time::getAsDate('d/m/Y',$this->payload['renovation_date'])->format('Y-m-d');
-			$this->payload['effective_date']=Time::getAsDate('d/m/Y',$this->payload['effective_date'])->format('Y-m-d');
+		$this->payload['renovation_date']=Time::getAsDate('d/m/Y',$this->payload['renovation_date'])->format('Y-m-d');
+		$this->payload['effective_date']=Time::getAsDate('d/m/Y',$this->payload['effective_date'])->format('Y-m-d');
 		if(!isset($this->payload['id'])){
 			$base_date = Time::getAsDate('d/m/Y',$this->payload['effective_date']);
 			$this->payload['created_by']=$this->current_id;
@@ -165,6 +175,17 @@ class clientsController extends Controller{
 
 		$newDate = date($format, strtotime($date));  
 		return $newDate;  
+	}
+
+	public function getRenovations(){
+		$result=[];
+		$policies = \App\Models\Policy::all(['conditions'=>['DATE_FORMAT(renovation_date,"%Y-%m")=?',$_GET['year'].'-'.$_GET['month']]]);
+		foreach($policies as $policy){
+			$result[]=$policy->to_array(['include'=>'client']);
+		}
+
+		$this->response(['errors'=>false,'data'=>$result]);
+
 	}
 
 }

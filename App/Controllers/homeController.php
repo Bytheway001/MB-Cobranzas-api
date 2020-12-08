@@ -148,7 +148,8 @@ class homeController extends Controller{
 			break;
 			case 'payments':
 			$payment = \App\Models\Payment::find([$this->payload['ref']]);
-			$expense = new \App\Models\Expense(['date'=>date('Y-m-d H:i:s'),'account_id'=>$payment->account_id,'category_id'=>97,'user_id'=>$this->current_id,'description'=>"Correccion de Cobranzas #".$payment->id,'currency'=>$payment->currency,'amount'=>$payment->amount,'office'=>'sc','bill_number'=>'S/N']);
+		
+			$expense = new \App\Models\Expense(['date'=>date('Y-m-d H:i:s'),'account_id'=>$payment->account->id,'category_id'=>97,'user_id'=>$this->current_id,'description'=>"Correccion de Cobranzas #".$payment->id,'currency'=>$payment->currency,'amount'=>$payment->amount,'office'=>'sc','bill_number'=>'S/N']);
 			$expense->save();
 			$payment->corrected_with=$expense->id;
 			$payment->save();

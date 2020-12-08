@@ -28,11 +28,8 @@ class paymentsController extends Controller{
 			\App\Models\Check::create(['amount'=>$payment->amount,'currency'=>$payment->currency,'client_id'=>$payment->policy->client_id]);
 			$payment->account_id = \App\Models\Account::find_by_name("Cheques en transito")->id;
 		}
-
-	
 		if($payment->save()){
 			$payment->policy->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
-
 			if(isset($this->payload['tags'])){
 				$users=\App\Models\User::all(['conditions'=>['name in (?)',$this->payload['tags']]]);
 				$tags = array_map(function($t){return ['name'=>$t->name,'email'=>$t->email];},$users);
