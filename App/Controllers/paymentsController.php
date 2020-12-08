@@ -24,10 +24,7 @@ class paymentsController extends Controller{
 		$payment = array_diff_key($this->payload, array_flip(["tags"]));
 		$payment['user_id']=$this->current_id;
 		$payment=new \App\Models\Payment($payment);
-		if($payment->isCheck()){
-			\App\Models\Check::create(['amount'=>$payment->amount,'currency'=>$payment->currency,'client_id'=>$payment->policy->client_id]);
-			$payment->account_id = \App\Models\Account::find_by_name("Cheques en transito")->id;
-		}
+		
 		if($payment->save()){
 			$payment->policy->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
 			if(isset($this->payload['tags'])){
@@ -83,6 +80,10 @@ class paymentsController extends Controller{
 	public function validate($id){
 		$payment=Payment::find([$id]);
 		$payment->processed=1;
+		if($payment->isCheck()){
+			\App\Models\Check::create(['amount'=>$payment->amount,'currency'=>$payment->currency,'client_id'=>$payment->policy->client_id]);
+			$payment->account_id = \App\Models\Account::find_by_name("Cheques en transito")->id;
+		}
 		if($payment->currency==="BOB"){
 			$discounts_in_usd = ($payment->company_discount + $payment->agency_discount + $payment->agent_discount)/$payment->change_rate;
 			$amount_in_usd = $payment->amount / $payment->change_rate;
