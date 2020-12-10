@@ -18,6 +18,11 @@ class Policy extends \ActiveRecord\Model{
 		}
 	}
 
+	public function applyDiscount($amount){
+		$this->payed = $this->payed + $amount;
+		$this->save();
+	}
+
 }
 
  ?>

@@ -74,33 +74,21 @@ class paymentsController extends Controller{
 			$p['payment_date']=$payment->payment_date->format('d-m-Y');
 			$result[]=$p;
 		}
+		
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
 
 	public function validate($id){
 		$payment=Payment::find([$id]);
-		$payment->processed=1;
-		if($payment->isCheck()){
-			\App\Models\Check::create(['amount'=>$payment->amount,'currency'=>$payment->currency,'client_id'=>$payment->policy->client_id]);
-			$payment->account_id = \App\Models\Account::find_by_name("Cheques en transito")->id;
-		}
-		if($payment->currency==="BOB"){
-			$discounts_in_usd = ($payment->company_discount + $payment->agency_discount + $payment->agent_discount)/$payment->change_rate;
-			$amount_in_usd = $payment->amount / $payment->change_rate;
-			$amount_in_usd = $amount_in_usd + $discounts_in_usd;
-			$payment->policy->payed = $payment->policy->payed+$amount_in_usd;
-			$payment->policy->save();
+		if($payment->process()){
+			$this->response(['errors'=>false,'data'=>'Validated Successfully']);
 		}
 		else{
-			$payment->policy->payed = $payment->policy->payed+$payment->company_discount + $payment->agency_discount + $payment->agent_discount+$payment->amount;
-			$payment->policy->save();
+			http_response_code(400)
+			$this->response(['errors'=>true,'data'=>'Payment was not validated']);
 		}
-
-		if($payment->account){
-			$payment->account->deposit($payment->amount,$payment->currency);
-		}
-		$payment->save();
-		$this->response(['errors'=>false,'data'=>'Validated Successfully']);
+		
+		
 	}
 }
 

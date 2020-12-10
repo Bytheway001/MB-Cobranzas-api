@@ -3,9 +3,7 @@ namespace App\Models;
 
 class Payment extends \ActiveRecord\Model{
 	static $belongs_to=[['policy'],['user'],['account']];
-
 	public function serialize(){
-		
 		$payment = $this->to_array();
 		$payment['payment_date']=$this->payment_date->format('d-m-Y');
 		$payment['client']=$this->policy->client->first_name;
@@ -15,8 +13,6 @@ class Payment extends \ActiveRecord\Model{
 		$payment['account_name']=$this->account?$this->account->name:'--';
 		$payment['payment_method']=$this->serializePaymentMethods($this->payment_method);
 		return $payment;
-		
-	
 	}
 
 	public function calculateDiscount(){
@@ -56,6 +52,30 @@ class Payment extends \ActiveRecord\Model{
 
 	public function isCash(){
 		return $this->payment_method==='cash_to_agency';
+	}
+
+	public function process(){
+		/* Si es un pago en cheque creamos el cheque */
+		if($this->isCheck()){
+			\App\Models\Check::create(['amount'=>$payment->amount,'currency'=>$payment->currency,'client_id'=>$payment->policy->client_id]);
+			$payment->account_id = \App\Models\Account::find_by_name("Cheques en transito")->id;
+		}
+		/* Aplicamos los descuentos */
+		if($this->currency==="BOB"){
+			$discounts_in_usd = ($this->company_discount + $this->agency_discount + $this->agent_discount)/$this->change_rate;
+			$amount_in_usd = $this->amount / $this->change_rate;
+			$amount_in_usd = $amount_in_usd + $discounts_in_usd;
+			$policy->applyDiscount($amount_in_usd);
+		}
+		else{
+			$policy->applyDiscount($this->policy->payed+$this->company_discount + $this->agency_discount + $this->agent_discount+$this->amount);
+		}
+		if($this->account){
+			$this->account->deposit($payment->amount,$payment->currency);
+		}
+		$this->processed = 1;
+		return $this->save();
+		
 	}
 
 }
