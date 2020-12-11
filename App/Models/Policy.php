@@ -23,6 +23,50 @@ class Policy extends \ActiveRecord\Model{
 		$this->save();
 	}
 
+	public function totals(){
+		return [
+			'payed'=>$this->totalpayed(),
+			'collected'=>$this->totalcollected(),
+			'financed'=>$this->totalfinanced()
+		];
+	}
+
+	public function totalcollected(){
+		$cobranzas = $this->payments;
+		$total = 0;
+		foreach($cobranzas as $cobranza){
+			if($cobranza->corrected_with===null && $cobranza->processed===1){
+				$total = $total+$cobranza->amount;
+			}
+			
+		}
+
+		return $total;
+	}
+
+	public function totalpayed(){
+		$policy_payments = $this->policy_payments;
+		$total=0;
+		foreach($policy_payments as $pp){
+			$total = $total + $pp->amount;
+		}
+		return $total;
+	}
+
+	public function totalfinanced(){
+		$policy_payments = $this->policy_payments;
+		$total = 0;
+		foreach($policy_payments as $pp){
+			if($pp->payment_type === "Finance"){
+				$total = $total+$pp->amount;
+			}
+		}
+		return $total;
+	}
+
+
+
 }
 
  ?>
+

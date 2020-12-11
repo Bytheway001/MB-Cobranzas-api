@@ -84,7 +84,7 @@ class paymentsController extends Controller{
 			$this->response(['errors'=>false,'data'=>'Validated Successfully']);
 		}
 		else{
-			http_response_code(400)
+			http_response_code(400);
 			$this->response(['errors'=>true,'data'=>'Payment was not validated']);
 		}
 		

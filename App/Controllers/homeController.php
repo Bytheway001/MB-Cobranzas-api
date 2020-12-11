@@ -119,13 +119,8 @@ class homeController extends Controller{
 
 
 	public function test(){
-		$m= new \App\Models\MovementNew(['from'=>5,'to'=>1,'description'=>'Test','currency'=>'USD','amount'=>'100']);
-		if($m->process()){
-			$this->response(['errors'=>false,'data'=>'created']);
-		}
-		else{
-			$this->response(['errors'=>false,'data'=>'error']);
-		}
+		$policy = \App\Models\Policy::find([10267]);
+		print_r($policy->financed());
 	}
 
 	public function reportCorrection(){

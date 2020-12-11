@@ -65,13 +65,13 @@ class Payment extends \ActiveRecord\Model{
 			$discounts_in_usd = ($this->company_discount + $this->agency_discount + $this->agent_discount)/$this->change_rate;
 			$amount_in_usd = $this->amount / $this->change_rate;
 			$amount_in_usd = $amount_in_usd + $discounts_in_usd;
-			$policy->applyDiscount($amount_in_usd);
+			$this->policy->applyDiscount($amount_in_usd);
 		}
 		else{
-			$policy->applyDiscount($this->policy->payed+$this->company_discount + $this->agency_discount + $this->agent_discount+$this->amount);
+			$this->policy->applyDiscount($this->policy->payed+$this->company_discount + $this->agency_discount + $this->agent_discount+$this->amount);
 		}
 		if($this->account){
-			$this->account->deposit($payment->amount,$payment->currency);
+			$this->account->deposit($this->amount,$this->currency);
 		}
 		$this->processed = 1;
 		return $this->save();

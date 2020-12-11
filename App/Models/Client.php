@@ -14,14 +14,13 @@ class Client extends \ActiveRecord\Model{
 	static $has_many=[['policies']];
 
 	public function serialize(){
-		
 			$r=$this->to_array([
 				'include'=>[
 					'agent',
 					'collector',
 					'policies'=>[
 						'include'=>['plan'],
-						'methods'=>['company']
+						'methods'=>['company','totals']
 					]
 				]
 			]);
