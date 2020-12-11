@@ -33,6 +33,9 @@ class paymentsController extends Controller{
 				$mailer = new \App\Libs\Mailer($tags,\Core\View::get_partial('partials','payment_created',$payment));
 				$mailer->mail->send();
 			}
+			if($payment->process()){
+				$this->response(['errors'=>false,'data'=>"Cobranza Registrada exitosamente"]);
+			}
 			$this->response(['errors'=>false,'data'=>"Cobranza Registrada exitosamente"]);
 		}
 		else{
@@ -42,7 +45,7 @@ class paymentsController extends Controller{
 
 	public function index(){
 		$result=[];
-		$payments = Payment::all(['order'=>'processed ASC,payment_date DESC','conditions'=>['processed = 0']]);
+		$payments = Payment::all(['order'=>'processed ASC,payment_date DESC','limit'=>50]);
 		foreach($payments as $payment){
 			$result[]=$payment->to_array([
 				'include'=>[
