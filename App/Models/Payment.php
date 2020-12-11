@@ -67,6 +67,12 @@ class Payment extends \ActiveRecord\Model{
 	}
 
 	public function revert($user_id){
+		if($this->isCheck()){
+			$check = \App\Models\Check::first(['conditions'=>['client_id = ? and amount = ?',$this->client->id,$this->amount]]);
+			$account =\App\Models\Account::find_by_name("Cheques en transito");
+			$account->withdraw($this->amount,$this->currency);
+			$check->delete();
+		}
 		if($this->account_id){
 			$expense = new \App\Models\Expense([
 				'date'=>date('Y-m-d H:i:s'),
@@ -81,6 +87,7 @@ class Payment extends \ActiveRecord\Model{
 			$expense->account->withdraw($this->currency,$this->amount);
 			$expense->save();
 			$expense->reload();
+
 			$this->corrected_with = $expense->id;
 			$this->save();
 		}

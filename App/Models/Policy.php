@@ -59,5 +59,20 @@ class Policy extends \ActiveRecord\Model{
 		return $total;
 	}
 
+	public function  history(){
+		$result=[
+			'payments'=>[],
+			'policy_payments'=>[]
+		];
+		foreach ($this->payments as $payment) {
+			$result['payments'][]=$payment->to_array();
+		}
+
+		foreach($this->policy_payments as $pp){
+			$result['policy_payments'][]=$pp->to_array();
+		}
+		return $result;
+	}
+
 }
 ?>

@@ -72,11 +72,8 @@ class expensesController extends Controller{
 	public function getPolicyPayments($id){
 		$result=[];
 		$policy = \App\Models\Policy::find([$id]);
-
-		foreach($policy->policy_payments as $payment){
-			$result[] = $payment->to_array();
-		}
-		$this->response(['errors'=>false,'data'=>$result]);
+		
+		$this->response(['errors'=>false,'data'=>$policy->history()]);
 	}
 }
 

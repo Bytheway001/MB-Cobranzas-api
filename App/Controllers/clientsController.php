@@ -144,9 +144,7 @@ class clientsController extends Controller{
 	}
 
 	public function show($id){
-
 		$client=Client::find_by_id($id);
-
 		$result=$client->serialized();
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
