@@ -143,17 +143,7 @@ class homeController extends Controller{
 			break;
 			case 'payments':
 			$payment = \App\Models\Payment::find([$this->payload['ref']]);
-			if($payment->account_id){
-				$expense = new \App\Models\Expense(['date'=>date('Y-m-d H:i:s'),'account_id'=>$payment->account->id,'category_id'=>97,'user_id'=>$this->current_id,'description'=>"Correccion de Cobranzas #".$payment->id,'currency'=>$payment->currency,'amount'=>$payment->amount,'office'=>'sc','bill_number'=>'S/N']);
-				$expense->save();
-				$expense->reload();
-				$payment->corrected_with = $expense->id;
-				$payment->save();
-			}
-			else{
-				$payment->delete();
-			}
-			
+			$payment->revert($this->current_id);
 			break;
 			default:
 

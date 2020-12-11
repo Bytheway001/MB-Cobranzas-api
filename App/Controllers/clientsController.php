@@ -13,7 +13,7 @@ class clientsController extends Controller{
 		if(!isset($this->payload['id'])){
 			$client=new Client($this->payload);
 			if($client->save()){
-				$this->response(['errors'=>false,'data'=>$client->serialize()]);
+				$this->response(['errors'=>false,'data'=>$client->serialized()]);
 			}
 			else{
 				$this->response(['errors'=>true,'data'=>"No se pudo crear el cliente"]);
@@ -22,7 +22,7 @@ class clientsController extends Controller{
 		else{
 			$client = Client::find([$this->payload['id']]);
 			if($client->update_attributes($this->payload)){
-				$this->response(['errors'=>false,'data'=>$client->serialize()]);
+				$this->response(['errors'=>false,'data'=>$client->serialized()]);
 			}
 			else{
 				$this->response(['errors'=>true,'data'=>"No se pudo crear el cliente"]);
@@ -41,7 +41,7 @@ class clientsController extends Controller{
 			$this->payload['created_by']=$this->current_id;
 			$this->payload['created_at'] = Time::getasDate('d/m/y',date('d/m/y'))->format('Y-m-d H:i:s');
 			if($client->create_policy($this->payload)){
-				$this->response(['errors'=>false,'data'=>$client->reload()->serialize()]);
+				$this->response(['errors'=>false,'data'=>$client->reload()->serialized()]);
 			}
 			else{
 				$this->response(['errors','data'=>"Unknown"]);
@@ -50,8 +50,9 @@ class clientsController extends Controller{
 		else{
 
 			$policy=\App\Models\Policy::find([$this->payload['id']]);
+			unset($this->payload['totals']);
 			if($policy->update_attributes($this->payload)){
-				$this->response(['errors'=>false,'data'=>$client->reload()->serialize()]);
+				$this->response(['errors'=>false,'data'=>$client->reload()->serialized()]);
 			}
 			else{
 				$this->response(['errors','data'=>"Unknown"]);
@@ -109,7 +110,7 @@ class clientsController extends Controller{
 				$clients=Client::all();
 			}
 			foreach($clients as $client){
-				$result[]=$client->serialize();
+				$result[]=$client->serialized();
 			}
 			$this->response(['errors'=>false,'data'=>$result]);
 
@@ -130,7 +131,7 @@ class clientsController extends Controller{
 		$client=Client::find_by_id($id);
 		if($client){
 			if($client->update_attributes($this->payload)){
-				$this->response(['errors'=>false,'data'=>$client->serialize()]);
+				$this->response(['errors'=>false,'data'=>$client->serialized()]);
 			}
 			else{
 				$this->response(['errors'=>true,'data'=>"UPDATE_IMPOSSIBLE"]);
@@ -146,13 +147,13 @@ class clientsController extends Controller{
 
 		$client=Client::find_by_id($id);
 
-		$result=$client->serialize();
+		$result=$client->serialized();
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
 
 	public function profile($id){
 		$client=Client::find_by_id($id);
-		$result=$client->serialize();
+		$result=$client->serialized();
 		$result['payments']=[];
 		foreach($client->payments as $payment){
 			$p=$payment->to_array();

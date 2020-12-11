@@ -13,7 +13,7 @@ class Client extends \ActiveRecord\Model{
 
 	static $has_many=[['policies']];
 
-	public function serialize(){
+	public function serialized(){
 			$r=$this->to_array([
 				'include'=>[
 					'agent',

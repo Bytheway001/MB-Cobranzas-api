@@ -78,6 +78,31 @@ class Payment extends \ActiveRecord\Model{
 		
 	}
 
+	public function revert($user_id){
+		if($this->account_id){
+			$expense = new \App\Models\Expense([
+				'date'=>date('Y-m-d H:i:s'),
+				'account_id'=>$this->account->id,
+				'category_id'=>97,
+				'user_id'=>$user,
+				'description'=>"Correccion de Cobranzas #".$this->id,
+				'currency'=>$this->currency,
+				'amount'=>$this->amount,
+				'office'=>'sc','bill_number'=>'S/N'
+			]);
+			$expense->account->withdraw($this->currency,$this->amount);
+			$expense->save();
+			$expense->reload();
+			$this->corrected_with = $expense->id;
+			$this->save();
+		}
+		else{
+			$this->delete();
+			
+		}
+		return true;
+	}
+
 }
 
- ?>
+?>
