@@ -85,9 +85,8 @@ class reportsController extends Controller{
 		foreach($incomes as $income){
 			$result['incomes'][]=$income->to_array(['include'=>['category','account']]);
 		}
-		foreach(\App\Models\Check::all(['conditions'=>['status = ?','Abonado en cuenta']]) as $check){
+		foreach(\App\Models\Check::all() as $check){
 			$c = $check->to_array();
-
 			$c['client']=$check->client->first_name;
 			
 			if($check->status=='Abonado en cuenta'){

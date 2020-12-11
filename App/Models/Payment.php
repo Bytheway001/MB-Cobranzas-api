@@ -55,27 +55,15 @@ class Payment extends \ActiveRecord\Model{
 	}
 
 	public function process(){
-		/* Si es un pago en cheque creamos el cheque */
 		if($this->isCheck()){
-			\App\Models\Check::create(['amount'=>$payment->amount,'currency'=>$payment->currency,'client_id'=>$payment->policy->client_id]);
-			$payment->account_id = \App\Models\Account::find_by_name("Cheques en transito")->id;
-		}
-		/* Aplicamos los descuentos */
-		if($this->currency==="BOB"){
-			$discounts_in_usd = ($this->company_discount + $this->agency_discount + $this->agent_discount)/$this->change_rate;
-			$amount_in_usd = $this->amount / $this->change_rate;
-			$amount_in_usd = $amount_in_usd + $discounts_in_usd;
-			$this->policy->applyDiscount($amount_in_usd);
-		}
-		else{
-			$this->policy->applyDiscount($this->policy->payed+$this->company_discount + $this->agency_discount + $this->agent_discount+$this->amount);
+			\App\Models\Check::create(['amount'=>$this->amount,'currency'=>$this->currency,'client_id'=>$this->policy->client_id]);
+			$this->account_id = \App\Models\Account::find_by_name("Cheques en transito")->id;
 		}
 		if($this->account){
 			$this->account->deposit($this->amount,$this->currency);
 		}
 		$this->processed = 1;
 		return $this->save();
-		
 	}
 
 	public function revert($user_id){
