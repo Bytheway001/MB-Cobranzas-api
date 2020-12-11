@@ -62,7 +62,6 @@ class paymentsController extends Controller{
 			]);
 			
 		}
-
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
 

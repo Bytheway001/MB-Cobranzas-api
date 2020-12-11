@@ -65,8 +65,5 @@ class Policy extends \ActiveRecord\Model{
 	}
 
 
-
 }
-
- ?>
-
+?>
