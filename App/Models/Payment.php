@@ -62,23 +62,24 @@ class Payment extends \ActiveRecord\Model{
 		if($this->account){
 			$this->account->deposit($this->amount,$this->currency);
 		}
-		$this->processed = 1;
 		return $this->save();
 	}
 
+
 	public function revert($user_id){
 		if($this->isCheck()){
-			$check = \App\Models\Check::first(['conditions'=>['client_id = ? and amount = ?',$this->client->id,$this->amount]]);
+			$check = \App\Models\Check::find(['conditions'=>['client_id = ? and DATE(created_at) = ?',$this->policy->client->id,$this->created_at->format('Y-m-d')]]);
 			$account =\App\Models\Account::find_by_name("Cheques en transito");
-			$account->withdraw($this->amount,$this->currency);
-			$check->delete();
+			if($account->withdraw($this->amount,$this->currency)){
+				$check->delete();
+			}
 		}
 		if($this->account_id){
 			$expense = new \App\Models\Expense([
 				'date'=>date('Y-m-d H:i:s'),
 				'account_id'=>$this->account->id,
 				'category_id'=>97,
-				'user_id'=>$user,
+				'user_id'=>$user_id,
 				'description'=>"Correccion de Cobranzas #".$this->id,
 				'currency'=>$this->currency,
 				'amount'=>$this->amount,

@@ -104,7 +104,7 @@ class reportsController extends Controller{
 
 		$this->response($result);
 	}
-
+	
 	public function payments_per_company(){
 		$result=[];
 		foreach(Payment::all() as $payment){

@@ -8,10 +8,20 @@ class Account extends \ActiveRecord\Model{
 		$this->save();
 	}
 	public function withdraw($amount,$currency){
-		$currency = strtolower($currency);
-		if($this->has($amount,$currency)){
-			$this->$currency = $this->$currency-$amount;
-			$this->save();
+		try{
+			$currency = strtolower($currency);
+			if($this->has($amount,$currency)){
+				$this->$currency = $this->$currency-$amount;
+				$this->save();
+				return true;
+			}
+			else{
+				return false;
+			}
+
+		}
+		catch(\Exception $e){
+			return false;
 		}
 	}
 	
@@ -41,4 +51,4 @@ class Account extends \ActiveRecord\Model{
 	}
 
 }
- ?>
+?>

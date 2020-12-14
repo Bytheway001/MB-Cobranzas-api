@@ -24,7 +24,6 @@ class paymentsController extends Controller{
 		$payment = array_diff_key($this->payload, array_flip(["tags"]));
 		$payment['user_id']=$this->current_id;
 		$payment=new \App\Models\Payment($payment);
-		
 		if($payment->save()){
 			$payment->policy->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
 			if(isset($this->payload['tags'])){
@@ -68,29 +67,16 @@ class paymentsController extends Controller{
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
 
-	public function getClientPayments($id){
-		$result=[];
-		$client=\App\Models\Client::find([$id]);
-		foreach($client->payments as $payment){
-			$p=$payment->to_array();
-			$p['payment_date']=$payment->payment_date->format('d-m-Y');
-			$result[]=$p;
-		}
-		
-		$this->response(['errors'=>false,'data'=>$result]);
-	}
-
 	public function validate($id){
 		$payment=Payment::find([$id]);
-		if($payment->process()){
+		$payment->processed=1;
+		if($payment->save()){
 			$this->response(['errors'=>false,'data'=>'Validated Successfully']);
 		}
 		else{
 			http_response_code(400);
 			$this->response(['errors'=>true,'data'=>'Payment was not validated']);
 		}
-		
-		
 	}
 }
 

@@ -35,7 +35,6 @@ class Policy extends \ActiveRecord\Model{
 			}
 			
 		}
-
 		return $total;
 	}
 
