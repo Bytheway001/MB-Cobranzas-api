@@ -32,6 +32,7 @@ class clientsController extends Controller{
 		
 	}
 
+	 // POST /clients/policies/create
 	public function createPolicy(){
 		$client=Client::find([$this->payload['client_id']]);
 		$this->payload['renovation_date']=Time::getAsDate('d/m/Y',$this->payload['renovation_date'])->format('Y-m-d');
