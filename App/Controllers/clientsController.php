@@ -28,8 +28,6 @@ class clientsController extends Controller{
 				$this->response(['errors'=>true,'data'=>"No se pudo crear el cliente"]);
 			}
 		}
-
-		
 	}
 
 	 // POST /clients/policies/create
@@ -136,10 +134,6 @@ class clientsController extends Controller{
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
 
-
-
-
-
 	public function updatePolicy($id){
 		$client=Client::find_by_id($id);
 		if($client){
@@ -196,8 +190,19 @@ class clientsController extends Controller{
 			$result[]=$policy->to_array(['include'=>'client']);
 		}
 		$this->response(['errors'=>false,'data'=>$result]);
-
 	}
+
+	public function getPaymentsOfPolicy($policyId){
+
+		$result=[];
+		$policy=\App\Models\Policy::find([$policyId]);
+		foreach($policy->payments as $payment){
+			$result[] = $payment->to_array();
+		}
+
+		$this->response(['errors'=>false,'data'=>$result]);
+	}
+
 
 }
 

@@ -20,6 +20,7 @@ routes:
   create_client: [/clients/create,App\Controllers\clientsController.create,POST]
   create_bulk_clients: [/clients/bulk,App\Controllers\clientsController.bulk,POST]
   get_renovations: [/renovations,App\Controllers\clientsController.getRenovations,GET]
+  get_payments_of_policy: ['/policies/:policyId/payments',App\Controllers\clientsController.getPaymentsOfPolicy,GET]
   # payments
   create_payment: [/payments/create,\App\Controllers\paymentsController.create,POST]
   get_payment_list: [/payments,\App\Controllers\paymentsController.index,GET]
@@ -29,6 +30,7 @@ routes:
   get_reports_list: [/reports,\App\Controllers\reportsController.getReports,GET]
   test: [/test,\App\Controllers\homeController.test,GET]
   movements: [/movements/:id,\App\Controllers\reportsController.accountMovements,GET]
+  gyp: [/reports/gyp,App\Controllers\reportsController.GyP,GET]
   # expenses
   get_expenses_list: [/expenses,\App\Controllers\expensesController.index,GET]
   create_expense: [/expenses,\App\Controllers\expensesController.create,POST]
