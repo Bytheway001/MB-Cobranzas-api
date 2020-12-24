@@ -65,7 +65,7 @@ class reportsController extends Controller{
 			]);
 		}
 		foreach($expenses as $expense){
-			$result['expenses'][]=$expense->to_array(['include'=>['category','account']]);
+			$result['expenses'][]=$expense->to_array(['include'=>['category','account','user']]);
 		}
 		foreach($policy_payments as $policy_payment){
 			$result['policy_payments'][]=$policy_payment->to_array([
