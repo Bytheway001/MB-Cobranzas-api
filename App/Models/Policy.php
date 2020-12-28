@@ -1,6 +1,6 @@
 <?php 
 namespace App\Models;
-
+use \DateTime;
 class Policy extends \ActiveRecord\Model{
 	static $belongs_to = [
 		['client'],
@@ -10,7 +10,7 @@ class Policy extends \ActiveRecord\Model{
 
 	public function company(){
 		try{
-		return $this->plan->company->to_array();
+			return $this->plan->company->to_array();
 		}
 		catch(\Exception $e){
 			print_r($this);
@@ -72,6 +72,49 @@ class Policy extends \ActiveRecord\Model{
 		}
 		return $result;
 	}
+
+
+	public function getLastRenovationDate(){
+		$now =	new DateTime("now");
+		$date = new DateTime(date('Y').'-'.$this->effective_date->format('m-d'));
+		if($now>$this->effective_date){
+			$date = $date->sub(new \DateInterval('P1Y'));
+		}
+		
+		return $date->format('Y-m-d');
+	}
+
+	public function getPaymentDates(){
+		$last_renovation = new DateTime($this->getLastRenovationDate());
+		$dates=[$last_renovation->format('Y-m-d')];
+		switch($this->frequency){
+			case "Annual":
+			$dates[]= $last_renovation;
+			break;
+			case "Semiannual":
+			for($i=0;$i<1;$i++){
+				$dates[]=$last_renovation->add(new \DateInterval('P6M'))->format('Y-m-d');
+			}
+			break;
+
+			case "Quarterly":
+			for($i=0;$i<3;$i++){
+				$dates[]=$last_renovation->add(new \DateInterval('P3M'))->format('Y-m-d');
+			}
+			break;
+
+			case "Monthly":
+			for($i=0;$i<11;$i++){
+				$dates[]=$last_renovation->add(new \DateInterval('P1M'))->format('Y-m-d');
+			}
+			break;
+		}	
+		return $dates;
+	}
+
+
+
+
 
 }
 ?>

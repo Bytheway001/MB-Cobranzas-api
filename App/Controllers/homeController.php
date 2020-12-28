@@ -117,6 +117,12 @@ class homeController extends Controller{
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
 
+	public function test(){
+		$policy = \App\Models\Policy::find([10267]);
+		print_r($policy->getPaymentDates());
+		die();
+	}
+
 
 /*
 
@@ -141,6 +147,7 @@ class homeController extends Controller{
 			if(count($policy)<=0){
 				$errors=$errors+1;
 			}
+			
 		if($errors ===0){
 			$policy[0]->create_payment([
 				'office'=>$payment->city,

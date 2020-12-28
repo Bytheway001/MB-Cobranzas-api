@@ -83,7 +83,7 @@ class reportsController extends Controller{
 
 
 		foreach($incomes as $income){
-			$result['incomes'][]=$income->to_array(['include'=>['category','account']]);
+			$result['incomes'][]=$income->to_array(['include'=>['category','account','user']]);
 		}
 		foreach(\App\Models\Check::all() as $check){
 			$c = $check->to_array();
