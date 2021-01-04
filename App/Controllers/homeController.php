@@ -120,6 +120,7 @@ class homeController extends Controller{
 	public function test(){
 		$policy = \App\Models\Policy::find([10267]);
 		print_r($policy->getPaymentDates());
+		print_r($policy->history());
 		die();
 	}
 
