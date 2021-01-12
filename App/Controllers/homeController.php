@@ -190,7 +190,7 @@ class homeController extends Controller{
 			$income = \App\Models\Income::find([$this->payload['ref']]);
 			$expense = new \App\Models\Expense(['date'=>date('Y-m-d H:i:s'),'account_id'=>$income->account_id,'category_id'=>97,'user_id'=>$this->current_id,'description'=>"Correccion de Ingreso #".$income->id,'currency'=>$income->currency,'amount'=>$income->amount,'office'=>'sc','bill_number'=>'S/N']);
 			$expense->save();
-			$expense->account->withdraw($expense->currenty,$expense->account);
+			$expense->account->withdraw($expense->amount,$expense->currency);
 			$income->corrected_with = $expense->id;
 			$income->save();
 			break;
