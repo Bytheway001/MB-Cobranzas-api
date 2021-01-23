@@ -31,7 +31,13 @@ class Policy extends \ActiveRecord\Model{
 		$total = 0;
 		foreach($cobranzas as $cobranza){
 			if($cobranza->corrected_with===null && $cobranza->processed===1){
-				$total = $total+$cobranza->amount;
+				if($cobranza->currency === "BOB"){
+					$total = $total + ($cobranza->amount/$cobranza->change_rate);
+				}
+				else{
+					$total = $total+$cobranza->amount;
+				}
+				
 			}
 			
 		}

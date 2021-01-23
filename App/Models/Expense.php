@@ -12,7 +12,7 @@ class Expense extends \ActiveRecord\Model{
 
 	public function revert($user_id){
 		try{
-			$income =Income([
+			$income =new Income([
 				'date'=>date('Y-m-d H:i:s'),
 				'account_id'=>$this->account_id,
 				'category_id'=>98,'user_id'=>$user_id,
