@@ -56,25 +56,27 @@ class Account extends \ActiveRecord\Model{
 	public function getSaldoAt($date){
 		$date = new \DateTime($date);
 		$date = $date->format('Y-m-d');
+
 		$fechaInicial = $this->last_balance_date->format('Y-m-d');
 		$saldo = ['USD'=>$this->last_balance_usd,'BOB'=>$this->last_balance_bob];
+		
 		if($date>$fechaInicial){
 			$query = "SELECT * from movimiento_de_cuenta where account_id = $this->id AND DATE(date) between '$fechaInicial' and '$date'";
 			$movements = $this->find_by_sql($query);
 			foreach($movements as $movement){
-				
-				$saldo[$movement->currency]=$saldo[$movement->currency]+ $movement->debe - $movement->haber;
-
+				$saldo[$movement->currency]=$saldo[$movement->currency]+ $movement->debe - $movement->haber;	
 			}
 			
 		}
 		else{
+
 			$query = "SELECT * from movimiento_de_cuenta where account_id = $this->id AND DATE(date) between '$date' and '$fechaInicial'";
 			$movements = $this->find_by_sql($query);
 			foreach($movements as $movement){
 				$saldo[$movement->currency]=$saldo[$movement->currency]-$movement->debe + $movement->haber;
 			}
 		}
+
 		return $saldo;
 	}
 }
