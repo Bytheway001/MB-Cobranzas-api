@@ -39,8 +39,8 @@ class clientsController extends Controller{
 			$base_date = Time::getAsDate('d/m/Y',$this->payload['effective_date']);
 			$this->payload['created_by']=$this->current_id;
 			$this->payload['created_at'] = Time::getasDate('d/m/y',date('d/m/y'))->format('Y-m-d H:i:s');
-			if($client->create_policy($this->payload)){
-				$this->response(['errors'=>false,'data'=>$client->reload()->serialized()]);
+			if($policy=$client->create_policy($this->payload)){
+				$this->response(['errors'=>false,'data'=>$policy->reload()->to_array(['include'=>['plan'],'methods'=>['company','totals']])]);
 			}
 			else{
 				$this->response(['errors','data'=>"Unknown"]);
@@ -51,7 +51,7 @@ class clientsController extends Controller{
 			$policy=\App\Models\Policy::find([$this->payload['id']]);
 			unset($this->payload['totals']);
 			if($policy->update_attributes($this->payload)){
-				$this->response(['errors'=>false,'data'=>$client->reload()->serialized()]);
+				$this->response(['errors'=>false,'data'=>$policy->reload()->to_array(['include'=>['plan'],'methods'=>['company','totals']])]);
 			}
 			else{
 				$this->response(['errors','data'=>"Unknown"]);
@@ -73,19 +73,19 @@ class clientsController extends Controller{
 					$collector=User::create(['name'=>$client['collector']]);
 				}
 				$client['collector_id']=$collector->id;
-				
+
 			}
 			else{
 				$client['collector_id']=null;
 			}
 			$client['agent_id']=$agent->id;
-			
-			
+
+
 			$client['first_name']=$client['name'];
 			unset($client['name']);
 			unset($client['agent']);
 			unset($client['collector']);
-			
+
 			if(!$this->clientExists($client)){
 				Client::create($client);
 			}
@@ -97,14 +97,14 @@ class clientsController extends Controller{
 	}
 
 	public function index(){
-		
+
 		try{
 			$clients=[];
 			$result=[];
 			if(isset($_GET['q'])){
 				$clients=Client::all(['conditions'=>["first_name LIKE ? OR h_id LIKE ?",'%'.$_GET['q'].'%','%'.$_GET['q'].'%']]);
 			}
-			
+
 			else{
 				$clients=Client::all();
 			}
@@ -112,7 +112,6 @@ class clientsController extends Controller{
 				$result[]=$client->serialized();
 			}
 			$this->response(['errors'=>false,'data'=>$result]);
-
 		}
 
 		catch(\ActiveRecord\DatabaseException $e){
@@ -177,7 +176,7 @@ class clientsController extends Controller{
 	}
 
 	private function setDateFormat($date,$format){
-		
+
 
 		$newDate = date($format, strtotime($date));  
 		return $newDate;  

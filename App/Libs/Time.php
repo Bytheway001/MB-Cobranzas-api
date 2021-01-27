@@ -17,6 +17,10 @@ class Time{
 		return $date->add(new \DateInterval('P'.$days.'D'));
 	}
 
+	static function addYears($date,$years){
+		return $date->add(new \DateInterval('P'.$years.'Y'));
+	}
+
 }
 
 ?>

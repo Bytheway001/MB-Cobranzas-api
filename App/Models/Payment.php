@@ -85,7 +85,7 @@ class Payment extends \ActiveRecord\Model{
 				'amount'=>$this->amount,
 				'office'=>'sc','bill_number'=>'S/N'
 			]);
-			$expense->account->withdraw($this->currency,$this->amount);
+			$expense->account->withdraw($this->amount,$this->currency);
 			$expense->save();
 			$expense->reload();
 

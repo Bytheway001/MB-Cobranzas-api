@@ -117,88 +117,67 @@ class homeController extends Controller{
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
 
-
-/*
-
 	public function test(){
-		$policy = \App\Models\Policy::find([10267]);
-		print_r($policy->financed());
+		$date = new \DateTime('2018-01-01');
+		$date->modify('last day of this month');
+		print_r($date);
 	}
-=======
-		
-		$payments = \App\Models\Payment::find_by_sql('SELECT * FROM respaldo_cobranzas.payments');
-		$errors =0;
-		$created=0;
-		foreach($payments as $payment){
-			$policy = \App\Models\Policy::find_by_sql(
-				"SELECT id FROM policies WHERE client_id = (
-				SELECT id FROM clients WHERE h_id = (
-				SELECT h_id FROM respaldo_cobranzas.clients WHERE id = (
-				SELECT client_id FROM respaldo_cobranzas.payments WHERE id =$payment->id)
-				)
-				)
-				");
-			if(count($policy)<=0){
-				$errors=$errors+1;
-			}
-		if($errors ===0){
-			$policy[0]->create_payment([
-				'office'=>$payment->city,
-				'payment_method'=>$payment->payment_method,
-				'payment_type'=>$payment->payment_type,
-				'payment_date'=>$payment->payment_date,
-				'agency_discount'=>$payment->agency_discount,
-				'agent_discount'=>$payment->agent_discount,
-				'company_discount'=>$payment->company_discount,
-				'comment'=>$payment->comment,
-				'currency'=>$payment->currency,
-				'processed'=>$payment->processed,
-				'account_id'=>$payment->account_id,
-				'amount'=>$payment->amount,
-				'user_id'=>$payment->user_id,
-				'change_rate'=>$payment->change_rate
-			]);
-			$created= $created+1;
-		}
-		
-			
->>>>>>> Stashed changes
 
-		}
-		
-	}
-*/
+
 	public function reportCorrection(){
 		switch($this->payload['type']){
 			case 'expenses':
 			$expense = \App\Models\Expense::find([$this->payload['ref']]);
-			$income = new \App\Models\Income(['date'=>date('Y-m-d H:i:s'),'account_id'=>$expense->account_id,'category_id'=>98,'user_id'=>$this->current_id,'description'=>"Correccion de gasto #".$expense->id,'currency'=>$expense->currency,'amount'=>$expense->amount]);
-			$income->account->deposit($income->amount,$income->currency);
-			$income->save();
-			$expense->corrected_with = $income->id;
-			$expense->save();
+			if($expense->revert($this->current_id)){
+				$this->response(['errors'=>false,'data'=>'Gasto Corregido']);
+			}
 			break;
 			case 'incomes':
 			$income = \App\Models\Income::find([$this->payload['ref']]);
-			$expense = new \App\Models\Expense(['date'=>date('Y-m-d H:i:s'),'account_id'=>$income->account_id,'category_id'=>97,'user_id'=>$this->current_id,'description'=>"Correccion de Ingreso #".$income->id,'currency'=>$income->currency,'amount'=>$income->amount,'office'=>'sc','bill_number'=>'S/N']);
-			$expense->save();
-			$expense->account->withdraw($expense->currenty,$expense->account);
-			$income->corrected_with = $expense->id;
-			$income->save();
+			if($income->revert($this->current_id)){
+				$this->response(['errors'=>false,'data'=>'Ingreso Corregido']);
+			}
 			break;
 			case 'payments':
 			$payment = \App\Models\Payment::find([$this->payload['ref']]);
-			$payment->revert($this->current_id);
+			if($payment->revert($this->current_id)){
+				$this->response(['errors'=>false,'data'=>'Cobranza Corregida']);
+			}
+		
+			break;
+			case 'policy_payments':
+			$payment = \App\Models\PolicyPayment::find([$this->payload['ref']]);
+			if($payment->revert($this->current_id)){
+				$this->response(['errors'=>false,'data'=>'Pago de Poliza Corregido']);
+			}
 			break;
 			default:
 
 			break;
-
 		}
-		$this->response(['errors'=>false,'data'=>'Correccion Realizada!']);
+		
 	}
 
-	
+	/*
+$q = "SELECT";
+
+$fields = ['id','name'];
+$table = 'accounts';
+$where = [
+	['field'=>'id','operator'=>'=','value'=>'3'],
+	['field'=>'name','operator'=>'=>','value'=>'5']
+];
+
+function createWhereClause($where){
+	$result=[];
+	foreach($where as $clause){
+		$result[]=implode('',$clause);
+	}
+	return implode(' AND ',$result);
+}
+
+echo "SELECT ".implode(',',$fields)." from $table where ".createWhereClause($where);
+	*/
 
 }
 

@@ -65,7 +65,7 @@ class reportsController extends Controller{
 			]);
 		}
 		foreach($expenses as $expense){
-			$result['expenses'][]=$expense->to_array(['include'=>['category','account']]);
+			$result['expenses'][]=$expense->to_array(['include'=>['category','account','user']]);
 		}
 		foreach($policy_payments as $policy_payment){
 			$result['policy_payments'][]=$policy_payment->to_array([
@@ -83,7 +83,7 @@ class reportsController extends Controller{
 
 
 		foreach($incomes as $income){
-			$result['incomes'][]=$income->to_array(['include'=>['category','account']]);
+			$result['incomes'][]=$income->to_array(['include'=>['category','account','user']]);
 		}
 		foreach(\App\Models\Check::all() as $check){
 			$c = $check->to_array();
@@ -135,15 +135,23 @@ class reportsController extends Controller{
 	}
 
 	public function accountMovements($id){
-		$result=[];
-		$data = \App\Models\Income::find_by_sql("SELECT * from movimiento_de_cuenta where account_id = '".$id."'");
+		$initialdate = isset($_GET['period'])? new \DateTime(date('Y-'.$_GET['period'].'-01')): new \DateTime('first day of this month');
+		$finaldate = clone $initialdate;
+		$finaldate->modify('last day of this month');
+		$initialdate=$initialdate->format('Y-m-d');
+
+		$finaldate=$finaldate->format('Y-m-d');
+		$account =\App\Models\Account::find([$id]);
+		$result['saldos']=$account->getSaldoAt($initialdate);
+		$result['query']="SELECT * from movimiento_de_cuenta where account_id = $id and date BETWEEN '$initialdate' and '$finaldate'";
+		$result['movements']=[];
+		$data = \App\Models\Income::find_by_sql("SELECT * from movimiento_de_cuenta where account_id = $id and date BETWEEN '$initialdate' and '$finaldate'" );
 		foreach($data as $row){
 			$r=$row->to_array();
 			$r['date']=$row->date->format('d-m-Y');
-			$result[]=$r;
+			$result['movements'][]=$r;
 		}
 		$this->response(['errors'=>false,'data'=>$result]);
-		
 	}
 
 	

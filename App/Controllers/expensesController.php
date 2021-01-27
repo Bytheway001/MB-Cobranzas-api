@@ -6,7 +6,7 @@ use \App\Models\PolicyPayment;
 class expensesController extends Controller{
 	public function create(){
 		$expense = new Expense($this->payload);
-
+		$expense->user_id = $this->current_id;
 		if(!$expense->account->has($expense->amount,$expense->currency)){
 			http_response_code(403);
 			$this->response(['errors'=>true,'data'=>"La cuenta seleccionada no posee el saldo suficiente para registrar esta salida"]);

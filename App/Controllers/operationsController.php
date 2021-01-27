@@ -46,6 +46,7 @@ class operationsController extends Controller{
 
 	public function createIncome(){
 		$income = new \App\Models\Income($this->payload);
+		$income->user_id = $this->current_id;
 		if($income->save()){
 			$income->account->deposit($income->amount,$income->currency);
 			$this->response(['errors'=>false,'data'=>$income->to_array(['include'=>['account','category']])]);

@@ -60,7 +60,7 @@ class paymentsController extends Controller{
 
 						],
 					]
-				]
+					]
 			]);
 			
 		}
@@ -71,11 +71,11 @@ class paymentsController extends Controller{
 		$payment=Payment::find([$id]);
 		$payment->processed=1;
 		if($payment->save()){
-			$this->response(['errors'=>false,'data'=>'Validated Successfully']);
+			$this->response(['errors'=>false,'data'=>'Validacion Exitosa']);
 		}
 		else{
 			http_response_code(400);
-			$this->response(['errors'=>true,'data'=>'Payment was not validated']);
+			$this->response(['errors'=>true,'data'=>'No se pudo validar esta cobranza']);
 		}
 	}
 }
