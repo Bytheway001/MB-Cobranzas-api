@@ -2,11 +2,11 @@
 namespace App\Controllers;
 use \App\Models\Category;
 class categoriesController extends Controller{
+
 	public function list(){
 		$result=[];
 		$categories = Category::all();
 		foreach($categories as $category){
-
 			$r=$category->to_array();
 			$r['parent']=$category->parent?$category->parent->name:null;
 			$result[]=$r;
@@ -36,6 +36,19 @@ class categoriesController extends Controller{
 			$this->response(['errors'=>true,'data'=>'No se pudo Modificar']);
 		}
 		
+	}
+
+	public function getTree(){
+		$result=[];
+		$categories = Category::all();
+		foreach($categories as $category){
+			if(!$category->parent){
+				$result[$category->name]=$category->to_array(['except'=>'parent_id','include'=>'children']);
+			}
+			
+			
+		}
+		$this->response(['errors'=>false,'data'=>$result]);
 	}
 
 	public function delete(){
