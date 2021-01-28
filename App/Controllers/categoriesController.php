@@ -4,12 +4,26 @@ use \App\Models\Category;
 class categoriesController extends Controller{
 
 	public function list(){
-		$result=[];
-		$categories = Category::all();
+		$result=[
+			'egresos'=>[],
+			'ingresos'=>[]
+		];
+		$categories = Category::all(['conditions'=>['parent_id is null']]);
 		foreach($categories as $category){
-			$r=$category->to_array();
-			$r['parent']=$category->parent?$category->parent->name:null;
-			$result[]=$r;
+			if($category->type=='MainI'){
+				$result['ingresos'][$category->name]=[];
+				foreach($category->children as $c){
+					$result['ingresos'][$category->name][]=$c->to_array();
+				}
+			}
+			else{
+				$result['egresos'][$category->name]=[];
+				foreach($category->children as $c){
+					$result['egresos'][$category->name][]=$c->to_array();
+				}
+			}
+			
+			
 		}
 		$this->response(['errors'=>false,'data'=>$result]);
 	}
@@ -39,11 +53,23 @@ class categoriesController extends Controller{
 	}
 
 	public function getTree(){
-		$result=[];
-		$categories = Category::all();
+		$result=[
+			'egresos'=>[],
+			'ingresos'=>[]
+		];
+		$categories = Category::all(['conditions'=>['parent_id is null']]);
 		foreach($categories as $category){
-			if(!$category->parent){
-				$result[$category->name]=$category->to_array(['except'=>'parent_id','include'=>'children']);
+			if($category->type=='MainI'){
+				$result['ingresos'][$category->name]=[];
+				foreach($category->children as $c){
+					$result['ingresos'][$category->name][]=$c->to_array();
+				}
+			}
+			else{
+				$result['egresos'][$category->name]=[];
+				foreach($category->children as $c){
+					$result['egresos'][$category->name][]=$c->to_array();
+				}
 			}
 			
 			
@@ -56,4 +82,4 @@ class categoriesController extends Controller{
 	}
 }
 
- ?>
+?>
