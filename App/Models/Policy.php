@@ -48,7 +48,13 @@ class Policy extends \ActiveRecord\Model{
 		$policy_payments = $this->policy_payments;
 		$total=0;
 		foreach($policy_payments as $pp){
-			$total = $total + $pp->amount;
+			if($pp->currency==='BOB'){
+				$total = $total + round($pp->amount/6.96,2);
+			}
+			else{
+				$total = $total + $pp->amount;
+			}
+			
 		}
 		return $total;
 	}
