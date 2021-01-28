@@ -118,9 +118,10 @@ class homeController extends Controller{
 	}
 
 	public function test(){
-		$date = new \DateTime('2018-01-01');
-		$date->modify('last day of this month');
-		print_r($date);
+		$policy = \App\Models\Policy::find([10267]);
+		
+		print_r($policy->getStatus());
+		die();
 	}
 
 
