@@ -31,7 +31,7 @@ class Policy extends \ActiveRecord\Model {
         ];
     }
 
-    public function totalcollected() { 
+    public function totalcollected() {
         $cobranzas = $this->payments;
         $total = 0;
         foreach ($cobranzas as $cobranza) {
