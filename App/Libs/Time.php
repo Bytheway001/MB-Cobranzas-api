@@ -1,26 +1,30 @@
-<?php 
+<?php
 
 namespace App\Libs;
 
-class Time{
-	static function convert($date,$inputFormat,$outputFormat){
-		$date = \DateTime::createFromFormat($inputFormat,$date);
-		return $date->format($outputFormat);  
-	}
+class Time
+{
+    public static function convert($date, $inputFormat, $outputFormat)
+    {
+        $date = \DateTime::createFromFormat($inputFormat, $date);
 
-	static function getasDate($inputFormat,$date){
-			$date = \DateTime::createFromFormat($inputFormat,$date);
-			return $date;
-	}
+        return $date->format($outputFormat);
+    }
 
-	static function addDays($date,$days){
-		return $date->add(new \DateInterval('P'.$days.'D'));
-	}
+    public static function getasDate($inputFormat, $date)
+    {
+        $date = \DateTime::createFromFormat($inputFormat, $date);
 
-	static function addYears($date,$years){
-		return $date->add(new \DateInterval('P'.$years.'Y'));
-	}
+        return $date;
+    }
 
+    public static function addDays($date, $days)
+    {
+        return $date->add(new \DateInterval('P'.$days.'D'));
+    }
+
+    public static function addYears($date, $years)
+    {
+        return $date->add(new \DateInterval('P'.$years.'Y'));
+    }
 }
-
-?>
