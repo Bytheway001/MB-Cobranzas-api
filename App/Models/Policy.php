@@ -9,7 +9,10 @@ class Policy extends \ActiveRecord\Model {
         ['client'],
         ['plan'],
     ];
-    public static $has_many = [['payments'], ['policy_payments']];
+    public static $has_many = [
+        ['payments','conditions'=>'corrected_with is null'],
+        ['policy_payments']
+     ];
 
     public function company() {
         try {
@@ -47,7 +50,6 @@ class Policy extends \ActiveRecord\Model {
     public function totalpayed() {
         $policy_payments = $this->policy_payments;
         $total = 0;
-        
         foreach ($policy_payments as $pp) {
             if ($pp->currency === 'BOB') {
                 $total = $total + round($pp->amount / 6.96, 2);
@@ -75,7 +77,9 @@ class Policy extends \ActiveRecord\Model {
         ];
 
         foreach ($this->payments as $payment) {
-            $result['payments'][] = $payment->to_array();
+            if (!$payment->corrected_with) {
+                $result['payments'][] = $payment->to_array();
+            }
         }
 
         foreach ($this->policy_payments as $pp) {
@@ -104,24 +108,24 @@ class Policy extends \ActiveRecord\Model {
         $last_renovation = new DateTime($this->begginingDate());
         $dates = [$last_renovation->format('Y-m-d')];
         switch ($this->frequency) {
-            case 'Semiannual':
-            for ($i = 0; $i < 1; $i++) {
-                $dates[] = $last_renovation->add(new \DateInterval('P6M'))->format('Y-m-d');
-            }
-            break;
-
-            case 'Quarterly':
-            for ($i = 0; $i < 3; $i++) {
-                $dates[] = $last_renovation->add(new \DateInterval('P3M'))->format('Y-m-d');
-            }
-            break;
-
-            case 'Monthly':
-            for ($i = 0; $i < 11; $i++) {
-                $dates[] = $last_renovation->add(new \DateInterval('P1M'))->format('Y-m-d');
-            }
-            break;
+        case 'Semiannual':
+        for ($i = 0; $i < 1; $i++) {
+            $dates[] = $last_renovation->add(new \DateInterval('P6M'))->format('Y-m-d');
         }
+        break;
+
+        case 'Quarterly':
+        for ($i = 0; $i < 3; $i++) {
+            $dates[] = $last_renovation->add(new \DateInterval('P3M'))->format('Y-m-d');
+        }
+        break;
+
+        case 'Monthly':
+        for ($i = 0; $i < 11; $i++) {
+            $dates[] = $last_renovation->add(new \DateInterval('P1M'))->format('Y-m-d');
+        }
+        break;
+    }
 
         return $dates;
     }
