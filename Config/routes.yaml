@@ -48,6 +48,7 @@ routes:
   list_companies: [/companies,\App\Controllers\homeController.listCompanies,GET]
   list_plans: [/plans/:id,\App\Controllers\homeController.listPlans,GET]
   #policies
+  financed_policies: [/policies/financed,\App\Controllers\clientsController.getFinancedPolicies,GET]
 
 
 

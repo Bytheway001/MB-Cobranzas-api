@@ -183,16 +183,23 @@ class clientsController extends Controller {
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function getFinancedPolicies(){
+    public function getFinancedPolicies() {
         $result=[];
         $policies = \App\Models\Policy::all();
-        if($policies->totalFinanced>0){
-            $result[]=$policy->to_array( [
-                'include'=> [
-                    'client',
-                    'plan'=> ['include'=>'company'],
-                ]);
+        foreach ($policies as $policy) {
+            if ($policy->totalFinanced()>0) {
+                $result[]=$policy->to_array([
+                    'methods'=>['totals'],
+                    'include'=> [
+                        'client',
+                        'plan'=> [
+                            'include'=>'company'
+                        ]
+
+                    ]]);
+            }
         }
-         $this->response(['errors'=>false, 'data'=>$result]);
+        
+        $this->response(['errors'=>false, 'data'=>$result]);
     }
 }
