@@ -1,0 +1,6 @@
+#composer
+/vendor
+/Config/web.php
+/docs
+
+.php_cs.cache
