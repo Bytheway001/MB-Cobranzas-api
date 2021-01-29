@@ -5,10 +5,8 @@ namespace App\Controllers;
 use App\Models\Expense;
 use App\Models\PolicyPayment;
 
-class expensesController extends Controller
-{
-    public function create()
-    {
+class expensesController extends Controller {
+    public function create() {
         $expense = new Expense($this->payload);
         $expense->user_id = $this->current_id;
         if (!$expense->account->has($expense->amount, $expense->currency)) {
@@ -25,8 +23,7 @@ class expensesController extends Controller
         }
     }
 
-    public function index()
-    {
+    public function index() {
         $result = [
             'expenses'=> [],
             'payments'=> [],
@@ -51,8 +48,7 @@ class expensesController extends Controller
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function createPolicyPayment()
-    {
+    public function createPolicyPayment() {
         $policy_payment = new \App\Models\PolicyPayment($this->payload);
         $policy_payment->user_id = $this->current_id;
         if ($policy_payment->account->has($policy_payment->amount, $policy_payment->currency)) {
@@ -69,8 +65,7 @@ class expensesController extends Controller
         }
     }
 
-    public function getPolicyPayments($id)
-    {
+    public function getPolicyPayments($id) {
         $result = [];
         $policy = \App\Models\Policy::find([$id]);
 

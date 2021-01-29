@@ -5,10 +5,8 @@ namespace App\Controllers;
 use App\Models\Account;
 use App\Models\Transfer;
 
-class operationsController extends Controller
-{
-    public function createTransfer()
-    {
+class operationsController extends Controller {
+    public function createTransfer() {
         $transfer = new Transfer($this->payload);
         if (!$transfer->origin->has($transfer->amount, $transfer->currency)) {
             http_response_code(401);
@@ -45,8 +43,7 @@ class operationsController extends Controller
         }
     }
 
-    public function createIncome()
-    {
+    public function createIncome() {
         $income = new \App\Models\Income($this->payload);
         $income->user_id = $this->current_id;
         if ($income->save()) {
@@ -58,8 +55,7 @@ class operationsController extends Controller
         }
     }
 
-    public function collect_check()
-    {
+    public function collect_check() {
         $check = \App\Models\Check::find([$this->payload['check_id']]);
         $account = Account::find([$this->payload['account_id']]);
         $check->status = 'Abonado en cuenta';

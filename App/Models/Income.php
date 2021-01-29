@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-class Income extends \ActiveRecord\Model
-{
+class Income extends \ActiveRecord\Model {
     public static $belongs_to = [['account'], ['user'], 'category'];
 
-    public function serialize()
-    {
+    public function serialize() {
         $result = $this->to_array();
         $result['account'] = $this->account->name;
         $result['date'] = $this->date->format('d-m-Y');
@@ -16,8 +14,7 @@ class Income extends \ActiveRecord\Model
         return $result;
     }
 
-    public function revert($user_id)
-    {
+    public function revert($user_id) {
         try {
             $expense = new Expense([
                 'date'       => date('Y-m-d H:i:s'),

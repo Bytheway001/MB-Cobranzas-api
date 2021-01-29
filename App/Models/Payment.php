@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-class Payment extends \ActiveRecord\Model
-{
+class Payment extends \ActiveRecord\Model {
     public static $belongs_to = [['policy'], ['user'], ['account']];
 
-    public function serialize()
-    {
+    public function serialize() {
         $payment = $this->to_array();
         $payment['payment_date'] = $this->payment_date->format('d-m-Y');
         $payment['client'] = $this->policy->client->first_name;
@@ -20,8 +18,7 @@ class Payment extends \ActiveRecord\Model
         return $payment;
     }
 
-    public function calculateDiscount()
-    {
+    public function calculateDiscount() {
         $discount = $this->agency_discount + $this->agent_discount + $this->company_discount;
         if ($this->currency === 'BOB') {
             return $discount / $this->change_rate;
@@ -30,8 +27,7 @@ class Payment extends \ActiveRecord\Model
         }
     }
 
-    private function serializePaymentMethods($method)
-    {
+    private function serializePaymentMethods($method) {
         $methods = [
             'cash_to_agency'            => 'Efectivo la agencia',
             'check_to_agency_local'     => 'Cheque local a la agencia',
@@ -48,25 +44,21 @@ class Payment extends \ActiveRecord\Model
         return $methods[$method];
     }
 
-    public function isCheck()
-    {
+    public function isCheck() {
         return $this->payment_method == 'check_to_agency_local' || $this->payment_method == 'check_to_agency_foreign';
     }
 
-    public function isAgencyPayment()
-    {
+    public function isAgencyPayment() {
         $agencyMethods = ['cash_to_agency', 'check_to_agency_foreign', 'check_to_agency_local', 'transfer_to_agency_foreign', 'transfer_to_agency_local'];
 
         return in_array($this->payment_method, $agengyMethods);
     }
 
-    public function isCash()
-    {
+    public function isCash() {
         return $this->payment_method === 'cash_to_agency';
     }
 
-    public function process()
-    {
+    public function process() {
         if ($this->isCheck()) {
             \App\Models\Check::create(['amount'=>$this->amount, 'currency'=>$this->currency, 'client_id'=>$this->policy->client_id]);
             $this->account_id = \App\Models\Account::find_by_name('Cheques en transito')->id;
@@ -78,8 +70,7 @@ class Payment extends \ActiveRecord\Model
         return $this->save();
     }
 
-    public function revert($user_id)
-    {
+    public function revert($user_id) {
         if ($this->isCheck()) {
             $check = \App\Models\Check::find(['conditions'=>['client_id = ? and DATE(created_at) = ?', $this->policy->client->id, $this->created_at->format('Y-m-d')]]);
             $account = \App\Models\Account::find_by_name('Cheques en transito');

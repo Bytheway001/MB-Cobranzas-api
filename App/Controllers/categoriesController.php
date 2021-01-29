@@ -4,10 +4,8 @@ namespace App\Controllers;
 
 use App\Models\Category;
 
-class categoriesController extends Controller
-{
-    public function list()
-    {
+class categoriesController extends Controller {
+    public function list() {
         $result = [
             'egresos' => [],
             'ingresos'=> [],
@@ -29,8 +27,7 @@ class categoriesController extends Controller
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function create()
-    {
+    public function create() {
         $category = new Category($this->payload);
         if ($category->save()) {
             $this->response(['errors'=>false, 'data'=>'Categoria creada con exito']);
@@ -39,8 +36,7 @@ class categoriesController extends Controller
         }
     }
 
-    public function update($id)
-    {
+    public function update($id) {
         $category = Category::find([$id]);
         if ($this->payload['parent_id'] === '') {
             $this->payload['parent_id'] = null;
@@ -52,8 +48,7 @@ class categoriesController extends Controller
         }
     }
 
-    public function getTree()
-    {
+    public function getTree() {
         $result = [
             'egresos' => [],
             'ingresos'=> [],
@@ -75,7 +70,6 @@ class categoriesController extends Controller
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function delete()
-    {
+    public function delete() {
     }
 }

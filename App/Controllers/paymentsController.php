@@ -4,8 +4,7 @@ namespace App\Controllers;
 
 use App\Models\Payment;
 
-function clientHasDebt($client)
-{
+function clientHasDebt($client) {
     $amount_to_pay = $client->prima;
     $payed_amount = 0;
     $payments = $client->payments;
@@ -21,10 +20,8 @@ function clientHasDebt($client)
     return  $payed_amount < $client->prima;
 }
 
-class paymentsController extends Controller
-{
-    public function create()
-    {
+class paymentsController extends Controller {
+    public function create() {
         $policy = \App\Models\Policy::find([$this->payload['policy_id']]);
         $payment = array_diff_key($this->payload, array_flip(['tags']));
         $payment['user_id'] = $this->current_id;
@@ -33,7 +30,9 @@ class paymentsController extends Controller
             $payment->policy->client->addHubSpotNote('(SIS-COB) Cobranza efectuada en sistema por un monto de '.$payment->currency.' '.$payment->amount);
             if (isset($this->payload['tags'])) {
                 $users = \App\Models\User::all(['conditions'=>['name in (?)', $this->payload['tags']]]);
-                $tags = array_map(function ($t) {return ['name'=>$t->name, 'email'=>$t->email]; }, $users);
+                $tags = array_map(function ($t) {
+                    return ['name'=>$t->name, 'email'=>$t->email];
+                }, $users);
                 $mailer = new \App\Libs\Mailer($tags, \Core\View::get_partial('partials', 'payment_created', $payment));
                 $mailer->mail->send();
             }
@@ -46,8 +45,7 @@ class paymentsController extends Controller
         }
     }
 
-    public function index()
-    {
+    public function index() {
         $result = [];
         $payments = Payment::all(['order'=>'processed ASC,payment_date DESC', 'limit'=>50]);
         foreach ($payments as $payment) {
@@ -71,8 +69,7 @@ class paymentsController extends Controller
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function validate($id)
-    {
+    public function validate($id) {
         $payment = Payment::find([$id]);
         $payment->processed = 1;
         if ($payment->save()) {

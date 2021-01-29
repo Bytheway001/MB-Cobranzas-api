@@ -6,10 +6,8 @@ use App\Models\Agent;
 use App\Models\Payment;
 use App\Models\User;
 
-class agentsController extends Controller
-{
-    public function index()
-    {
+class agentsController extends Controller {
+    public function index() {
         $result = [];
         $agents = Agent::all();
         foreach ($agents as $agent) {
@@ -18,8 +16,7 @@ class agentsController extends Controller
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function getCollectors()
-    {
+    public function getCollectors() {
         $result = [];
         $collectors = User::all();
         foreach ($collectors as $collector) {
@@ -29,8 +26,7 @@ class agentsController extends Controller
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function createPayment()
-    {
+    public function createPayment() {
         if (!$this->payload['account_id']) {
             $this->payload['account_id'] = null;
         }
@@ -67,8 +63,7 @@ class agentsController extends Controller
         }
     }
 
-    private function setDateFormat($date, $format)
-    {
+    private function setDateFormat($date, $format) {
         $newDate = date($format, strtotime($date));
 
         return $newDate;

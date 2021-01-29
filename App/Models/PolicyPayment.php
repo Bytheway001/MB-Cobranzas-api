@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-class PolicyPayment extends \ActiveRecord\Model
-{
+class PolicyPayment extends \ActiveRecord\Model {
     public static $belongs_to = [['account'], ['policy'], ['user']];
 
-    public function revert($user_id)
-    {
+    public function revert($user_id) {
         try {
             $income = new Income([
                 'date'       => date('Y-m-d H:i:s'),
