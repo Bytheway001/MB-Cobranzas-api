@@ -11,7 +11,8 @@ defined('APPPATH') or exit('Access denied');
 /**
  * App class will call this one in case that a view render is needed.
  */
-class View {
+class View
+{
     /**
      * Stores the variables passed to the view.
      *
@@ -27,7 +28,8 @@ class View {
      * @param string $template Path to the view.
      * @param string $layout   Path to the layout.
      */
-    public static function render($template, $layout = null) {
+    public static function render($template, $layout = null)
+    {
         if (!file_exists(self::VIEWS_PATH.$template.'.'.self::EXTENSION_TEMPLATES)) {
             throw new \Exception('Error: El archivo '.self::VIEWS_PATH.$template.'.'.self::EXTENSION_TEMPLATES.' no existe', 1);
         }
@@ -51,7 +53,8 @@ class View {
      * @param string $folder  Folder Path.
      * @param string $partial File Path.
      */
-    public static function render_partial($folder, $partial) {
+    public static function render_partial($folder, $partial)
+    {
         if (!file_exists(self::VIEWS_PATH.$folder.'/_'.$partial.'.'.self::EXTENSION_TEMPLATES)) {
             throw new \Exception('Error: El archivo '.self::VIEWS_PATH.$folder.'/_'.$partial.'.'.self::EXTENSION_TEMPLATES.' no existe', 1);
         }
@@ -63,7 +66,8 @@ class View {
         echo $str;
     }
 
-    public static function get_partial($folder, $partial, $local = null) {
+    public static function get_partial($folder, $partial, $local = null)
+    {
         if (!file_exists(self::VIEWS_PATH.$folder.'/_'.$partial.'.'.self::EXTENSION_TEMPLATES)) {
             throw new \Exception('Error: El archivo '.self::VIEWS_PATH.$folder.'/_'.$partial.'.'.self::EXTENSION_TEMPLATES.' no existe', 1);
         }
@@ -85,7 +89,8 @@ class View {
      * @param string $name  Name that the variable will have in the view.
      * @param mixed  $value The value of the variable.
      */
-    public static function set($name, $value) {
+    public static function set($name, $value)
+    {
         self::$data[$name] = $value;
     }
 }

@@ -1,5 +1,7 @@
 <?php
+
 $array = [];
-function pepe() {
+function pepe()
+{
     echo 'aaassaa';
 }

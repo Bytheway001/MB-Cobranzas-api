@@ -7,12 +7,15 @@ use App\Models\Agent;
 use App\Models\Client;
 use App\Models\User;
 
-class clientsController extends Controller {
-    private function clientExists($client) {
+class clientsController extends Controller
+{
+    private function clientExists($client)
+    {
         return Client::count(['conditions'=>['policy_number = ? and company = ?', $client['policy_number'], $client['company']]]);
     }
 
-    public function create() {
+    public function create()
+    {
         if (!isset($this->payload['id'])) {
             $client = new Client($this->payload);
             if ($client->save()) {
@@ -31,7 +34,8 @@ class clientsController extends Controller {
     }
 
     // POST /clients/policies/create
-    public function createPolicy() {
+    public function createPolicy()
+    {
         $client = Client::find([$this->payload['client_id']]);
         $this->payload['renovation_date'] = Time::getAsDate('d/m/Y', $this->payload['renovation_date'])->format('Y-m-d');
         $this->payload['effective_date'] = Time::getAsDate('d/m/Y', $this->payload['effective_date'])->format('Y-m-d');
@@ -55,7 +59,8 @@ class clientsController extends Controller {
         }
     }
 
-    public function bulk() {
+    public function bulk()
+    {
         $count = 0;
         foreach ($this->payload as $client) {
             $agent = Agent::find_by_name($client['agent']);
@@ -87,7 +92,8 @@ class clientsController extends Controller {
         $this->response(['errors'=>false, 'data'=>"Clientes creados con exito, $count clientes ya existian y no han sido agregados"]);
     }
 
-    public function index() {
+    public function index()
+    {
         try {
             $clients = [];
             $result = [];
@@ -107,7 +113,8 @@ class clientsController extends Controller {
     }
 
     // GET /payments/:id
-    public function getPayments() {
+    public function getPayments()
+    {
         $result = [];
         $client = \App\Models\Client::find([$id]);
         foreach ($client->payments as $payment) {
@@ -118,7 +125,8 @@ class clientsController extends Controller {
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function updatePolicy($id) {
+    public function updatePolicy($id)
+    {
         $client = Client::find_by_id($id);
         if ($client) {
             if ($client->update_attributes($this->payload)) {
@@ -132,13 +140,15 @@ class clientsController extends Controller {
         }
     }
 
-    public function show($id) {
+    public function show($id)
+    {
         $client = Client::find_by_id($id);
         $result = $client->serialized();
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function profile($id) {
+    public function profile($id)
+    {
         $client = Client::find_by_id($id);
         $result = $client->serialized();
         $result['payments'] = [];
@@ -158,13 +168,15 @@ class clientsController extends Controller {
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    private function setDateFormat($date, $format) {
+    private function setDateFormat($date, $format)
+    {
         $newDate = date($format, strtotime($date));
 
         return $newDate;
     }
 
-    public function getRenovations() {
+    public function getRenovations()
+    {
         $result = [];
         $policies = \App\Models\Policy::all(['conditions'=>['DATE_FORMAT(renovation_date,"%Y-%m")=?', $_GET['year'].'-'.$_GET['month']]]);
         foreach ($policies as $policy) {
@@ -173,7 +185,8 @@ class clientsController extends Controller {
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function getPaymentsOfPolicy($policyId) {
+    public function getPaymentsOfPolicy($policyId)
+    {
         $result = [];
         $policy = \App\Models\Policy::find([$policyId]);
         foreach ($policy->payments as $payment) {
@@ -183,23 +196,24 @@ class clientsController extends Controller {
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function getFinancedPolicies() {
-        $result=[];
+    public function getFinancedPolicies()
+    {
+        $result = [];
         $policies = \App\Models\Policy::all();
         foreach ($policies as $policy) {
-            if ($policy->totalFinanced()>0) {
-                $result[]=$policy->to_array([
-                    'methods'=>['totals'],
+            if ($policy->totalFinanced() > 0) {
+                $result[] = $policy->to_array([
+                    'methods'=> ['totals'],
                     'include'=> [
                         'client',
                         'plan'=> [
-                            'include'=>'company'
-                        ]
+                            'include'=> 'company',
+                        ],
 
-                    ]]);
+                    ], ]);
             }
         }
-        
+
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 }
