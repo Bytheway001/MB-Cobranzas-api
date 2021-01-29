@@ -2,5 +2,6 @@
 
 namespace App\Models;
 
-class Change extends \ActiveRecord\Model {
+class Change extends \ActiveRecord\Model
+{
 }

@@ -1,4 +1,6 @@
 <?php
+
 $array = [];
-function pepe() {
+function pepe()
+{
 }

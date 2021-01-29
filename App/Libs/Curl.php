@@ -2,8 +2,10 @@
 
 namespace App\Libs;
 
-class Curl {
-    public static function doPostRequest($url, $postData, $options = [], $params = []) {
+class Curl
+{
+    public static function doPostRequest($url, $postData, $options = [], $params = [])
+    {
         $defaultOptions = [
             CURLOPT_POSTFIELDS     => json_encode($postData),
             CURLOPT_URL            => $url.'?hapikey='.HUBSPOT_API_KEY.'&'.http_build_query($params),
@@ -30,7 +32,8 @@ class Curl {
         }
     }
 
-    public static function doGetRequest($url, $params, $options = []) {
+    public static function doGetRequest($url, $params, $options = [])
+    {
         echo $url.'?hapikey='.HUBSPOT_API_KEY.'&'.http_build_query($params);
         exit();
 

@@ -2,19 +2,23 @@
 
 namespace App\Controllers;
 
-class Controller {
-    public function __construct() {
+class Controller
+{
+    public function __construct()
+    {
         $this->payload = json_decode(file_get_contents('php://input'), true);
         //$this->authenticateRequest();
     }
 
-    protected function response(array $response) {
+    protected function response(array $response)
+    {
         header('Content-Type:application/json');
         echo json_encode($response);
         exit();
     }
 
-    private function authenticateRequest() {
+    private function authenticateRequest()
+    {
         $uri = strtok($_SERVER['REQUEST_URI'], '?');
         if ($uri !== '/auth') {
             if (!isset($_SERVER['HTTP_U'])) {
