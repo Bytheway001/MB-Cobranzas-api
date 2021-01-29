@@ -4,8 +4,10 @@ namespace App\Controllers;
 
 use App\Models\Payment;
 
-class reportsController extends Controller {
-    public function getReports() {
+class reportsController extends Controller
+{
+    public function getReports()
+    {
         $from = $_GET['f'] ?? '01/'.date('m/Y');
         $to = $_GET['t'] ?? cal_days_in_month(CAL_GREGORIAN, 8, 2009).'/'.date('m/Y');
 
@@ -96,7 +98,8 @@ class reportsController extends Controller {
         $this->response($result);
     }
 
-    public function payments_per_company() {
+    public function payments_per_company()
+    {
         $result = [];
         foreach (Payment::all() as $payment) {
             $company = $payment->client->company;
@@ -118,14 +121,16 @@ class reportsController extends Controller {
         exit();
     }
 
-    private function setDateFormat($date, $format) {
+    private function setDateFormat($date, $format)
+    {
         $date = str_replace('/', '-', $date);
         $newDate = date($format, strtotime($date));
 
         return $newDate;
     }
 
-    public function accountMovements($id) {
+    public function accountMovements($id)
+    {
         $initialdate = isset($_GET['period']) ? new \DateTime(date('Y-'.$_GET['period'].'-01')) : new \DateTime('first day of this month');
         $finaldate = clone $initialdate;
         $finaldate->modify('last day of this month');

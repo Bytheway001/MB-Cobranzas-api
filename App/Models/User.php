@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
-class User extends \ActiveRecord\Model {
+class User extends \ActiveRecord\Model
+{
     public static $belongs_to = [['account']];
 }

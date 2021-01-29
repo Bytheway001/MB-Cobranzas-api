@@ -4,17 +4,19 @@ namespace App\Models;
 
 use DateTime;
 
-class Policy extends \ActiveRecord\Model {
+class Policy extends \ActiveRecord\Model
+{
     public static $belongs_to = [
         ['client'],
         ['plan'],
     ];
     public static $has_many = [
-        ['payments','conditions'=>'corrected_with is null'],
-        ['policy_payments']
-     ];
+        ['payments', 'conditions'=>'corrected_with is null'],
+        ['policy_payments'],
+    ];
 
-    public function company() {
+    public function company()
+    {
         try {
             return $this->plan->company->to_array();
         } catch (\Exception $e) {
@@ -23,7 +25,8 @@ class Policy extends \ActiveRecord\Model {
         }
     }
 
-    public function totals() {
+    public function totals()
+    {
         return [
             'payed'    => $this->totalpayed(),
             'collected'=> $this->totalcollected(),
@@ -31,7 +34,8 @@ class Policy extends \ActiveRecord\Model {
         ];
     }
 
-    public function totalcollected() { 
+    public function totalcollected()
+    {
         $cobranzas = $this->payments;
         $total = 0;
         foreach ($cobranzas as $cobranza) {
@@ -47,7 +51,8 @@ class Policy extends \ActiveRecord\Model {
         return $total;
     }
 
-    public function totalpayed() {
+    public function totalpayed()
+    {
         $policy_payments = $this->policy_payments;
         $total = 0;
         foreach ($policy_payments as $pp) {
@@ -61,7 +66,8 @@ class Policy extends \ActiveRecord\Model {
         return $total;
     }
 
-    public function totalfinanced() {
+    public function totalfinanced()
+    {
         $policy_payments = $this->policy_payments;
         $total = 0;
         $payed = $this->totalpayed();
@@ -70,7 +76,8 @@ class Policy extends \ActiveRecord\Model {
         return $payed - $collected < 0 ? 0 : $payed - $collected;
     }
 
-    public function history() {
+    public function history()
+    {
         $result = [
             'payments'       => [],
             'policy_payments'=> [],
@@ -90,7 +97,8 @@ class Policy extends \ActiveRecord\Model {
     }
 
     /* Fecha en la cual comienza la poliza actual */
-    public function begginingDate() {
+    public function begginingDate()
+    {
         $now = new DateTime('now');
         $this_year_renovation_date = new DateTime(date('Y').'-'.$this->effective_date->format('m-d'));
         /* Si aun no ha pasado la fecha de renovacion devolvemos la fecha del año pasado */
@@ -104,7 +112,8 @@ class Policy extends \ActiveRecord\Model {
     }
 
     /* Fechas en las cuales se espera el pago */
-    public function getPaymentDates() {
+    public function getPaymentDates()
+    {
         $last_renovation = new DateTime($this->begginingDate());
         $dates = [$last_renovation->format('Y-m-d')];
         switch ($this->frequency) {
