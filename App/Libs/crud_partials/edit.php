@@ -1,9 +1,9 @@
 <?php ob_start() ?>
 <div class="container">
 	<form action="/<?=$pluralname ?>/<?=$object->id ?>" method='post'>
-		<?php foreach($columns as $column): ?>
-			<?php $cn=$column->name ?>
-			<?php if($column->name!=$pk): ?>
+		<?php foreach ($columns as $column) { ?>
+			<?php $cn = $column->name ?>
+			<?php if ($column->name != $pk) { ?>
 				<div class="form-group">
 					<label for=""><?= $column->name ?></label>
 					<input 
@@ -13,12 +13,12 @@
 					value='<?= $object->$cn ?>'
 					>
 				</div>
-			<?php endif; ?>
-		<?php endforeach; ?>
+			<?php } ?>
+		<?php } ?>
 		<div class="form-group">
 			<button class='btn btn-success' type="submit">Save Changes</button>
 			<a class='btn btn-info' href="/<?= $pluralname  ?>" >Back to List</a>
 		</div>
 	</form>
 </div>
-<?php $html=ob_get_clean() ?>
+<?php $html = ob_get_clean() ?>

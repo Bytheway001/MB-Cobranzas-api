@@ -4,19 +4,19 @@
 	<a class='btn btn-success' href="<?= '/'.$pluralname.'/new' ?>">New <?= $singularname ?></a>
 	<table class="table table-bordered">
 		<tr>
-			<?php foreach($columns as $column): ?>
+			<?php foreach ($columns as $column) { ?>
 				<th><?= $column->name ?></th>
-			<?php endforeach; ?>
+			<?php } ?>
 		</tr>
-		<?php foreach($list as $item): ?>
+		<?php foreach ($list as $item) { ?>
 			<tr>
-				<?php foreach($columns as $k=>$v): ?>
+				<?php foreach ($columns as $k=>$v) { ?>
 					<td><?= $item->$k ?></td>
-				<?php endforeach; ?>
+				<?php } ?>
 				<td><a href="<?= '/'.$pluralname.'/edit/'.$item->id; ?>">Edit</a></td>
 				<td><a href="<?= '/'.$pluralname.'/destroy/'.$item->id; ?>">Delete</a></td>
 			</tr>
-		<?php endforeach; ?>
+		<?php } ?>
 	</table>
 </div>
-<?php $html=ob_get_clean(); ?>
+<?php $html = ob_get_clean(); ?>

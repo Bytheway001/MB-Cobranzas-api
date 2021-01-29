@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
@@ -18,7 +19,7 @@ final class AddUserIdToChanges extends AbstractMigration
      */
     public function change(): void
     {
-        $table=$this->table('changes');
-        $table->addColumn('user_id','integer')->update();
+        $table = $this->table('changes');
+        $table->addColumn('user_id', 'integer')->update();
     }
 }
