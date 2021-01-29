@@ -1,9 +1,7 @@
-<?php 
+<?php
+
 namespace App\Models;
 
-class Movement extends \ActiveRecord\Model{
-	
+class Movement extends \ActiveRecord\Model
+{
 }
-
-
- ?>
