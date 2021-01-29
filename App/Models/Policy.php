@@ -14,8 +14,7 @@ class Policy extends \ActiveRecord\Model {
         ['policy_payments']
      ];
 
-    public function company() 
-     {
+    public function company() {
         try {
             return $this->plan->company->to_array();
         } catch (\Exception $e) {
