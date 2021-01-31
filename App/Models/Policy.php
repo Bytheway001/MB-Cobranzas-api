@@ -12,7 +12,7 @@ class Policy extends \ActiveRecord\Model {
     public static $has_many = [
         ['payments','conditions'=>'corrected_with is null'],
         ['policy_payments']
-     ];
+    ];
 
     public function company() {
         try {
@@ -23,12 +23,34 @@ class Policy extends \ActiveRecord\Model {
         }
     }
 
+    public function getDiscounts() {
+        $discounts=[
+            'agency'=>0,
+            'agent'=>0,
+            'company'=>0
+        ];
+        $payments = $this->payments;
+        foreach ($this->payments as $p) {
+            if ($p->currency==='BOB') {
+                $discounts['agency']+=round($p->agency_discount/$p->change_rate, 2);
+                $discounts['agent']+=round($p->agent_discount/$p->change_rate, 2);
+                $discounts['company']+=round($p->company_discount/$p->change_rate, 2);
+            } else {
+                $discounts['agency']+=$p->agency_discount/$p->change_rate;
+                $discounts['agent']+=$p->agent_discount/$p->change_rate;
+                $discounts['company']+=$p->company_discount/$p->change_rate;
+            }
+        }
+        return $discounts;
+    }
+
     public function totals() {
         return [
-            'payed'    => $this->totalpayed(),
-            'collected'=> $this->totalcollected(),
-            'financed' => $this->totalfinanced(),
-        ];
+        'discounts'=>$this->getDiscounts(),
+        'payed'    => $this->totalpayed(),
+        'collected'=> $this->totalcollected(),
+        'financed' => $this->totalfinanced(),
+    ];
     }
 
     public function totalcollected() {
@@ -48,6 +70,7 @@ class Policy extends \ActiveRecord\Model {
     }
 
     public function totalpayed() {
+        $discounts = array_sum($this->getDiscounts());
         $policy_payments = $this->policy_payments;
         $total = 0;
         foreach ($policy_payments as $pp) {
@@ -58,7 +81,7 @@ class Policy extends \ActiveRecord\Model {
             }
         }
 
-        return $total;
+        return $total-$discounts;
     }
 
     public function totalfinanced() {
@@ -72,9 +95,9 @@ class Policy extends \ActiveRecord\Model {
 
     public function history() {
         $result = [
-            'payments'       => [],
-            'policy_payments'=> [],
-        ];
+        'payments'       => [],
+        'policy_payments'=> [],
+    ];
 
         foreach ($this->payments as $payment) {
             if (!$payment->corrected_with) {
