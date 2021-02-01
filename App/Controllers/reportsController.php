@@ -133,7 +133,9 @@ class reportsController extends Controller {
 
         $finaldate = $finaldate->format('Y-m-d');
         $account = \App\Models\Account::find([$id]);
+
         $result['saldos'] = $account->getSaldoAt($initialdate);
+        
         $result['query'] = "SELECT * from movimiento_de_cuenta where account_id = $id and date BETWEEN '$initialdate' and '$finaldate'";
         $result['movements'] = [];
         $data = \App\Models\Income::find_by_sql("SELECT * from movimiento_de_cuenta where account_id = $id and date BETWEEN '$initialdate' and '$finaldate'");
