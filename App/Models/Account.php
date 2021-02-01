@@ -65,9 +65,7 @@ class Account extends \ActiveRecord\Model {
             foreach ($movements as $movement) {
                 $saldo[$movement->currency] = $saldo[$movement->currency] + $movement->debe - $movement->haber;
             }
-        } 
-
-        else {
+        } else {
             $query = "SELECT * from movimiento_de_cuenta where account_id = $this->id AND DATE(date) between '$date' and '$fechaInicial'";
             $movements = $this->find_by_sql($query);
             foreach ($movements as $movement) {
