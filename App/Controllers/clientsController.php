@@ -176,10 +176,32 @@ class clientsController extends Controller {
     public function getPaymentsOfPolicy($policyId) {
         $result = [];
         $policy = \App\Models\Policy::find([$policyId]);
-        foreach ($policy->payments as $payment) {
-            $result[] = $payment->to_array();
-        }
+        $policyHasRenewals = count($policy->renewals)>0;
 
+        if (!$policyHasRenewals) {
+            foreach ($policy->payments as $payment) {
+                if ($payment->corrected_with===null) {
+                    $result['legacy'][] = $payment->to_array();
+                }
+            }
+        } else {
+            /* Pagos Anteriores a la primera renovacion */
+            foreach (\App\Models\Payment::all(['conditions'=>['policy_id = ? and payment_date < ? and corrected_with is null',$policy->id,$policy->renewals[0]->renovation_date]]) as $p) {
+                $result['legacy'][]=$p->to_array();
+            }
+            /* Pagos despues de la nueva renovacion */
+            foreach ($policy->renewals as $r) {
+                $result[$r->renovation_date->format('Y')]=[];
+                $startdate = new \DateTime($r->renovation_date->format('Y-m-d'));
+                $endDate = clone $startdate;
+                $endDate->add(new \DateInterval('P1Y'))->format('Y-m-d');
+                $payments = \App\Models\Payment::all(['conditions'=>['policy_id = ? and payment_date BETWEEN ? AND ? and corrected_with is null',$policy->id,$startdate,$endDate]]);
+                foreach ($payments as $p) {
+                    $result[$r->renovation_date->format('Y')][]=$p->to_array();
+                }
+            }
+        }
+        
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
@@ -201,5 +223,26 @@ class clientsController extends Controller {
         }
         
         $this->response(['errors'=>false, 'data'=>$result]);
+    }
+
+    public function getPolicy($id) {
+        $policy =\App\Models\Policy::find([$id]);
+        $this->response(['errors'=>false,'data'=>$policy->to_array([
+            'methods'=>'company',
+            'include'=>'plan'
+        ])]);
+    }
+
+    public function createRenewal() {
+        $this->payload['renovation_date'] = Time::getAsDate('d/m/Y', $this->payload['renovation_date'])->format('Y-m-d');
+        $renewal = new \App\Models\Renewal($this->payload);
+       
+        $renewal->user_id = $this->current_id;
+        if ($renewal->save()) {
+            $this->response(['errors'=>false,'data'=>"Cliente Renovado con exito"]);
+        } else {
+            http_response_code(400);
+            $this->response(['errors'=>true,'data'=>"No se pudo renovar al cliente"]);
+        }
     }
 }

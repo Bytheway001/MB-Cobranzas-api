@@ -21,7 +21,6 @@ if (!session_id()) {
 ActiveRecord\Serialization::$DATETIME_FORMAT = 'd/m/Y';
 ActiveRecord\Config::initialize(function ($cfg) {
     include '../Config/web.php';
-
     ActiveRecord\Connection::$datetime_format = 'Y-m-d H:i:s';
     $cfg->set_model_directory(APPPATH.'/Models');
     $cfg->set_connections([

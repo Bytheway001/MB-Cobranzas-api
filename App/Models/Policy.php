@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use \App\Models\Renewal;
 use DateTime;
 
 class Policy extends \ActiveRecord\Model {
@@ -11,8 +12,63 @@ class Policy extends \ActiveRecord\Model {
     ];
     public static $has_many = [
         ['payments','conditions'=>'corrected_with is null'],
-        ['policy_payments']
+        ['policy_payments'],
+        ['renewals']
     ];
+    /* Method override */
+    public static function find() {
+        $class = get_called_class();
+        if (func_num_args() <= 0) {
+            throw new RecordNotFound("Couldn't find $class without an ID");
+        }
+        $args = func_get_args();
+        $options = static::extract_and_validate_options($args);
+        $num_args = count($args);
+        $single = true;
+
+        if ($num_args > 0 && ($args[0] === 'all' || $args[0] === 'first' || $args[0] === 'last')) {
+            switch ($args[0]) {
+                case 'all':
+                $single = false;
+                break;
+
+                case 'last':
+                if (!array_key_exists('order', $options)) {
+                    $options['order'] = join(' DESC, ', static::table()->pk) . ' DESC';
+                } else {
+                    $options['order'] = SQLBuilder::reverse_order($options['order']);
+                }
+
+                    // fall thru
+
+                    // no break
+                case 'first':
+                $options['limit'] = 1;
+                $options['offset'] = 0;
+                break;
+            }
+
+            $args = array_slice($args, 1);
+            $num_args--;
+        }
+        //find by pk
+        elseif (1 === count($args) && 1 == $num_args) {
+            $args = $args[0];
+        }
+
+        // anything left in $args is a find by pk
+        if ($num_args > 0 && !isset($options['conditions'])) {
+            return static::find_by_pk($args, $options)->getLastPolicy();
+        }
+
+        $options['mapped_names'] = static::$alias_attribute;
+        $list = static::table()->find($options);
+        $result=[];
+        foreach ($list as $l) {
+            $result[]=$l->getLastPolicy();
+        }
+        return $single ? (!empty($list) ? $list[0]->getLastPolicy() : null) : $result;
+    }
 
     public function company() {
         try {
@@ -46,11 +102,11 @@ class Policy extends \ActiveRecord\Model {
 
     public function totals() {
         return [
-        'discounts'=>$this->getDiscounts(),
-        'payed'    => $this->totalpayed(),
-        'collected'=> $this->totalcollected(),
-        'financed' => $this->totalfinanced(),
-    ];
+            'discounts'=>$this->getDiscounts(),
+            'payed'    => $this->totalpayed(),
+            'collected'=> $this->totalcollected(),
+            'financed' => $this->totalfinanced(),
+        ];
     }
 
     public function totalcollected() {
@@ -95,9 +151,10 @@ class Policy extends \ActiveRecord\Model {
 
     public function history() {
         $result = [
-        'payments'       => [],
-        'policy_payments'=> [],
-    ];
+            'renewals'=>[],
+            'payments'       => [],
+            'policy_payments'=> [],
+        ];
 
         foreach ($this->payments as $payment) {
             if (!$payment->corrected_with) {
@@ -107,6 +164,10 @@ class Policy extends \ActiveRecord\Model {
 
         foreach ($this->policy_payments as $pp) {
             $result['policy_payments'][] = $pp->to_array();
+        }
+
+        foreach ($this->renewals as $renewal) {
+            $result['renewals']=$pp->to_array();
         }
 
         return $result;
@@ -131,25 +192,89 @@ class Policy extends \ActiveRecord\Model {
         $last_renovation = new DateTime($this->begginingDate());
         $dates = [$last_renovation->format('Y-m-d')];
         switch ($this->frequency) {
-        case 'Semiannual':
-        for ($i = 0; $i < 1; $i++) {
-            $dates[] = $last_renovation->add(new \DateInterval('P6M'))->format('Y-m-d');
-        }
-        break;
+            case 'Semiannual':
+            for ($i = 0; $i < 1; $i++) {
+                $dates[] = $last_renovation->add(new \DateInterval('P6M'))->format('Y-m-d');
+            }
+            break;
 
-        case 'Quarterly':
-        for ($i = 0; $i < 3; $i++) {
-            $dates[] = $last_renovation->add(new \DateInterval('P3M'))->format('Y-m-d');
-        }
-        break;
+            case 'Quarterly':
+            for ($i = 0; $i < 3; $i++) {
+                $dates[] = $last_renovation->add(new \DateInterval('P3M'))->format('Y-m-d');
+            }
+            break;
 
-        case 'Monthly':
-        for ($i = 0; $i < 11; $i++) {
-            $dates[] = $last_renovation->add(new \DateInterval('P1M'))->format('Y-m-d');
+            case 'Monthly':
+            for ($i = 0; $i < 11; $i++) {
+                $dates[] = $last_renovation->add(new \DateInterval('P1M'))->format('Y-m-d');
+            }
+            break;
         }
-        break;
-    }
 
         return $dates;
+    }
+
+    public function getLastPolicy() {
+        $last_renewal = Renewal::last(['select'=>'plan_id,option,premium,frequency,renovation_date','conditions'=>['policy_id = ?',$this->id]]);
+
+        if (!$last_renewal) {
+            return $this;
+        } else {
+            foreach ($last_renewal->to_array() as $key=>$item) {
+                if ($key==='renovation_date') {
+                    $this->$key=$last_renewal->$key;
+                    
+                    $this->$key=$this->$key->format('Y-m-d');
+                } else {
+                    $this->$key = $item;
+                }
+            }
+            return $this;
+        }
+    }
+
+    public function getStatus() {
+        $startDate=new DateTime($this->renovation_date);
+        $endDate= clone $startDate;
+        $startDate=$startDate->format('Y-m-d');
+        $endDate = $endDate->add(new \DateInterval('P1Y'));
+        $endDate = $endDate->format('Y-m-d');
+        $payments = \App\Models\Payment::all(['conditions'=>[
+            'policy_id = ? AND DATE(payment_date) BETWEEN ? AND ? AND corrected_with is null',
+            $this->id,
+            $startDate,
+            $endDate,
+        ]
+    ]);
+        if (count($payments)===0) {
+            return "Nueva";
+        }
+
+        $payed = 0;
+        $discounts = 0;
+
+        foreach ($payments as $payment) {
+            if ($payment->currency==="BOB") {
+                $discounts += ($payment->agency_discount + $payment->agent_discount + $payment->company_discount)/$payment->change_rate;
+                $payed += $payment->amount/$payment->change_rate;
+            } else {
+                $discounts += $payment->agency_discount + $payment->agent_discount + $payment->company_discount;
+                $payed += $payment->amount;
+            }
+        }
+        $debt = $this->premium - $discounts -$payed;
+        if ($debt===0) {
+            return "Cobrada";
+        } else {
+            switch ($this->frequency) {
+                case "Annual":
+                return $debt>0?"Pendiente":"Cobrada";
+                break;
+
+                default:
+                return "N/A";
+                break;
+            }
+        }
     }
 }

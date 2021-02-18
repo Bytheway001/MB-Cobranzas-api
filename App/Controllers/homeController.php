@@ -115,8 +115,7 @@ class homeController extends Controller {
     }
 
     public function test() {
-        $policy = \App\Models\Policy::find([10267]);
-
+        $policy = \App\Models\Policy::find([10497]);
         print_r($policy->getStatus());
         exit();
     }
