@@ -20,14 +20,13 @@ class Client extends \ActiveRecord\Model {
             'include'=> [
                 'agent',
                 'collector',
-                'policies'=> [
-                    'include'=> ['plan'],
-                    'methods'=> ['company', 'totals'],
-                ],
+                'policies'=>[
+                    'include'=>['plan'],
+                    'methods'=>['company','totals','status']
+                ]
             ],
         ]);
         $r['h_id'] = (string) $this->h_id;
-
         return $r;
     }
 

@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Models\Plan;
 
-class plansntroller extends Controller {
+class plansController extends Controller {
     public function list() {
         $result = [];
         $accounts = Plan::all();

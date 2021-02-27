@@ -115,43 +115,50 @@ class homeController extends Controller {
     }
 
     public function test() {
-        $policy = \App\Models\Policy::find([10267]);
-
-        print_r($policy->getStatus());
-        exit();
+        $client = \App\Models\Client::find([2048]);
+        print_r($client->to_array(['include'=>[
+        'agent',
+        'collector',
+        'policies'=>[
+            'include'=>['plan'],
+            'methods'=>['company','totals','status']
+        ]
+    ]
+]));
+        die();
     }
 
     public function reportCorrection() {
         switch ($this->payload['type']) {
-            case 'expenses':
-            $expense = \App\Models\Expense::find([$this->payload['ref']]);
-            if ($expense->revert($this->current_id)) {
-                $this->response(['errors'=>false, 'data'=>'Gasto Corregido']);
-            }
-            break;
-            case 'incomes':
-            $income = \App\Models\Income::find([$this->payload['ref']]);
-            if ($income->revert($this->current_id)) {
-                $this->response(['errors'=>false, 'data'=>'Ingreso Corregido']);
-            }
-            break;
-            case 'payments':
-            $payment = \App\Models\Payment::find([$this->payload['ref']]);
-            if ($payment->revert($this->current_id)) {
-                $this->response(['errors'=>false, 'data'=>'Cobranza Corregida']);
-            }
-
-            break;
-            case 'policy_payments':
-            $payment = \App\Models\PolicyPayment::find([$this->payload['ref']]);
-            if ($payment->revert($this->current_id)) {
-                $this->response(['errors'=>false, 'data'=>'Pago de Poliza Corregido']);
-            }
-            break;
-            default:
-
-            break;
+        case 'expenses':
+        $expense = \App\Models\Expense::find([$this->payload['ref']]);
+        if ($expense->revert($this->current_id)) {
+            $this->response(['errors'=>false, 'data'=>'Gasto Corregido']);
         }
+        break;
+        case 'incomes':
+        $income = \App\Models\Income::find([$this->payload['ref']]);
+        if ($income->revert($this->current_id)) {
+            $this->response(['errors'=>false, 'data'=>'Ingreso Corregido']);
+        }
+        break;
+        case 'payments':
+        $payment = \App\Models\Payment::find([$this->payload['ref']]);
+        if ($payment->revert($this->current_id)) {
+            $this->response(['errors'=>false, 'data'=>'Cobranza Corregida']);
+        }
+
+        break;
+        case 'policy_payments':
+        $payment = \App\Models\PolicyPayment::find([$this->payload['ref']]);
+        if ($payment->revert($this->current_id)) {
+            $this->response(['errors'=>false, 'data'=>'Pago de Poliza Corregido']);
+        }
+        break;
+        default:
+
+        break;
+    }
     }
 
     /*

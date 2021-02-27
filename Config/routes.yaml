@@ -49,6 +49,11 @@ routes:
   list_plans: [/plans/:id,\App\Controllers\homeController.listPlans,GET]
   #policies
   financed_policies: [/policies/financed,\App\Controllers\clientsController.getFinancedPolicies,GET]
+  get_policy: [/policies/:id,\App\Controllers\clientsController.getPolicy,GET]
+  #plans 
+  get_plans: [/plans,\App\Controllers\clientsController.getPlans,GET]
+  #renewals
+  create_renewal: [/renewals,\App\Controllers\clientsController.createRenewal,POST]
 
 
 
