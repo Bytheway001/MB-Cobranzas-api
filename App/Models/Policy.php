@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use \App\Models\Renewal;
+use \App\Models\Payment;
+use \App\Models\PolicyPayment;
 use DateTime;
 
 class Policy extends \ActiveRecord\Model {
@@ -10,11 +12,13 @@ class Policy extends \ActiveRecord\Model {
         ['client'],
         ['plan'],
     ];
+
     public static $has_many = [
         ['payments','conditions'=>'corrected_with is null'],
-        ['policy_payments'],
-        ['renewals']
+        ['policy_payments','conditions'=>'corrected_with is null'],
+        ['renewals','order'=>'id ASC']
     ];
+
     /* Method override */
     public static function find() {
         $class = get_called_class();
@@ -70,83 +74,97 @@ class Policy extends \ActiveRecord\Model {
         return $single ? (!empty($list) ? $list[0]->getLastPolicy() : null) : $result;
     }
 
+    public function get_actual_payments() {
+        return Payment::all(['conditions'=>['policy_id = ? and corrected_with is null and DATE(payment_date) >= ?',$this->id,$this->renovation_date]]);
+    }
+
+    public function get_actual_policy_payments() {
+        return PolicyPayment::all(['conditions'=>['policy_id = ? and corrected_with is null and DATE(payment_date) >= ?',$this->id,$this->renovation_date]]);
+    }
+
     public function company() {
         try {
             return $this->plan->company->to_array();
         } catch (\Exception $e) {
-            print_r($this);
+            print_r("La poliza ".$this->id, 'No tiene una compañia asignada');
             exit();
         }
     }
 
-    public function getDiscounts() {
-        $discounts=[
-            'agency'=>0,
-            'agent'=>0,
-            'company'=>0
+    public function totals() {
+        return [
+            'discounts'=>$this->discounts,
+            'payed'    => $this->payed,
+            'collected'=> $this->collected,
+            'financed' => $this->financed,
+            'debt'=>$this->debt
         ];
-        $payments = $this->payments;
-        foreach ($this->payments as $p) {
+    }
+
+    /**
+    * Cobranzas Realizadas a esta poliza
+    */
+    public function get_collected():float {
+        $total = 0;
+        
+        foreach ($this->actual_payments as $cobranza) {
+            if ($cobranza->currency==="BOB") {
+                $total=$total+ ($cobranza->amount/$cobranza->change_rate);
+            } else {
+                $total=$total+ $cobranza->amount;
+            }
+        }
+        
+        return $total;
+    }
+
+    /**
+    * Pagos hechos a la aseguradora
+    */
+    public function get_payed():float {
+        $total = 0;
+        foreach ($this->actual_policy_payments as $pp) {
+            if ($pp->currency==="BOB") {
+                $total += round($pp->amount / 6.96, 2);
+            } else {
+                $total +=  $pp->amount;
+            }
+        }
+        return $total;
+    }
+
+    /**
+    * Descuentos hechos a esta poliza
+    */
+    public function get_discounts():array {
+        $discounts=['agency'=>0,'agent'=>0,'company'=>0];
+        foreach ($this->actual_payments as $p) {
             if ($p->currency==='BOB') {
                 $discounts['agency']+=round($p->agency_discount/$p->change_rate, 2);
                 $discounts['agent']+=round($p->agent_discount/$p->change_rate, 2);
                 $discounts['company']+=round($p->company_discount/$p->change_rate, 2);
             } else {
-                $discounts['agency']+=$p->agency_discount/$p->change_rate;
-                $discounts['agent']+=$p->agent_discount/$p->change_rate;
-                $discounts['company']+=$p->company_discount/$p->change_rate;
+                $discounts['agency']+=$p->agency_discount;
+                $discounts['agent']+=$p->agent_discount;
+                $discounts['company']+=$p->company_discount;
             }
         }
         return $discounts;
     }
 
-    public function totals() {
-        return [
-            'discounts'=>$this->getDiscounts(),
-            'payed'    => $this->totalpayed(),
-            'collected'=> $this->totalcollected(),
-            'financed' => $this->totalfinanced(),
-        ];
+    /**
+    * Deuda Real con la Agencia
+    */
+    public function get_debt() {
+        return round($this->premium - array_sum($this->discounts) - $this->collected, 2);
     }
 
-    public function totalcollected() {
-        $cobranzas = $this->payments;
-        $total = 0;
-        foreach ($cobranzas as $cobranza) {
-            if ($cobranza->corrected_with === null && $cobranza->processed === 1) {
-                if ($cobranza->currency === 'BOB') {
-                    $total = $total + ($cobranza->amount / $cobranza->change_rate);
-                } else {
-                    $total = $total + $cobranza->amount;
-                }
-            }
-        }
-
-        return $total;
-    }
-
-    public function totalpayed() {
-        $discounts = array_sum($this->getDiscounts());
-        $policy_payments = $this->policy_payments;
-        $total = 0;
-        foreach ($policy_payments as $pp) {
-            if ($pp->currency === 'BOB') {
-                $total = $total + round($pp->amount / 6.96, 2);
-            } else {
-                $total = $total + $pp->amount;
-            }
-        }
-
-        return $total-$discounts;
-    }
-
-    public function totalfinanced() {
-        $policy_payments = $this->policy_payments;
-        $total = 0;
-        $payed = $this->totalpayed();
-        $collected = $this->totalcollected();
-
-        return $payed - $collected < 0 ? 0 : $payed - $collected;
+    /**
+    * Financiamientos
+    */
+    public function get_financed() {
+        $financed = $this->payed - array_sum($this->discounts) - $this->collected;
+        return $financed>0?round($financed, 2):0;
     }
 
     public function history() {
@@ -183,7 +201,6 @@ class Policy extends \ActiveRecord\Model {
         } else {
             $date = $this_year_renovation_date;
         }
-
         return $date->format('Y-m-d');
     }
 
@@ -223,8 +240,6 @@ class Policy extends \ActiveRecord\Model {
             foreach ($last_renewal->to_array() as $key=>$item) {
                 if ($key==='renovation_date') {
                     $this->$key=$last_renewal->$key;
-                    
-                    $this->$key=$this->$key->format('Y-m-d');
                 } else {
                     $this->$key = $item;
                 }
@@ -233,48 +248,26 @@ class Policy extends \ActiveRecord\Model {
         }
     }
 
-    public function getStatus() {
-        $startDate=new DateTime($this->renovation_date);
-        $endDate= clone $startDate;
-        $startDate=$startDate->format('Y-m-d');
-        $endDate = $endDate->add(new \DateInterval('P1Y'));
-        $endDate = $endDate->format('Y-m-d');
-        $payments = \App\Models\Payment::all(['conditions'=>[
-            'policy_id = ? AND DATE(payment_date) BETWEEN ? AND ? AND corrected_with is null',
-            $this->id,
-            $startDate,
-            $endDate,
-        ]
-    ]);
-        if (count($payments)===0) {
+    public function status() {
+        $isTotallyPayed = $this->payed === $this->premium - $this->discounts['company'];
+        if ($this->collected === 0 and $this->payed ===0) {
             return "Nueva";
         }
-
-        $payed = 0;
-        $discounts = 0;
-
-        foreach ($payments as $payment) {
-            if ($payment->currency==="BOB") {
-                $discounts += ($payment->agency_discount + $payment->agent_discount + $payment->company_discount)/$payment->change_rate;
-                $payed += $payment->amount/$payment->change_rate;
+        if ($this->debt>0) {
+            if ($this->payed > $this->collected) {
+                return "Financiada";
             } else {
-                $discounts += $payment->agency_discount + $payment->agent_discount + $payment->company_discount;
-                $payed += $payment->amount;
+                return "Pendiente";
             }
         }
-        $debt = $this->premium - $discounts -$payed;
-        if ($debt===0) {
+        if ($this->debt==0 and !$isTotallyPayed) {
             return "Cobrada";
-        } else {
-            switch ($this->frequency) {
-                case "Annual":
-                return $debt>0?"Pendiente":"Cobrada";
-                break;
-
-                default:
-                return "N/A";
-                break;
-            }
+        }
+        if ($this->debt == 0 and $isTotallyPayed) {
+            return "Pagada";
+        }
+        if ($this->debt<0) {
+            return $this->debt;
         }
     }
 }

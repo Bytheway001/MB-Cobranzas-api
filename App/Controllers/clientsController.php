@@ -166,10 +166,22 @@ class clientsController extends Controller {
 
     public function getRenovations() {
         $result = [];
-        $policies = \App\Models\Policy::all(['conditions'=>['DATE_FORMAT(renovation_date,"%Y-%m")=?', $_GET['year'].'-'.$_GET['month']]]);
-        foreach ($policies as $policy) {
-            $result[] = $policy->to_array(['include'=>'client']);
+        $policies = \App\Models\Policy::all();
+        try {
+            foreach ($policies as $policy) {
+                if ($policy->renovation_date) {
+                    if ($policy->renovation_date->format('Y-m')===$_GET['year'].'-'.$_GET['month']) {
+                        $result[] = $policy->to_array(['include'=>'client']);
+                    }
+                } else {
+                    print_r($policy);
+                    die();
+                }
+            }
+        } catch (\Exception $e) {
+            print_r($policy->id);
         }
+        
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
@@ -181,13 +193,13 @@ class clientsController extends Controller {
         if (!$policyHasRenewals) {
             foreach ($policy->payments as $payment) {
                 if ($payment->corrected_with===null) {
-                    $result['legacy'][] = $payment->to_array();
+                    $result[$policy->renovation_date->format('Y')-1][] = $payment->to_array();
                 }
             }
         } else {
             /* Pagos Anteriores a la primera renovacion */
             foreach (\App\Models\Payment::all(['conditions'=>['policy_id = ? and payment_date < ? and corrected_with is null',$policy->id,$policy->renewals[0]->renovation_date]]) as $p) {
-                $result['legacy'][]=$p->to_array();
+                $result[$policy->renovation_date->format('Y')-1][]=$p->to_array();
             }
             /* Pagos despues de la nueva renovacion */
             foreach ($policy->renewals as $r) {
@@ -201,7 +213,7 @@ class clientsController extends Controller {
                 }
             }
         }
-        
+
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
@@ -209,7 +221,7 @@ class clientsController extends Controller {
         $result=[];
         $policies = \App\Models\Policy::all();
         foreach ($policies as $policy) {
-            if ($policy->totalFinanced()>0) {
+            if ($policy->financed>0) {
                 $result[]=$policy->to_array([
                     'methods'=>['totals'],
                     'include'=> [
@@ -221,7 +233,7 @@ class clientsController extends Controller {
                     ]]);
             }
         }
-        
+
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
@@ -236,7 +248,7 @@ class clientsController extends Controller {
     public function createRenewal() {
         $this->payload['renovation_date'] = Time::getAsDate('d/m/Y', $this->payload['renovation_date'])->format('Y-m-d');
         $renewal = new \App\Models\Renewal($this->payload);
-       
+
         $renewal->user_id = $this->current_id;
         if ($renewal->save()) {
             $this->response(['errors'=>false,'data'=>"Cliente Renovado con exito"]);
