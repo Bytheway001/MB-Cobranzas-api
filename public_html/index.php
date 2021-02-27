@@ -18,6 +18,7 @@ $router = Router::parseConfig($config);
 if (!session_id()) {
     @session_start();
 }
+
 ActiveRecord\Serialization::$DATETIME_FORMAT = 'd/m/Y';
 ActiveRecord\Config::initialize(function ($cfg) {
     include '../Config/web.php';
