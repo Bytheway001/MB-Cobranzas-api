@@ -4,8 +4,10 @@ namespace App\Libs;
 
 use PHPMailer\PHPMailer\PHPMailer;
 
-class Mailer {
-    public function __construct($recipients, $body) {
+class Mailer
+{
+    public function __construct($recipients, $body)
+    {
         $this->mail = new PHPMailer();
         $this->mail->SMTPDebug = false;
         $this->mail->isSMTP();

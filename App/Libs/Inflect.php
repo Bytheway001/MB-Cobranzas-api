@@ -57,7 +57,8 @@ namespace App\Libs;
   //   Added rule for potato -> potatoes
   //   Added rule for *us -> *uses
 
-  class Inflect {
+  class Inflect
+  {
       public static $plural = [
           '/(quiz)$/i'                    => '$1zes',
           '/^(ox)$/i'                     => '$1en',
@@ -135,7 +136,8 @@ namespace App\Libs;
           'equipment',
       ];
 
-      public static function pluralize($string) {
+      public static function pluralize($string)
+      {
           // save some time in the case that singular and plural are the same
           if (in_array(strtolower($string), self::$uncountable)) {
               return $string;
@@ -160,7 +162,8 @@ namespace App\Libs;
           return $string;
       }
 
-      public static function singularize($string) {
+      public static function singularize($string)
+      {
           // save some time in the case that singular and plural are the same
           if (in_array(strtolower($string), self::$uncountable)) {
               return $string;
@@ -185,7 +188,8 @@ namespace App\Libs;
           return $string;
       }
 
-      public static function pluralize_if($count, $string) {
+      public static function pluralize_if($count, $string)
+      {
           if ($count == 1) {
               return "1 $string";
           } else {

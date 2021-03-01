@@ -4,8 +4,10 @@ namespace App\Controllers;
 
 use App\Models\Plan;
 
-class plansController extends Controller {
-    public function list() {
+class plansController extends Controller
+{
+    public function list()
+    {
         $result = [];
         $accounts = Plan::all();
         foreach ($accounts as $account) {
