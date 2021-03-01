@@ -232,7 +232,7 @@ class Policy extends \ActiveRecord\Model {
     }
 
     public function getLastPolicy() {
-        $last_renewal = Renewal::last(['select'=>'plan_id,option,premium,frequency,renovation_date','conditions'=>['policy_id = ?',$this->id]]);
+        $last_renewal = Renewal::last(['select'=>'plan_id,`option`,premium,frequency,renovation_date','conditions'=>['policy_id = ?',$this->id]]);
 
         if (!$last_renewal) {
             return $this;
