@@ -28,7 +28,6 @@ routes:
   validate_payment: [/payments/validate/:id,\App\Controllers\paymentsController.validate,GET]
   # reports
   get_reports_list: [/reports,\App\Controllers\reportsController.getReports,GET]
-  test: [/test,\App\Controllers\homeController.test,GET]
   movements: [/movements/:id,\App\Controllers\reportsController.accountMovements,GET]
   gyp: [/reports/gyp,App\Controllers\reportsController.GyP,GET]
   # expenses
@@ -54,6 +53,8 @@ routes:
   get_plans: [/plans,\App\Controllers\clientsController.getPlans,GET]
   #renewals
   create_renewal: [/renewals,\App\Controllers\clientsController.createRenewal,POST]
+  #tests
+  test_email: [/test/email,\App\Controllers\testController.testEmail,GET]
 
 
 
