@@ -37,7 +37,7 @@
         "hooks":{
             "pre-commit": [
                 "echo committing as $(git config user.name)",
-                "php-cs-fixer fix . --config=.phpcsfixer" 
+                "php-cs-fixer fix . --config=../.phpcsfixer" 
             ]
         }
     }
