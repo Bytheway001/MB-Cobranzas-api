@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
-class Expense extends \ActiveRecord\Model {
+class Expense extends \ActiveRecord\Model
+{
     public static $belongs_to = [
         ['account'],
         ['category'],
         ['user'],
     ];
 
-    public function revert($user_id) {
+    public function revert($user_id)
+    {
         try {
             $income = new Income([
                 'date'       => date('Y-m-d H:i:s'),

@@ -6,12 +6,15 @@ use App\Models\Account;
 use App\Models\Company;
 use App\Models\User;
 
-class homeController extends Controller {
-    public function index() {
+class homeController extends Controller
+{
+    public function index()
+    {
         $this->response(['errors'=>false, 'data'=>'Welcome to MB-Cobranzas']);
     }
 
-    public function listAccounts() {
+    public function listAccounts()
+    {
         $result = [];
         $accounts = \App\Models\Account::all(['order'=>'name']);
         foreach ($accounts as $account) {
@@ -21,7 +24,8 @@ class homeController extends Controller {
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function listChecks() {
+    public function listChecks()
+    {
         $result = [];
         $checks = \App\Models\Check::all(['conditions'=>['status != ?', 'Abonado en cuenta']]);
         foreach ($checks as $check) {
@@ -32,7 +36,8 @@ class homeController extends Controller {
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function listCategories() {
+    public function listCategories()
+    {
         $result = [];
         $categories = \App\Models\Category::all(['order'=>'name ASC']);
         foreach ($categories as $category) {
@@ -42,14 +47,16 @@ class homeController extends Controller {
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function auth() {
+    public function auth()
+    {
         $user = User::find_by_email($_GET['id']);
         $response = $user->to_array(['include'=>'account']);
 
         $this->response(['errors'=>false, 'data'=>$response]);
     }
 
-    public function convert() {
+    public function convert()
+    {
         $currencies = explode('/', $this->payload['type']);
         $coinFrom = $currencies[0];
         $coinTo = $currencies[1];
@@ -94,7 +101,8 @@ class homeController extends Controller {
         }
     }
 
-    public function listCompanies() {
+    public function listCompanies()
+    {
         $result = [];
         $companies = Company::all();
         foreach ($companies as $company) {
@@ -103,7 +111,8 @@ class homeController extends Controller {
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function listPlans($company_id) {
+    public function listPlans($company_id)
+    {
         $result = [];
         $company = Company::find([$company_id]);
 
@@ -114,21 +123,23 @@ class homeController extends Controller {
         $this->response(['errors'=>false, 'data'=>$result]);
     }
 
-    public function test() {
+    public function test()
+    {
         $client = \App\Models\Client::find([2048]);
-        print_r($client->to_array(['include'=>[
-        'agent',
-        'collector',
-        'policies'=>[
-            'include'=>['plan'],
-            'methods'=>['company','totals','status']
-        ]
-    ]
-]));
-        die();
+        print_r($client->to_array(['include'=> [
+            'agent',
+            'collector',
+            'policies'=> [
+                'include'=> ['plan'],
+                'methods'=> ['company', 'totals', 'status'],
+            ],
+        ],
+        ]));
+        exit();
     }
 
-    public function reportCorrection() {
+    public function reportCorrection()
+    {
         switch ($this->payload['type']) {
         case 'expenses':
         $expense = \App\Models\Expense::find([$this->payload['ref']]);

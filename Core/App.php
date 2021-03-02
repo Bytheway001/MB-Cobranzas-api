@@ -11,7 +11,8 @@ defined('APPPATH') or exit('Access denied');
 /**
  * An instance of this object will be generated on each request, it handles all the logic and calls the controller/action requested.
  */
-class App {
+class App
+{
     /**
      * The default namespace to look for the controllers.
      */
@@ -39,7 +40,8 @@ class App {
     /**
      * En el constructor cargo la ruta, transformo la url y manejo el request del usuario.
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->_controller = $url['controller'];
         $fullClass = self::NAMESPACE_CONTROLLERS.$this->_controller;
         $this->_controller = new $fullClass();
@@ -57,7 +59,8 @@ class App {
     /**
      * Calls the controller and action that should be executed.
      */
-    public function render() {
+    public function render()
+    {
         call_user_func_array([$this->_controller, $this->_method], $this->_params);
     }
 }

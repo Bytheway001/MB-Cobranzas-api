@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-function setDateFormat($date, $format) {
+function setDateFormat($date, $format)
+{
     $newDate = date($format, strtotime($date));
 
     return $newDate;
 }
-class Client extends \ActiveRecord\Model {
+class Client extends \ActiveRecord\Model
+{
     public static $belongs_to = [
         ['agent'],
         ['collector', 'class_name'=>'User', 'foreign_key'=>'collector_id'],
@@ -15,26 +17,30 @@ class Client extends \ActiveRecord\Model {
 
     public static $has_many = [['policies']];
 
-    public function serialized() {
+    public function serialized()
+    {
         $r = $this->to_array([
             'include'=> [
                 'agent',
                 'collector',
-                'policies'=>[
-                    'include'=>['plan'],
-                    'methods'=>['company','totals','status']
-                ]
+                'policies'=> [
+                    'include'=> ['plan'],
+                    'methods'=> ['company', 'totals', 'status'],
+                ],
             ],
         ]);
         $r['h_id'] = (string) $this->h_id;
+
         return $r;
     }
 
-    public function isLinkedToHubSpot() {
+    public function isLinkedToHubSpot()
+    {
         return $this->h_id != null;
     }
 
-    public function calculateDebt() {
+    public function calculateDebt()
+    {
         $amountToPay = $this->prima;
         $payed = 0;
         foreach ($this->payments as $payment) {
@@ -50,7 +56,8 @@ class Client extends \ActiveRecord\Model {
         return $amountToPay - $payed;
     }
 
-    public function linkToHubSpot() {
+    public function linkToHubSpot()
+    {
         $apikey = 'abcb7c3c-c65a-4985-bc11-58892ac09f3f';
         $poliza = $this->policy_number;
         $company = $this->company;
@@ -104,7 +111,8 @@ class Client extends \ActiveRecord\Model {
         }
     }
 
-    public function addHubSpotNote($text) {
+    public function addHubSpotNote($text)
+    {
         if (!$this->isLinkedToHubSpot()) {
             $this->linkToHubSpot();
         }

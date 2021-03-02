@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-class Company extends \ActiveRecord\Model {
+class Company extends \ActiveRecord\Model
+{
     public static $has_many = [
         ['plans'],
-        ['policies','through'=>'plans']
+        ['policies', 'through'=>'plans'],
     ];
 }
