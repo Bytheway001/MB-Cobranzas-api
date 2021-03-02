@@ -13,15 +13,29 @@ class Mailer {
         $this->mail->Host = 'mail.quotiapp.com';
         $this->mail->CharSet = 'UTF-8';
         $this->mail->Port = 587;
-        $this->mail->isHTML(true);
-        $this->mail->setFrom('siscob@megabrokerslatam.com', 'SIS-COB');
-        $this->mail->Username = 'siscob@megabrokerslatam.com';
+        $this->mail->isHTML();
+        $this->mail->setFrom('rcastillo@quotiapp.com', 'Rafael');
+        $this->mail->Username = 'rcastillo@quotiapp.com';
         $this->mail->Password = 'Silvereye1990';
+        /*$this->mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
+        */                       // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+
+        //Recipients
+        $this->mail->setFrom('hello@megabrokerslatam.com', 'SIS-COB');
         foreach ($recipients as $recipient) {
             $this->mail->addAddress($recipient['email'], $recipient['name']);
         }
-        // Set email format to HTML
-        $this->mail->Subject = 'Registro de Cobranza';
+        // Add a recipient
+
+        // Content
+    $this->mail->isHTML(true);                                  // Set email format to HTML
+    $this->mail->Subject = 'Registro de Cobranza';
         $this->mail->Body = $body;
     }
 }
