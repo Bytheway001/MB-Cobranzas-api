@@ -106,7 +106,6 @@ class Policy extends \ActiveRecord\Model {
     */
     public function get_collected():float {
         $total = 0;
-        
         foreach ($this->actual_payments as $cobranza) {
             if ($cobranza->currency==="BOB") {
                 $total=$total+ ($cobranza->amount/$cobranza->change_rate);
@@ -122,7 +121,20 @@ class Policy extends \ActiveRecord\Model {
     * Pagos hechos a la aseguradora
     */
     public function get_payed():float {
+        $direct_methods = ['tdc_to_collector','tdc_to_company','transfer_to_company','check_to_agency_local','check_to_agency_foreign'];
+
         $total = 0;
+        
+        foreach ($this->actual_payments as $payment) {
+            if (in_array($payment->payment_method, $direct_methods)) {
+                if ($payment->currency==="BOB") {
+                    $total=$total+ ($payment->amount/$payment->change_rate);
+                } else {
+                    $total=$total+ $payment->amount;
+                }
+            }
+        }
+        
         foreach ($this->actual_policy_payments as $pp) {
             if ($pp->currency==="BOB") {
                 $total += round($pp->amount / 6.96, 2);
