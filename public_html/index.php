@@ -8,9 +8,9 @@ require '../vendor/autoload.php';
 use PHPRouter\Config;
 use PHPRouter\Router;
 
-header('Access-Control-Allow-Origin:*');
+header('Access-Control-Allow-Origin:https://quotiapp.com');
+header('Access-Control-Allow-Headers:Content-type,CALL-TYPE,Authorization,session');
 header('Access-Control-Allow-Methods:*');
-header('Access-Control-Allow-Headers:*');
 header('Access-Control-Allow-Credentials:true');
 $config = Config::loadFromFile(PROJECTPATH.'/Config/routes.yaml');
 $router = Router::parseConfig($config);
