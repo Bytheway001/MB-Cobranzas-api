@@ -8,8 +8,16 @@ require '../vendor/autoload.php';
 use PHPRouter\Config;
 use PHPRouter\Router;
 
-header('Access-Control-Allow-Origin:https://cobranzas.megabrokerslatam.com');
-header('Access-Control-Allow-Headers:Content-type,CALL-TYPE,Authorization,session');
+$allowedOrigins = [
+    "http://localhost:3000",
+    "https://cobranzas.megabrokerslatam.com",
+    "https://test.megabrokerslatam.com"
+    // ... etc
+];
+if (in_array($_SERVER["HTTP_ORIGIN"], $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"]);
+}
+header('Access-Control-Allow-Headers:Content-type,CALL-TYPE,Authorization,session,u');
 header('Access-Control-Allow-Methods:*');
 header('Access-Control-Allow-Credentials:true');
 $config = Config::loadFromFile(PROJECTPATH.'/Config/routes.yaml');
