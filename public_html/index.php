@@ -1,5 +1,4 @@
 <?php
-
 date_default_timezone_set('America/La_Paz');
 define('PROJECTPATH', dirname(__DIR__));
 define('APPPATH', PROJECTPATH.'/App');
@@ -8,10 +7,10 @@ define('HUBSPOT_API_KEY', 'abcb7c3c-c65a-4985-bc11-58892ac09f3f');
 require '../vendor/autoload.php';
 use PHPRouter\Config;
 use PHPRouter\Router;
-
 header('Access-Control-Allow-Origin:*');
 header('Access-Control-Allow-Methods:*');
 header('Access-Control-Allow-Headers:*');
+header('Access-Control-Allow-Credentials:true');
 $config = Config::loadFromFile(PROJECTPATH.'/Config/routes.yaml');
 $router = Router::parseConfig($config);
 //$router = Router::parseRafaFile($config);
