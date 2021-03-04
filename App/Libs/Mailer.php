@@ -7,7 +7,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 class Mailer {
     public function __construct($recipients, $body) {
         $this->mail = new PHPMailer();
-        $this->mail->SMTPDebug = false;
+        $this->mail->SMTPDebug = true;
         $this->mail->isSMTP();
         $this->mail->SMTPAuth = true;
         $this->mail->Host = 'mail.quotiapp.com';

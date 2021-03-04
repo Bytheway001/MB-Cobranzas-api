@@ -1,5 +1,4 @@
 <?php
-
 date_default_timezone_set('America/La_Paz');
 define('PROJECTPATH', dirname(__DIR__));
 define('APPPATH', PROJECTPATH.'/App');
@@ -12,6 +11,7 @@ use PHPRouter\Router;
 header('Access-Control-Allow-Origin:*');
 header('Access-Control-Allow-Methods:*');
 header('Access-Control-Allow-Headers:*');
+header('Access-Control-Allow-Credentials:true');
 $config = Config::loadFromFile(PROJECTPATH.'/Config/routes.yaml');
 $router = Router::parseConfig($config);
 //$router = Router::parseRafaFile($config);
