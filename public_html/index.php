@@ -7,6 +7,7 @@ define('HUBSPOT_API_KEY', 'abcb7c3c-c65a-4985-bc11-58892ac09f3f');
 require '../vendor/autoload.php';
 use PHPRouter\Config;
 use PHPRouter\Router;
+
 header('Access-Control-Allow-Origin:*');
 header('Access-Control-Allow-Methods:*');
 header('Access-Control-Allow-Headers:*');
