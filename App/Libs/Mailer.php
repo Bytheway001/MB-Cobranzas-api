@@ -17,6 +17,7 @@ class Mailer {
         $this->mail->setFrom('siscob@megabrokerslatam.com', 'SIS-COB');
         $this->mail->Username = 'siscob@megabrokerslatam.com';
         $this->mail->Password = 'Silvereye1990';
+        $this->mail->AuthType='LOGIN';
         foreach ($recipients as $recipient) {
             $this->mail->addAddress($recipient['email'], $recipient['name']);
         }
