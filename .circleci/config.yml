@@ -1,0 +1,67 @@
+version: 2.1
+orbs:
+  php: circleci/php@1.1.0
+commands:
+  copy_files:
+    parameters:
+      source:
+        type: string
+      destination:
+        type: string
+    steps:
+      - run: rsync  -avce "ssh -o StrictHostKeyChecking=no" --delete --exclude ".htaccess" << parameters.source >> $SSH_USER@$SSH_HOST:<< parameters.destination >>
+  set_up_server:
+    steps:
+      - add_ssh_keys:
+          fingerprints: 
+            - "71:3a:6b:fd:84:cf:60:e6:18:f6:fb:02:11:08:8d:0a"
+      - checkout
+      - run: sudo apt install rsync
+      - run: sudo docker-php-ext-install pdo pdo_mysql zip 
+      - run: sudo apt-get install -y zlib1g-dev libpng-dev libzip-dev
+      - run: sudo docker-php-ext-install gd
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "composer.json" }}
+            - v1-dependencies-
+      - save_cache:
+          paths:
+            - vendor
+          key: v1-dependencies-{{ checksum "composer.json" }}
+      - php/install-composer
+      - php/install-packages
+      - run: 
+          name: Update PHPRouter package
+          command: composer update dannyvankooten/php-router
+jobs:
+  create_production_build:
+    docker:
+      - image: circleci/php:7.4.21-node-browsers
+    steps:
+      - set_up_server
+      - copy_files:
+          source: /home/circleci/project/
+          destination: /home/megabrokers/public_html/cobranzas/api
+  create_test_build:
+    docker:
+      - image: circleci/php:7.4.21-node-browsers
+    steps:
+      - set_up_server
+      - copy_files:
+          source: /home/circleci/project/
+          destination: /home/megabrokers/public_html/test/cobranzas/api
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - create_production_build:
+          filters:
+            branches:
+              only:
+                - master
+      - create_test_build:
+          filters:
+            branches:
+              only:
+                - develop
+
