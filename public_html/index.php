@@ -8,7 +8,7 @@ $dotenv->load();
 $config = Config::loadFromFile(PROJECTPATH.'/Config/routes.yaml');
 $router = Router::parseConfig($config);
 if (!session_id()) {
-    @session_start();
+    @session_start(); 
 }
 
 ActiveRecord\Config::initialize(function ($cfg) {
@@ -17,7 +17,7 @@ ActiveRecord\Config::initialize(function ($cfg) {
     $cfg->set_connections(
         [
             'development' => 'mysql://'.$_ENV['DATABASE_USER'].':'.$_ENV['DATABASE_PASSWORD'].'@'.$_ENV['DATABASE_HOST'].'/'.$_ENV['DATABASE_NAME'].';charset=utf8'
-        //'test' => 'mysql://'.$database['user'].':'.$database['password'].'@'.$database['host'].'/mb_cobranzas_test;charset=utf8'
+        
         ]
     );
     $cfg->set_default_connection('development');
