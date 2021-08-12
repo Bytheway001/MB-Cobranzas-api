@@ -3,9 +3,9 @@ namespace App\Operations;
 use \Core\{Request,Response,ApiException};
 use \App\Models\{Policy,Income,Account};
 class CreatePaymentOperation extends Operation implements IOperation{
-	private array $payment_data;
+	private $payment_data;
 	private $receiving_policy;
-	private array $tags = [];
+	private $tags = [];
 
 
 /*
