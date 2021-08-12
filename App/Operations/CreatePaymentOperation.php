@@ -122,13 +122,13 @@ class CreatePaymentOperation extends Operation implements IOperation{
 
 	public function createPolicyPayment(){
 
-		$payment = $this->payment;
+		$payment = $this->payment; 
 		if($payment->payment_method === 'Pago con tarjeta de Terceros'){
 			$receiving_policy = Policy::find([$this->receiving_policy]);
 			$receiving_policy->create_policy_payment([
 				'policy_id'=>$this->receiving_policy,
 				'currency'=>$payment->currency,
-				'comment'=>'Pagada con CC del cliente '.$payment->policy->client->first_name,
+				'comment'=>'Pagada con TC del cliente '.$payment->policy->client->first_name,
 				'user_id'=>Request::instance()->user->id,
 				'payment_type'=>'Direct',
 				'payment_date'=>$payment->payment_date,
