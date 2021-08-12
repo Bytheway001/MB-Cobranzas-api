@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="phpunit.xsd"
+ testdox='true'
+ colors="true"
+ verbose="false"
+ >
+ <testsuites>
+    <testsuite name="general">
+        <directory suffix=".php">./tests</directory>
+
+    </testsuite>
+    
+    
+</testsuites>
+
+
+<php>
+    <const name="PHPUNIT_TESTSUITE" value="true"/>
+</php>
+</phpunit>

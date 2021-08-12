@@ -1,0 +1,10 @@
+#composer
+/vendor
+/Config/web.php
+/docs
+
+.php_cs.cache
+
+App/Files/~$main.xlsx
+
+.env

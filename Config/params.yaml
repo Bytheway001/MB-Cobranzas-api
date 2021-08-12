@@ -1,0 +1,57 @@
+create_client:
+   payload:
+      - first_name
+      - agent_id
+      - collector_id
+      - h_id
+client_index:
+    params:
+        - q
+create_policy:
+    payload:
+        - client_id
+        - plan_id
+        - policy_number
+        - premium
+        - frequency
+        - renovation_date
+        - effective_date
+        - option
+create_policy_payment:
+    payload:
+        - account_id
+        - policy_id
+        - amount
+        - currency
+        - payment_date
+renew_policy:
+    payload:
+        - policy_id
+create_transfer:
+    payload:
+        - amount
+        - currency
+        - from
+        - to
+collect_check:
+    payload:
+        - check_id
+        - account_id
+create_expense:
+    payload:
+        - date
+        - bill_number
+        - description
+        - currency
+        - amount
+        - account_id
+        - office
+        - category_id
+create_income:
+    payload:
+        - account_id
+        - category_id
+        - date
+        - description
+        - currency
+        - amount

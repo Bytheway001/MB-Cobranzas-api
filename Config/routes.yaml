@@ -1,0 +1,67 @@
+sbase_path: /
+routes:
+  test:
+    main: [/test/main,main,GET]
+  home:
+    index: [/,index,GET]
+    auth: [/auth,auth,GET]
+    accounts: [/accounts,listAccounts,GET]
+    list_checks: [/checks,listChecks,GET] 
+    list_companies: [/companies,listCompanies,GET]
+    list_plans: [/plans/:companyId,listPlans,GET]
+    not_found: [/*,routeNotFound,GET]
+    get_notifications: [/notifications,getNotifications,GET]
+  agents:
+    get_agents : [/agents,index,GET]
+    get_collectors: ['/collectors',getCollectors,GET]
+  clients:
+    list: [/clients,index,GET]
+    update: [/clients/:id,update,PUT] #
+    create: [/clients,create,POST] #
+    show: [/clients/:id,show,GET]
+  policies:
+    create: [/policies,create,POST] #
+    pay: [/policies/:policyId/pay,pay,POST]
+    renew: [/policies/:policyId/renew,renew,POST]
+    update: [/policies/:id,update,PUT]
+    financed_policies: [/policies/financed,getFinanced,GET]
+    get_renovations: [/renovations,getRenovations,GET]
+    history: [/policies/:policyId/history,getHistory,GET]
+    get_payments: [/policies/:policyId/payments,getPaymentsOfPolicy,GET]
+    get_policy_payments: [/policies/:policyId/policypayments,getPolicyPayments,GET]
+    show: [/policies/:policyId,show,GET]
+  payments:
+    create: [/payments,create,POST]
+    list: [/payments,index,GET]
+    show: [/payments/:id,show,GET]
+    validate: [/payments/validate/:id,validate,GET]
+  reports:
+    list: [/reports,getReports,GET]
+    movements: [/reports/movements/:id,accountMovements,GET]
+  expenses:
+    create: [/expenses,create,POST]
+  operations:
+    rc: [/changes,reportCorrection,POST]
+    transfer: [/operations/createtransfer,createTransfer,POST]
+    collect_check: [/operations/collectcheck,collect_check,POST]
+    create_income: [/operations/createincome,createIncome,POST]
+    convert: [/operations/convert,convert,POST]
+  categories:
+    list:  [/categories,getTree,GET]
+  exports:
+    financed_report: [/exports/financed,financedReport,GET]
+    cash_report: [/exports/cash/:id,cashReport,GET]
+    payments_report: [/exports/payments,paymentsReport,GET]
+    main_report: [/exports/main,mainReport,GET]
+
+
+
+
+
+
+
+
+
+
+
+
