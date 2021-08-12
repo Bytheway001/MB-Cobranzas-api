@@ -7,7 +7,7 @@ class Operation{
 	protected $payload;
 	public $response;
 	public $statusCode = 200;
-	public array $errors = [];
+	public $errors = [];
 	protected function __construct(){
 		$this->connection = \ActiveRecord\ConnectionManager::get_connection();
 		$this->payload = Request::instance()->payload;
