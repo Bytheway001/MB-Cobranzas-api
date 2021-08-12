@@ -5,9 +5,10 @@ use Symfony\Component\Yaml\Yaml;
 use Core\ApiException;
 use App\Models\Policy;
 class UpdatePolicyOperation extends Operation implements IOperation{
-	public function __construct(){
+	public function __construct($policy_id){
 		parent::__construct();
 		$this->action = 'create_policy';
+		$this->payload->policy_id = $policy_id;
 	}
 
 	public function process(){

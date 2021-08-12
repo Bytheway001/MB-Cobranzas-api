@@ -22,7 +22,7 @@ class policiesController extends Controller
 	}
 
 	public function update($policy_id) {
-		$operation = new \App\Operations\Policy\UpdatePolicyOperation();
+		$operation = new \App\Operations\Policy\UpdatePolicyOperation($policy_id);
 		$operation->process();
 		if($operation->done){
 			Response::send($operation->statusCode,$operation->response);
