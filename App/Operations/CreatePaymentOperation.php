@@ -50,7 +50,7 @@ class CreatePaymentOperation extends Operation implements IOperation{
 
 	public function setTags(){
 		if(!empty($this->payload['tags'])){
-			$tags = $this->payload['tags'];
+			$this->tags = $this->payload['tags'];
 		}
 	}
 	public function addHubSpotNote(){
