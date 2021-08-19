@@ -54,6 +54,27 @@ class CreateTransferOperation extends Operation implements IOperation{
 	}
 
 	public function makeTransfer(){
+		$user_id = \Core\Request::instance()->user->id;
+		$this->giving_account->create_expense([
+			'user_id'    => $user_id,
+			'bill_number'=> 'S/N',
+			'description'=> 'Transferencia hacia '.$this->receiving_account->name,
+			'currency'   => $this->payload['currency'],
+			'amount'     => $this->payload['amount'],
+			'category_id'=> 73,
+			'date'       => date('Y-m-d H:i:s'),
+		]);
+
+		$this->receiving_account->create_income([
+			'user_id'    => $user_id,
+			'description'=> 'Trasferencia desde '.$this->giving_account->name,
+			'category_id'=> 89,
+			'currency'   => $this->payload['currency'],
+			'amount'     => $this->payload['amount'],
+			'date'       => date('Y-m-d H:i:s'),
+		]);
+
+		
 		$this->giving_account->withdraw($this->payload['amount'],$this->payload['currency']);
 		$this->receiving_account->deposit($this->payload['amount'],$this->payload['currency']);
 	}
