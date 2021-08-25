@@ -8,12 +8,13 @@ class UpdatePolicyOperation extends Operation implements IOperation{
 	public function __construct(){
 		parent::__construct();
 		$this->action = 'create_policy';
+		
 	}
 
 	public function process(){
 		try{
 			$this->validateRequest();
-			$this->findClient();
+
 			$this->findPolicy();
 
 			$this->saveIntoDB();
@@ -33,16 +34,7 @@ class UpdatePolicyOperation extends Operation implements IOperation{
 		}
 	}
 
-	public function findClient(){
-		try{
-			$this->client = \App\Models\Client::find([$this->payload['client_id']]);
-		}
-		catch(\ActiveRecord\RecordNotFound $e){
-			$this->errors['client']="Client was not found";
-			$this->fail(400,"Client Not Found");
-		}
-
-	}
+	
 
 	
 
@@ -50,10 +42,6 @@ class UpdatePolicyOperation extends Operation implements IOperation{
 		try{
 			$policy = Policy::find([$this->payload['policy_id']]);
 			$this->policy = $policy;
-			if($this->policy->client->id !== $this->client->id){
-				$this->errors['policy']="Policy does not belong to this client";
-				$this->fail(404,"Policy Does not belong to client");
-			}
 		}
 		catch(\ActiveRecord\RecordNotFound $e){
 			$this->errors['policy']="Policy Not found";

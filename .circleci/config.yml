@@ -9,7 +9,7 @@ commands:
       destination:
         type: string
     steps:
-      - run: rsync  -avce "ssh -o StrictHostKeyChecking=no" --delete --exclude ".htaccess" << parameters.source >> $SSH_USER@$SSH_HOST:<< parameters.destination >>
+      - run: rsync  -avce "ssh -o StrictHostKeyChecking=no" --delete --exclude ".htaccess" --exclude ".env" << parameters.source >> $SSH_USER@$SSH_HOST:<< parameters.destination >>
   set_up_server:
     steps:
       - add_ssh_keys:
