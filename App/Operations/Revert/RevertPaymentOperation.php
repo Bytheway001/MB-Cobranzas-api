@@ -60,7 +60,7 @@ class RevertPaymentOperation extends Operation implements IOperation{
 
 	private function createCorrectionExpense(){
 		if($this->payment->account_id){
-			$expense = $this->payment->account->create_expense([
+			$this->expense = $this->payment->account->create_expense([
 				'date'       => date('Y-m-d H:i:s'),
 				'category_id'=> 97,
 				'user_id'    => Request::instance()->user->id,
@@ -74,6 +74,13 @@ class RevertPaymentOperation extends Operation implements IOperation{
 			$this->payment->corrected_with = $expense->id;
 			$this->payment->save();
 		}
+		else{
+			$this->payment->delete();
+		}
+	}
+
+	public function revertPayment(){
+
 	}
 	private function revertPolicyPayment(){
 		if($this->payment->payment_method === "Pago con tarjeta de Terceros"){
