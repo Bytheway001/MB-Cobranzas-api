@@ -10,7 +10,7 @@ class Payment extends Model
         $this->user_id = \Core\Request::instance()->user->id;
     }
 
-    public function get_check(){
+    public function get_check() {
         return \App\Models\Check::find(['conditions'=>['payment_id = ?', $this->id]]);
     }
 

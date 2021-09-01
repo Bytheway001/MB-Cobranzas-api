@@ -15,21 +15,19 @@ class clientsController extends Controller
     public function create() {
         $operation = new \App\Operations\Client\CreateClientOperation();
         $operation->process();
-        if($operation->done){
-            Response::send($operation->statusCode,$operation->response);
-        }  
-        else{
-            Response::crash($operation->statusCode,$operation->errors);
+        if ($operation->done) {
+            Response::send($operation->statusCode, $operation->response);
+        } else {
+            Response::crash($operation->statusCode, $operation->errors);
         }
     }
     public function update($id) {
         $operation = new \App\Operations\Client\UpdateClientOperation();
         $operation->process();
-        if($operation->done){
-            Response::send($operation->statusCode,$operation->response);
-        }  
-        else{
-            Response::crash($operation->statusCode,$operation->errors);
+        if ($operation->done) {
+            Response::send($operation->statusCode, $operation->response);
+        } else {
+            Response::crash($operation->statusCode, $operation->errors);
         }
     }
     public function index() {

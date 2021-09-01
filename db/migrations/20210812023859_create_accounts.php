@@ -17,19 +17,17 @@ final class CreateAccounts extends AbstractMigration
      * with the Table class.
      */
 
-
-    public function change(): void
-    {
-       $decimal = ['scale'=>2,'precision'=>10];
-       $varchar = ['limit'=>50];
-       $table = $this->table('accounts',['collation'=>'utf8_spanish2_ci']);
-       $table->addColumn('name','string',$varchar)
-       ->addColumn("USD",'decimal',$decimal)
-       ->addColumn("BOB",'decimal',$decimal)
-       ->addColumn("type",'string',$varchar)
-       ->addColumn("last_balance_usd",'decimal',$decimal)
-       ->addColumn("last_balance_bob",'decimal',$decimal)
-       ->addColumn("last_balance_date",'date')
+    public function change(): void {
+        $decimal = ['scale'=>2,'precision'=>10];
+        $varchar = ['limit'=>50];
+        $table = $this->table('accounts', ['collation'=>'utf8_spanish2_ci']);
+        $table->addColumn('name', 'string', $varchar)
+       ->addColumn("USD", 'decimal', $decimal)
+       ->addColumn("BOB", 'decimal', $decimal)
+       ->addColumn("type", 'string', $varchar)
+       ->addColumn("last_balance_usd", 'decimal', $decimal)
+       ->addColumn("last_balance_bob", 'decimal', $decimal)
+       ->addColumn("last_balance_date", 'date')
        ->create();
-   }
+    }
 }

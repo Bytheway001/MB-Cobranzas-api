@@ -1,71 +1,66 @@
-<?php 
+<?php
 namespace App\Operations\Policy;
-use App\Operations\{Operation,IOperation};
+
+use App\Operations\Operation;
+use App\Operations\IOperation;
 use Symfony\Component\Yaml\Yaml;
 use Core\ApiException;
 use App\Models\Policy;
-class UpdatePolicyOperation extends Operation implements IOperation{
-	public function __construct(){
-		parent::__construct();
-		$this->action = 'create_policy';
-		
-	}
 
-	public function process(){
-		try{
-			$this->validateRequest();
+class UpdatePolicyOperation extends Operation implements IOperation
+{
+    public function __construct() {
+        parent::__construct();
+        $this->action = 'create_policy';
+    }
 
-			$this->findPolicy();
+    public function process() {
+        try {
+            $this->validateRequest();
 
-			$this->saveIntoDB();
-			$this->prepareResponse();
-		}
-		catch(ApiException $e){
-			$this->response = $this->errors;
-		}
-	}
+            $this->findPolicy();
 
-	public function validateRequest(){
-		extract($this->payload);
-		if(empty($policy_id)){
-			$this->errors['policy']="Must Provide a policy ID";
-			$this->statusCode = 403;
-			throw new ApiException("Bad Request");
-		}
-	}
+            $this->saveIntoDB();
+            $this->prepareResponse();
+        } catch (ApiException $e) {
+            $this->response = $this->errors;
+        }
+    }
 
-	
+    public function validateRequest() {
+        extract($this->payload);
+        if (empty($policy_id)) {
+            $this->errors['policy']="Must Provide a policy ID";
+            $this->statusCode = 403;
+            throw new ApiException("Bad Request");
+        }
+    }
 
-	
+    public function findPolicy() {
+        try {
+            $policy = Policy::find([$this->payload['policy_id']]);
+            $this->policy = $policy;
+        } catch (\ActiveRecord\RecordNotFound $e) {
+            $this->errors['policy']="Policy Not found";
+            $this->fail(400, "Policy Not found");
+        }
+    }
 
-	public function findPolicy(){
-		try{
-			$policy = Policy::find([$this->payload['policy_id']]);
-			$this->policy = $policy;
-		}
-		catch(\ActiveRecord\RecordNotFound $e){
-			$this->errors['policy']="Policy Not found";
-			$this->fail(400,"Policy Not found");
-		}
-	}
+    public function saveIntoDB() {
+        unset($this->payload['policy_id']);
+        $this->policy->update_attributes($this->payload);
+    }
 
-	public function saveIntoDB(){
-		unset($this->payload['policy_id']);
-		$this->policy->update_attributes($this->payload);
-	}
-
-	public function prepareResponse(){
-		if(count($this->errors)>0){
-			$this->connection->rollback();
-			$this->response = $this->errors;
-			return;
-		}
-		$this->connection->commit();
-		$this->done = true;
-		$this->statusCode = 200;
-		$this->response=$this->policy->to_array(['include'=>['plan'],'methods'=>['company','totals']]);;
-	}
+    public function prepareResponse() {
+        if (count($this->errors)>0) {
+            $this->connection->rollback();
+            $this->response = $this->errors;
+            return;
+        }
+        $this->connection->commit();
+        $this->done = true;
+        $this->statusCode = 200;
+        $this->response=$this->policy->to_array(['include'=>['plan'],'methods'=>['company','totals']]);
+        ;
+    }
 }
-
-
-?>

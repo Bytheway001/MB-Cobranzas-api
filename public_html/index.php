@@ -3,12 +3,13 @@ require '../Core/init.php';
 require '../vendor/autoload.php';
 use PHPRouter\Config;
 use App\Libs\Router;
+
 $dotenv = Dotenv\Dotenv::createImmutable("../");
 $dotenv->load();
 $config = Config::loadFromFile(PROJECTPATH.'/Config/routes.yaml');
 $router = Router::parseConfig($config);
 if (!session_id()) {
-    @session_start(); 
+    @session_start();
 }
 
 ActiveRecord\Config::initialize(function ($cfg) {

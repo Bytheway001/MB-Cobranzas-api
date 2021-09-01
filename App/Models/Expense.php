@@ -23,6 +23,4 @@ class Expense extends \ActiveRecord\Model
             }
         }
     }
-
-   
 }

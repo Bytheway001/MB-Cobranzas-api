@@ -16,16 +16,10 @@ final class CreateAgents extends AbstractMigration
      * Remember to call "create()" or "update()" and NOT "save()" when working
      * with the Table class.
      */
-    public function change(): void
-    {
-        
-       
-       $varchar = ['limit'=>100];
-       $table = $this->table('agents',['collation'=>'utf8_spanish2_ci']);
-       $table->addColumn('name','string',$varchar)
+    public function change(): void {
+        $varchar = ['limit'=>100];
+        $table = $this->table('agents', ['collation'=>'utf8_spanish2_ci']);
+        $table->addColumn('name', 'string', $varchar)
        ->create();
-
-       
-       
-   }
+    }
 }

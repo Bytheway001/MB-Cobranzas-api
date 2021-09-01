@@ -4,11 +4,9 @@ namespace App\Models;
 
 class Account extends Model
 {
-    static $has_many =[['expenses'],['incomes'],['payments'],['policy_payments']];
+    public static $has_many =[['expenses'],['incomes'],['payments'],['policy_payments']];
 
-
-    
-    public function deposit(float $amount,string $currency) {
+    public function deposit(float $amount, string $currency) {
         $currency = strtolower($currency);
         $this->$currency = $this->$currency + $amount;
         $this->save();
