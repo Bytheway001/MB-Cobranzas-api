@@ -12,11 +12,10 @@ class expensesController extends Controller
     public function create() {
         $operation = new \App\Operations\CreateExpenseOperation();
         $operation->process();
-        if($operation->done){
-            Response::send($operation->statusCode,$operation->response);
-        }  
-        else{
-            Response::crash($operation->statusCode,$operation->errors);
+        if ($operation->done) {
+            Response::send($operation->statusCode, $operation->response);
+        } else {
+            Response::crash($operation->statusCode, $operation->errors);
         }
         /*
         $payload = Request::instance('create_expense')->payload;
@@ -27,6 +26,5 @@ class expensesController extends Controller
             Response::crash(400, $expense->errors->full_messages());
         }
         */
-       
     }
 }

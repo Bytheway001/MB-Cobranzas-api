@@ -5,7 +5,6 @@ use App\Models\Income;
 
 class Check extends Model
 {
-
     public static $belongs_to = [['client'], ['account'],['payment']];
     /*
     public function revert($expense_id) {

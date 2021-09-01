@@ -19,7 +19,6 @@ class PolicyPayment extends \ActiveRecord\Model
     public static $belongs_to = [['account'], ['policy'], ['user']];
     public static $before_create = ['set_creator'];
 
-
     public function validate() {
         /* Account should have the amount for this operations */
         if ($this->account) {

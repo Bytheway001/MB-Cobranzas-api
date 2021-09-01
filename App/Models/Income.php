@@ -21,5 +21,4 @@ class Income extends \ActiveRecord\Model
 
         return $result;
     }
-
 }

@@ -25,9 +25,6 @@ class Request
             self::$instance = new static();
         }
         
-     
         return self::$instance;
     }
-
-    
 }
