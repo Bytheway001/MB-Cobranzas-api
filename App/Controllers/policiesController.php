@@ -9,6 +9,74 @@ use Core\Response;
 
 class policiesController extends Controller
 {
+    public function list() {
+        $result = [
+            'new_business'=>[
+                'count'=>0,
+                'total'=>0,
+                'policies'=>[]
+                
+            ],
+            'renewals'=>[
+                'count'=>0,
+                'total'=>0,
+                'renewals'=>[],
+                'pending_renewal'=>0
+                
+            ]
+            
+        ];
+        $policies = \App\Models\Policy::all(['order'=>'plan_id']);
+        $policiesForRenewal = 0;
+        if (!empty($_GET['from'])) {
+            $dt = \DateTime::createFromFormat('d/m/Y', $_GET['from']);
+        }
+        if (!empty($_GET['to'])) {
+            $dto = \DateTime::createFromFormat('d/m/Y', $_GET['to']);
+        }
+
+        foreach ($policies as $policy) {
+            if (!empty($_GET['from'])) {
+                if ($policy->effective_date < $dt) {
+                    continue;
+                }
+            }
+            if (!empty($_GET['to'])) {
+                if ($policy->effective_date > $dto) {
+                    continue;
+                }
+            }
+
+            $result['new_business']['count']=$result['new_business']['count']+1;
+            $result['new_business']['policies'][]=$policy->to_array(['include'=>['client','plan'=>['include'=>'company']]]);
+            $result['new_business']['total']+= $policy->premium;
+        }
+
+        foreach (\App\Models\Renewal::all(['order'=>'policy_id']) as $renewal) {
+            if (!empty($_GET['from'])) {
+                $period =$dt->format('Y').'-'.($dt->format('Y')+1);
+                if ($renewal->created_at< $dt) {
+                    continue;
+                }
+                if ($renewal->period !== $period) {
+                    continue;
+                }
+            }
+            if (!empty($_GET['to'])) {
+                if ($renewal->created_at>$dto) {
+                    continue;
+                }
+            }
+            $result['renewals']['count']++;
+            $result['renewals']['renewals'][]=$renewal->to_array(['include'=>['plan','policy'=>['include'=>['client','plan'=>['include'=>'company']]]]]);
+            $result['renewals']['total']+= $renewal->premium;
+        }
+        $result['new_business']['total']=round($result['new_business']['total'], 2);
+        $result['renewals']['total']=round($result['renewals']['total'], 2);
+        
+        Response::send(200, $result);
+    }
+
     public function create() {
         $operation = new \App\Operations\Policy\CreatePolicyOperation();
         $operation->process();
