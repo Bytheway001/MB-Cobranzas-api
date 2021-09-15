@@ -7,7 +7,7 @@ use \App\Models\Payment;
 use \App\Models\PolicyPayment;
 use DateTime;
 
-class Policy extends \ActiveRecord\Model
+class Policy extends Model
 {
     public static $belongs_to = [
         ['client'],
