@@ -60,6 +60,7 @@ class RevertPaymentOperation extends Operation implements IOperation
     }
 
     private function createCorrectionExpense() {
+      
         if ($this->payment->account_id) {
             $this->expense = $this->payment->account->create_expense([
                 'date'       => date('Y-m-d H:i:s'),
@@ -68,10 +69,12 @@ class RevertPaymentOperation extends Operation implements IOperation
                 'description'=> 'Correccion de Cobranzas #'.$this->payment->id,
                 'currency'   => $this->payment->currency,
                 'amount'     => $this->payment->amount,
-                'office'     => 'sc', 'bill_number'=>'S/N',
+                'office'     => 'sc', 
+                'bill_number'=>'S/N',
                 'correcting'=>$this->payment->id,
                 'correcting_type'=>'payment'
             ]);
+           
             $this->payment->corrected_with = $this->expense->id;
             $this->payment->save();
         } else {

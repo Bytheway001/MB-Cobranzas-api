@@ -20,6 +20,7 @@ routes:
     create: [/clients,create,POST] #
     show: [/clients/:id,show,GET]
   policies:
+    list: [/policies,list,GET]
     create: [/policies,create,POST] #
     pay: [/policies/:policyId/pay,pay,POST]
     renew: [/policies/:policyId/renew,renew,POST]
@@ -38,6 +39,7 @@ routes:
   reports:
     list: [/reports,getReports,GET]
     movements: [/reports/movements/:id,accountMovements,GET]
+    renewals: [/reports/renewals,getRenewals,GET]
   expenses:
     create: [/expenses,create,POST]
   operations:

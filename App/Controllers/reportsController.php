@@ -159,4 +159,15 @@ class reportsController extends Controller
         }
         Response::send(200, $result);
     }
+
+    public function getRenewals(){
+
+        $renewals = \App\Models\Renewal::all(['conditions'=>[
+            'YEAR(created_at) = ? AND MONTH(created_at) = ?',
+            '2021',
+            '08'
+        ]]);
+
+        Response::send(200,\App\Presenters\RenewalRepresenter::for_reports($renewals));
+    }
 }
