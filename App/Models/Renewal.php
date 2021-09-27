@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-class Renewal extends \ActiveRecord\Model
+class Renewal extends Model
 {
     public static $belongs_to = [['policy'],['plan']];
 

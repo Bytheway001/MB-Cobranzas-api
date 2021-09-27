@@ -32,6 +32,7 @@ class Check extends Model
     }
      */
     public function wasCollected() {
-        return !empty($this->account_id);
+       
+        return $this->account_id !== 9;
     }
 }

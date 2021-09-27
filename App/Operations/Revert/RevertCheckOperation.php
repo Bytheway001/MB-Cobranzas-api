@@ -12,11 +12,13 @@ class RevertCheckOperation extends Operation{
 	}
 
 	public function process(){
+		
 		if($this->check->wasCollected()){
 			$this->revertCollection();
 			$this->createCorrections();
 			$this->destroyChecks();
 		}
+		
 		$this->done = true;
 	}
 
@@ -40,8 +42,6 @@ class RevertCheckOperation extends Operation{
 				'correcting'=>$this->income_created_on_collection->id,
 				'correcting_type'=>'income'
 			]);
-		
-
 		$this->income=$reimburse_account->create_income([
 			'date'=>date('Y-m-d H:i:s'),
 			'user_id'=>Request::instance()->user->id,

@@ -39,6 +39,7 @@ routes:
   reports:
     list: [/reports,getReports,GET]
     movements: [/reports/movements/:id,accountMovements,GET]
+    renewals: [/reports/renewals,getRenewals,GET]
   expenses:
     create: [/expenses,create,POST]
   operations:
