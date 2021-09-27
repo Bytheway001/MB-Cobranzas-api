@@ -5,7 +5,7 @@ use App\Operations\{Operation,IOperation};
 use App\Models\{Check,Account,Income,Expense};
 
 class RevertCheckOperation extends Operation{
-	private Check $check;
+	private $check;
 	public function __construct(Check $check){
 
 		$this->check = $check;
