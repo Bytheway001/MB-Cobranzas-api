@@ -197,7 +197,7 @@ class Policy extends Model
         if (count($this->renewals)===0) {
             $periodName=$this->effective_date->format('Y').'-'.$this->renovation_date->format('Y');
             $result[$periodName]=['payments'=>[],'policy_payments'=>[]];
-            $payments = \App\Models\Payment::all(['conditions'=>['policy_id = ?',$this->id]]);
+            $payments = \App\Models\Payment::all(['conditions'=>['policy_id = ? and corrected_with IS NULL',$this->id]]);
             $policy_payments = \App\Models\PolicyPayment::all(['conditions'=>['policy_id = ? and corrected_with is null',$this->id]]);
             foreach ($payments as $p) {
                 $result[$periodName]['payments'][]=$p->to_array(['include'=>'user']);
