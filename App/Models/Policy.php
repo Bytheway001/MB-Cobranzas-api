@@ -336,4 +336,8 @@ class Policy extends Model
             return false;
         }
     }
+
+    public function get_isNew(){
+        return count($this->renewals) <= 0;
+    }
 }

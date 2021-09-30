@@ -17,9 +17,7 @@ class UpdatePolicyOperation extends Operation implements IOperation
     public function process() {
         try {
             $this->validateRequest();
-
             $this->findPolicy();
-
             $this->saveIntoDB();
             $this->prepareResponse();
         } catch (ApiException $e) {
@@ -47,8 +45,23 @@ class UpdatePolicyOperation extends Operation implements IOperation
     }
 
     public function saveIntoDB() {
+        $policy = $this->policy;
+        $payload = $this->payload;
         unset($this->payload['policy_id']);
-        $this->policy->update_attributes($this->payload);
+        if(!$policy->isNew){
+            $renewal = $policy->getLastRenewalObject();
+            $renewal->update_attributes([
+                'plan_id'=>$payload['plan_id'],
+                'option'=>$payload['option'],
+                'premium'=>$payload['premium'],
+                'frequency'=>$payload['frequency'],
+            ]);
+
+        }
+        else{
+             $this->policy->update_attributes($this->payload);
+        }
+       
     }
 
     public function prepareResponse() {
@@ -60,6 +73,7 @@ class UpdatePolicyOperation extends Operation implements IOperation
         $this->connection->commit();
         $this->done = true;
         $this->statusCode = 200;
+        $this->policy->reload();
         $this->response=$this->policy->to_array(['include'=>['plan'],'methods'=>['company','totals']]);
         ;
     }
